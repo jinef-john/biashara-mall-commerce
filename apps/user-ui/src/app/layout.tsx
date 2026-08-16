@@ -15,7 +15,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ClerkProvider>
+        <ClerkProvider
+          signInFallbackRedirectUrl="/"
+          signUpFallbackRedirectUrl="/"
+        >
           <Header />
           {children}
         </ClerkProvider>

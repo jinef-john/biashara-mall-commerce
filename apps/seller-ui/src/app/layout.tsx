@@ -1,3 +1,5 @@
+import { ClerkProvider } from '@clerk/nextjs';
+import { Header } from '../components/header';
 import './global.css';
 
 export const metadata = {
@@ -12,7 +14,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <ClerkProvider
+          signInFallbackRedirectUrl="/"
+          signUpFallbackRedirectUrl="/"
+        >
+          <Header />
+          {children}
+        </ClerkProvider>
+      </body>
     </html>
   );
 }
