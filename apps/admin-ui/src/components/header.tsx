@@ -2,14 +2,14 @@ import { SignInButton, Show, UserButton } from '@clerk/nextjs';
 
 export function Header() {
   return (
-    <header className="flex items-center justify-between border-b border-neutral-800 px-6 py-4">
-      <span className="text-lg font-semibold text-neutral-100">
+    <header className="flex items-center justify-between border-b border-outline-variant bg-surface-container-lowest px-lg py-md">
+      <span className="text-headline-sm text-on-surface">
         Biashara Mall — Admin
       </span>
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-md">
         <Show when="signed-out">
           <SignInButton mode="modal">
-            <button className="text-sm text-neutral-300 hover:text-neutral-100">
+            <button className="rounded bg-primary px-md py-sm text-label-md text-on-primary hover:opacity-90">
               Sign in
             </button>
           </SignInButton>
