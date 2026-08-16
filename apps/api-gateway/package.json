@@ -61,6 +61,8 @@
     }
   },
   "dependencies": {
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "http-proxy-middleware": "^4.2.0",
+    "cors": "^2.8.6"
   }
 }

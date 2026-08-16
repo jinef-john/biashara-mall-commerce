@@ -61,6 +61,10 @@
     }
   },
   "dependencies": {
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "@clerk/express": "^2.1.57",
+    "@biashara-mall/prisma": "workspace:*",
+    "dotenv": "^17.4.2",
+    "cors": "^2.8.6"
   }
 }

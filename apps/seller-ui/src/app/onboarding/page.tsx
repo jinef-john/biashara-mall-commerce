@@ -11,7 +11,7 @@ export default function OnboardingPage() {
           Your shop is how buyers will find you on Biashara Mall.
         </p>
       </div>
-      <CreateOrganization afterCreateOrganizationUrl="/" />
+      <CreateOrganization afterCreateOrganizationUrl="/onboarding/shop-details" />
     </main>
   );
 }

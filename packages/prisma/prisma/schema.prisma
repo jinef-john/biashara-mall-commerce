@@ -1,0 +1,115 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+// A shop is owned by a seller. Shop identity/membership is handled by Clerk
+// Organizations (see apps/seller-service's Clerk webhook) — clerkOrgId is the
+// bridge between a Clerk Organization and this record.
+model Shops {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  clerkOrgId String @unique
+  ownerId    String // Clerk user id of the shop owner
+
+  name         String
+  bio          String?
+  address      String?
+  openingHours String?
+  website      String?
+  category     String?
+  logoUrl      String?
+  coverUrl     String?
+  socialLinks  Json?
+
+  stripeAccountId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  products       Product[]
+  discountCodes  DiscountCodes[]
+}
+
+model SiteConfig {
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  categories    String[]
+  subcategories Json
+}
+
+model DiscountCodes {
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  publicName    String
+  discountType  String // "percentage" | "flat"
+  discountValue Float
+  discountCode  String @unique
+
+  shopId String @db.ObjectId
+  shop   Shops  @relation(fields: [shopId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Images {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  fileId  String
+  fileUrl String
+
+  productId String?  @db.ObjectId
+  product   Product? @relation(fields: [productId], references: [id])
+}
+
+enum ProductStatus {
+  active
+  pending
+  draft
+}
+
+model Product {
+  id                   String  @id @default(auto()) @map("_id") @db.ObjectId
+  title                String
+  slug                 String  @unique
+  category             String
+  subcategory          String
+  shortDescription     String
+  detailedDescription  String
+
+  images Images[]
+
+  videoUrl String?
+  tags     String[]
+  brand    String?
+  colors   String[]
+  sizes    String[]
+
+  startingDate DateTime?
+  endingDate   DateTime?
+
+  stock        Int
+  salePrice    Float
+  regularPrice Float
+  ratings      Float   @default(5)
+  warranty     String?
+
+  customSpecifications Json?
+  customProperties     Json?
+
+  cashOnDelivery String @default("yes")
+
+  discountCodes String[] @db.ObjectId
+
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
+
+  status ProductStatus @default(active)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  shopId String @db.ObjectId
+  shop   Shops  @relation(fields: [shopId], references: [id])
+}
