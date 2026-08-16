@@ -130,16 +130,13 @@
   --radius-xl: 1.5rem;
   --radius-full: 9999px;
 
-  /* Spacing — named tokens alongside Tailwind's numeric scale (p-xs, gap-lg, etc.) */
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 16px;
-  --spacing-lg: 24px;
-  --spacing-xl: 32px;
-  --spacing-2xl: 48px;
-  --spacing-3xl: 64px;
-  --spacing-gutter: 24px;
-  --spacing-margin: 32px;
+  /* Spacing: DESIGN.md's 4px-unit scale (xs/sm/md/lg/xl/2xl/3xl = 4/8/16/24/32/48/64px)
+     IS Tailwind's own default --spacing scale (base 4px, numeric multiples). Named
+     --spacing-md etc. are intentionally NOT redefined here: Tailwind v4 shares the
+     --spacing-* namespace across many utilities (p-*, gap-*, w-*, max-w-*, ...), so a
+     custom --spacing-md would silently hijack unrelated utilities like max-w-md. Use
+     the plain numeric scale instead: p-1=4px, p-2=8px, p-4=16px, p-6=24px, p-8=32px,
+     p-12=48px, p-16=64px. */
 
   /* Elevation */
   --shadow-level-2:

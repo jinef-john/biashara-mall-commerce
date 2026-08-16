@@ -9,9 +9,9 @@ export function CustomSpecifications({ control }: { control: Control<any> }) {
   });
 
   return (
-    <div className="flex flex-col gap-sm">
+    <div className="flex flex-col gap-2">
       {fields.map((field, index) => (
-        <div key={field.id} className="flex items-center gap-sm">
+        <div key={field.id} className="flex items-center gap-2">
           <Controller
             name={`customSpecifications.${index}.name`}
             control={control}
@@ -20,7 +20,7 @@ export function CustomSpecifications({ control }: { control: Control<any> }) {
               <input
                 {...nameField}
                 placeholder="Specification name (e.g. Material)"
-                className="flex-1 rounded border border-outline-variant px-md py-sm text-body-sm text-on-surface"
+                className="flex-1 rounded border border-outline-variant px-4 py-2 text-body-sm text-on-surface"
               />
             )}
           />
@@ -32,7 +32,7 @@ export function CustomSpecifications({ control }: { control: Control<any> }) {
               <input
                 {...valueField}
                 placeholder="Value (e.g. Aluminum)"
-                className="flex-1 rounded border border-outline-variant px-md py-sm text-body-sm text-on-surface"
+                className="flex-1 rounded border border-outline-variant px-4 py-2 text-body-sm text-on-surface"
               />
             )}
           />

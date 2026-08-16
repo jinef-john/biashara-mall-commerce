@@ -54,7 +54,15 @@ export default function ShopDetailsPage() {
     control,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<ShopDetailsForm>();
+  } = useForm<ShopDetailsForm>({
+    defaultValues: {
+      bio: '',
+      address: '',
+      openingHours: '',
+      website: '',
+      category: '',
+    },
+  });
 
   const onSubmit = async (data: ShopDetailsForm) => {
     setSubmitError(null);
@@ -64,13 +72,17 @@ export default function ShopDetailsPage() {
         ...data,
       });
       router.push('/');
-    } catch {
-      setSubmitError('Could not save shop details. Please try again.');
+    } catch (err) {
+      console.error('Failed to save shop details', err);
+      const message =
+        (err as { response?: { data?: { message?: string } } })?.response
+          ?.data?.message ?? 'Could not save shop details. Please try again.';
+      setSubmitError(message);
     }
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-surface px-md py-xl">
+    <main className="flex min-h-screen items-center justify-center bg-surface px-4 py-8">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-headline-lg">
@@ -83,7 +95,7 @@ export default function ShopDetailsPage() {
         <CardContent>
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col gap-md"
+            className="flex flex-col gap-4"
           >
             <div>
               <Label htmlFor="bio">Shop bio</Label>
@@ -95,7 +107,7 @@ export default function ShopDetailsPage() {
                 })}
                 rows={3}
                 placeholder="A one-line summary of what your shop sells"
-                className="mt-xs"
+                className="mt-1"
               />
               {errors.bio && (
                 <p className="text-body-sm text-error">{errors.bio.message}</p>
@@ -107,7 +119,7 @@ export default function ShopDetailsPage() {
               <Input
                 id="address"
                 {...register('address', { required: 'Address is required' })}
-                className="mt-xs"
+                className="mt-1"
               />
               {errors.address && (
                 <p className="text-body-sm text-error">
@@ -122,7 +134,7 @@ export default function ShopDetailsPage() {
                 id="openingHours"
                 {...register('openingHours')}
                 placeholder="e.g. Mon–Sat, 9am–6pm"
-                className="mt-xs"
+                className="mt-1"
               />
             </div>
 
@@ -132,7 +144,7 @@ export default function ShopDetailsPage() {
                 id="website"
                 {...register('website')}
                 placeholder="https://"
-                className="mt-xs"
+                className="mt-1"
               />
             </div>
 
@@ -144,7 +156,7 @@ export default function ShopDetailsPage() {
                 rules={{ required: 'Pick a category' }}
                 render={({ field }) => (
                   <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger id="category" className="mt-xs w-full">
+                    <SelectTrigger id="category" className="mt-1 w-full">
                       <SelectValue placeholder="Select a category" />
                     </SelectTrigger>
                     <SelectContent>
@@ -168,7 +180,7 @@ export default function ShopDetailsPage() {
               <p className="text-body-sm text-error">{submitError}</p>
             )}
 
-            <Button type="submit" disabled={isSubmitting} className="mt-sm">
+            <Button type="submit" disabled={isSubmitting} className="mt-2">
               {isSubmitting ? 'Saving…' : 'Finish setup'}
             </Button>
           </form>

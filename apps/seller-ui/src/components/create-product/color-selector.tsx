@@ -33,7 +33,7 @@ export function ColorSelector({ control }: { control: Control<any> }) {
         };
 
         return (
-          <div className="flex flex-wrap items-center gap-sm">
+          <div className="flex flex-wrap items-center gap-2">
             {[...DEFAULT_COLORS, ...customColors].map((color) => (
               <button
                 key={color}

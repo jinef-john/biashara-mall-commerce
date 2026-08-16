@@ -47,13 +47,13 @@ export function CustomProperties({ control }: { control: Control<any> }) {
   };
 
   return (
-    <div className="flex flex-col gap-sm">
+    <div className="flex flex-col gap-2">
       {properties.map((property) => (
         <div
           key={property.label}
-          className="rounded border border-outline-variant p-sm"
+          className="rounded border border-outline-variant p-2"
         >
-          <div className="mb-xs flex items-center justify-between">
+          <div className="mb-1 flex items-center justify-between">
             <span className="text-label-md text-on-surface">
               {property.label}
             </span>
@@ -65,23 +65,23 @@ export function CustomProperties({ control }: { control: Control<any> }) {
               Remove
             </button>
           </div>
-          <div className="mb-xs flex flex-wrap gap-xs">
+          <div className="mb-1 flex flex-wrap gap-1">
             {property.values.map((v) => (
               <span
                 key={v}
-                className="rounded-full bg-surface-container px-sm py-xs text-body-sm text-on-surface"
+                className="rounded-full bg-surface-container px-2 py-1 text-body-sm text-on-surface"
               >
                 {v}
               </span>
             ))}
           </div>
           {activeLabel === property.label && (
-            <div className="flex gap-xs">
+            <div className="flex gap-1">
               <input
                 value={newValue}
                 onChange={(e) => setNewValue(e.target.value)}
                 placeholder="Add option value"
-                className="flex-1 rounded border border-outline-variant px-sm py-xs text-body-sm text-on-surface"
+                className="flex-1 rounded border border-outline-variant px-2 py-1 text-body-sm text-on-surface"
               />
               <button
                 type="button"
@@ -95,12 +95,12 @@ export function CustomProperties({ control }: { control: Control<any> }) {
         </div>
       ))}
 
-      <div className="flex gap-xs">
+      <div className="flex gap-1">
         <input
           value={newLabel}
           onChange={(e) => setNewLabel(e.target.value)}
           placeholder="Property label (e.g. Material)"
-          className="flex-1 rounded border border-outline-variant px-md py-sm text-body-sm text-on-surface"
+          className="flex-1 rounded border border-outline-variant px-4 py-2 text-body-sm text-on-surface"
         />
         <button
           type="button"

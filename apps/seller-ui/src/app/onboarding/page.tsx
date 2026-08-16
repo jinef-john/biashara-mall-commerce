@@ -2,7 +2,7 @@ import { CreateOrganization } from '@clerk/nextjs';
 
 export default function OnboardingPage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-lg bg-surface px-md">
+    <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-surface px-4">
       <div className="text-center">
         <h1 className="text-headline-lg text-on-surface">
           Set up your shop

@@ -21,13 +21,13 @@ export function SizeSelector({ control }: { control: Control<any> }) {
         };
 
         return (
-          <div className="flex flex-wrap gap-sm">
+          <div className="flex flex-wrap gap-2">
             {DEFAULT_SIZES.map((size) => (
               <button
                 key={size}
                 type="button"
                 onClick={() => toggle(size)}
-                className={`rounded border px-md py-xs text-body-sm ${
+                className={`rounded border px-4 py-1 text-body-sm ${
                   selected.includes(size)
                     ? 'border-primary bg-primary-container text-on-primary-container'
                     : 'border-outline-variant text-on-surface'
