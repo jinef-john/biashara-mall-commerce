@@ -29,6 +29,9 @@
     },
     {
       "path": "./apps/admin-ui"
+    },
+    {
+      "path": "./packages/ui"
     }
   ],
   "compilerOptions": {}

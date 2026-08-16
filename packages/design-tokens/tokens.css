@@ -53,6 +53,26 @@
   --color-on-background: #151c27;
   --color-surface-variant: #dce2f3;
 
+  /* shadcn/ui semantic tokens — mapped onto the palette above so shadcn
+     components (Button, Input, etc.) match DESIGN.md without duplicating
+     values. Only tokens not already covered by the names above are added
+     here (e.g. `primary`/`secondary`/`background` stay defined only once). */
+  --color-foreground: #151c27;
+  --color-card: #ffffff;
+  --color-card-foreground: #151c27;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #151c27;
+  --color-primary-foreground: #ffffff;
+  --color-secondary-foreground: #ffffff;
+  --color-muted: #e7eefe;
+  --color-muted-foreground: #464555;
+  --color-accent: #e2e8f8;
+  --color-accent-foreground: #151c27;
+  --color-destructive: #ba1a1a;
+  --color-border: #c7c4d8;
+  --color-input: #c7c4d8;
+  --color-ring: #3525cd;
+
   /* Typography — named scale from DESIGN.md, used as text-headline-xl, text-body-md, etc. */
   --text-headline-xl: 36px;
   --text-headline-xl--line-height: 44px;
