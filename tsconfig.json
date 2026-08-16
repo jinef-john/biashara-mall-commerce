@@ -2,6 +2,28 @@
   "extends": "./tsconfig.base.json",
   "compileOnSave": false,
   "files": [],
-  "references": [],
+  "references": [
+    {
+      "path": "./apps/api-gateway"
+    },
+    {
+      "path": "./apps/product-service"
+    },
+    {
+      "path": "./apps/seller-service"
+    },
+    {
+      "path": "./apps/order-service"
+    },
+    {
+      "path": "./apps/admin-service"
+    },
+    {
+      "path": "./apps/user-service"
+    },
+    {
+      "path": "./apps/user-ui"
+    }
+  ],
   "compilerOptions": {}
 }
