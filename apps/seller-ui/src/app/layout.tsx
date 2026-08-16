@@ -22,7 +22,7 @@ export default function RootLayout({
           signInUrl="/sign-in"
           signUpUrl="/sign-up"
           signInFallbackRedirectUrl="/"
-          signUpFallbackRedirectUrl="/"
+          signUpFallbackRedirectUrl="/onboarding"
         >
           <Header />
           {children}
