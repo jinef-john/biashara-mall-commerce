@@ -23,6 +23,12 @@
     },
     {
       "path": "./apps/user-ui"
+    },
+    {
+      "path": "./apps/seller-ui"
+    },
+    {
+      "path": "./apps/admin-ui"
     }
   ],
   "compilerOptions": {}

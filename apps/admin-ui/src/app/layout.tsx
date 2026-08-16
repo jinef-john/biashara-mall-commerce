@@ -1,8 +1,8 @@
 import './global.css';
 
 export const metadata = {
-  title: 'Biashara Mall',
-  description: 'Multi-vendor e-commerce marketplace',
+  title: 'Biashara Mall — Admin',
+  description: 'Admin dashboard for Biashara Mall',
 };
 
 export default function RootLayout({
