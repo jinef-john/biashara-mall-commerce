@@ -19,7 +19,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@biashara-mall/ui/*": ["../../packages/ui/src/*"]
     },
     "outDir": "dist",
     "rootDir": "src",
