@@ -2,7 +2,15 @@
   "name": "@biashara-mall/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "dev": "nx run-many -t serve,dev --parallel=9",
+    "dev:services": "nx run-many -t serve -p api-gateway user-service product-service seller-service order-service admin-service --parallel=6",
+    "dev:user-ui": "nx dev user-ui",
+    "dev:seller-ui": "nx dev seller-ui",
+    "dev:admin-ui": "nx dev admin-ui",
+    "dev:gateway": "nx serve api-gateway",
+    "build": "nx run-many -t build"
+  },
   "private": true,
   "dependencies": {
     "express": "^5.1.0",
