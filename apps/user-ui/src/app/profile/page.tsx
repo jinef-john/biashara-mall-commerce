@@ -1,4 +1,6 @@
-import { AddressSection } from '../../shared/components/address-section';
+import { Suspense } from 'react';
+import { Skeleton } from '@biashara-mall/ui/components/ui/skeleton';
+import { ProfileTabs } from '../../shared/components/profile-tabs';
 
 export const metadata = {
   title: 'Your profile — Biashara Mall',
@@ -8,7 +10,9 @@ export default function ProfilePage() {
   return (
     <main className="mx-auto flex max-w-4xl flex-col gap-8 px-4 py-8">
       <h1 className="text-headline-lg text-on-surface">Profile</h1>
-      <AddressSection />
+      <Suspense fallback={<Skeleton className="h-96 w-full rounded-xl" />}>
+        <ProfileTabs />
+      </Suspense>
     </main>
   );
 }

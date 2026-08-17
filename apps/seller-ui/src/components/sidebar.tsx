@@ -5,10 +5,12 @@ import { usePathname } from 'next/navigation';
 import {
   CalendarPlus,
   CalendarRange,
+  CreditCard,
   LayoutDashboard,
   Package,
   PackagePlus,
   Settings,
+  ShoppingBag,
   TicketPercent,
 } from 'lucide-react';
 import {
@@ -61,6 +63,21 @@ const NAV = [
         label: 'All Events',
         href: '/dashboard/events',
         icon: CalendarRange,
+      },
+    ],
+  },
+  {
+    title: 'Orders',
+    items: [
+      {
+        label: 'Orders',
+        href: '/dashboard/orders',
+        icon: ShoppingBag,
+      },
+      {
+        label: 'Payments',
+        href: '/dashboard/payments',
+        icon: CreditCard,
       },
     ],
   },

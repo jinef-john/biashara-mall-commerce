@@ -51,6 +51,21 @@ export function HeroSkeleton() {
   return <Skeleton className="h-64 w-full rounded-xl sm:h-80" />;
 }
 
+export function OrderListSkeleton({ count = 3 }: { count?: number }) {
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="grid grid-cols-3 gap-3">
+        {Array.from({ length: 3 }, (_, i) => (
+          <Skeleton key={i} className="h-20 w-full rounded-xl" />
+        ))}
+      </div>
+      {Array.from({ length: count }, (_, i) => (
+        <Skeleton key={i} className="h-24 w-full rounded-xl" />
+      ))}
+    </div>
+  );
+}
+
 export function ProductDetailsSkeleton() {
   return (
     <div className="grid gap-8 lg:grid-cols-2">

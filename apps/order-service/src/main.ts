@@ -4,6 +4,7 @@ import { clerkMiddleware } from '@clerk/express';
 import { errorMiddleware } from '@biashara-mall/error-handler';
 import { webhookRouter } from './routes/webhook';
 import { paymentRouter } from './routes/payment';
+import { ordersRouter } from './routes/orders';
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.get('/api', (req, res) => {
 });
 
 app.use('/api', paymentRouter);
+app.use('/api', ordersRouter);
 
 app.use(errorMiddleware);
 

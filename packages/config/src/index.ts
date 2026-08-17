@@ -13,6 +13,26 @@ export function sellerEarning(amount: number): number {
   return Math.round((amount - platformFee(amount)) * 100) / 100;
 }
 
+/** One-way progression — shared by order-service (enforces it) and both UIs
+ * (render it as a delivery progress bar / "advance to next" control). */
+export const ORDER_STATUS_STEPS = [
+  'ordered',
+  'packed',
+  'shipped',
+  'out_for_delivery',
+  'delivered',
+] as const;
+
+export type OrderStatusStep = (typeof ORDER_STATUS_STEPS)[number];
+
+export const ORDER_STATUS_LABELS: Record<OrderStatusStep, string> = {
+  ordered: 'Ordered',
+  packed: 'Packed',
+  shipped: 'Shipped',
+  out_for_delivery: 'Out for delivery',
+  delivered: 'Delivered',
+};
+
 /** Seeded into SiteConfig on first boot; the DB copy is authoritative after that. */
 export const DEFAULT_CATEGORIES = [
   'Electronics',
