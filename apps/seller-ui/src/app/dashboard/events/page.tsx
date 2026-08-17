@@ -167,14 +167,14 @@ export default function EventsPage() {
         </div>
       ) : (
         <div className="overflow-x-auto rounded-xl border border-outline-variant bg-surface-container-lowest">
-          <Table>
+          <Table className="table-fixed">
             <TableHeader>
               <TableRow>
                 <TableHead>Event</TableHead>
-                <TableHead className="text-right">Price</TableHead>
-                <TableHead>Runs</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="w-0" />
+                <TableHead className="w-28 text-right">Price</TableHead>
+                <TableHead className="w-44">Runs</TableHead>
+                <TableHead className="w-32">Status</TableHead>
+                <TableHead className="w-20" />
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -186,7 +186,7 @@ export default function EventsPage() {
                     className={isEnded ? 'opacity-60' : undefined}
                   >
                     <TableCell>
-                      <div className="flex items-center gap-3">
+                      <div className="flex min-w-0 items-center gap-3">
                         {event.images[0] ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img
@@ -197,7 +197,10 @@ export default function EventsPage() {
                         ) : (
                           <div className="size-10 shrink-0 rounded bg-surface-container" />
                         )}
-                        <span className="text-body-md text-on-surface">
+                        <span
+                          className="truncate text-body-md text-on-surface"
+                          title={event.title}
+                        >
                           {event.title}
                         </span>
                       </div>

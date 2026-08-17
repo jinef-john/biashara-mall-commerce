@@ -162,22 +162,22 @@ export default function AllProductsPage() {
         </div>
       ) : (
         <div className="overflow-x-auto rounded-xl border border-outline-variant bg-surface-container-lowest">
-          <Table>
+          <Table className="table-fixed">
             <TableHeader>
               <TableRow>
                 <TableHead>Product</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead className="text-right">Price</TableHead>
-                <TableHead className="text-right">Stock</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="w-0" />
+                <TableHead className="w-40">Category</TableHead>
+                <TableHead className="w-28 text-right">Price</TableHead>
+                <TableHead className="w-16 text-right">Stock</TableHead>
+                <TableHead className="w-24">Status</TableHead>
+                <TableHead className="w-20" />
               </TableRow>
             </TableHeader>
             <TableBody>
               {visible.map((product) => (
                 <TableRow key={product.id} data-deleted={product.isDeleted}>
                   <TableCell>
-                    <div className="flex items-center gap-3">
+                    <div className="flex min-w-0 items-center gap-3">
                       {product.images[0] ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
@@ -188,12 +188,18 @@ export default function AllProductsPage() {
                       ) : (
                         <div className="size-10 shrink-0 rounded bg-surface-container" />
                       )}
-                      <span className="text-body-md text-on-surface">
+                      <span
+                        className="truncate text-body-md text-on-surface"
+                        title={product.title}
+                      >
                         {product.title}
                       </span>
                     </div>
                   </TableCell>
-                  <TableCell className="text-on-surface-variant">
+                  <TableCell
+                    className="truncate text-on-surface-variant"
+                    title={`${product.category} › ${product.subcategory}`}
+                  >
                     {product.category} › {product.subcategory}
                   </TableCell>
                   <TableCell className="text-right tabular-nums">
