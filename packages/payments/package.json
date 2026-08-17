@@ -1,0 +1,9 @@
+{
+  "name": "@biashara-mall/payments",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "dependencies": {
+    "stripe": "^18.0.0"
+  }
+}

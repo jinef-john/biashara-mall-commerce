@@ -64,8 +64,11 @@
     "express": "^5.1.0",
     "@clerk/express": "^2.1.57",
     "@biashara-mall/auth": "workspace:*",
+    "@biashara-mall/config": "workspace:*",
     "@biashara-mall/error-handler": "workspace:*",
+    "@biashara-mall/payments": "workspace:*",
     "@biashara-mall/prisma": "workspace:*",
+    "@biashara-mall/redis": "workspace:*",
     "dotenv": "^17.4.2"
   }
 }

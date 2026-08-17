@@ -2,11 +2,16 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
 import { Minus, Plus, ShoppingBag, Store, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@biashara-mall/ui/components/ui/button';
 import { useStore, type LineItem } from '../../store';
 import { useCartActions } from '../../shared/hooks/use-cart-actions';
+import { useApi } from '../../lib/api';
+import { cartToPayload } from '../../lib/use-checkout';
 import { ConfirmDialog } from '../../shared/components/confirm-dialog';
 import { formatPrice } from '../../lib/format';
 
@@ -28,6 +33,8 @@ function groupByShop(cart: LineItem[]): ShopGroup[] {
 }
 
 export default function CartPage() {
+  const router = useRouter();
+  const api = useApi();
   const cart = useStore((s) => s.cart);
   const setQuantity = useStore((s) => s.setQuantity);
   const clearCart = useStore((s) => s.clearCart);
@@ -39,6 +46,24 @@ export default function CartPage() {
     () => cart.reduce((sum, item) => sum + item.price * item.quantity, 0),
     [cart],
   );
+
+  const checkout = useMutation({
+    mutationFn: async () => {
+      const { data } = await api.post('/order/api/create-payment-session', {
+        cart: cartToPayload(cart),
+      });
+      return data as { sessionId: string };
+    },
+    onSuccess: ({ sessionId }) => {
+      router.push(`/checkout?sessionId=${sessionId}`);
+    },
+    onError: (err) => {
+      const message =
+        (err as { response?: { data?: { message?: string } } })?.response
+          ?.data?.message ?? 'Could not start checkout';
+      toast.error(message);
+    },
+  });
 
   if (cart.length === 0) {
     return (
@@ -190,12 +215,14 @@ export default function CartPage() {
               {formatPrice(subtotal)}
             </span>
           </div>
-          <Button type="button" className="mt-4 w-full" disabled>
-            Proceed to Checkout
+          <Button
+            type="button"
+            className="mt-4 w-full"
+            disabled={checkout.isPending}
+            onClick={() => checkout.mutate()}
+          >
+            {checkout.isPending ? 'Starting checkout…' : 'Proceed to Checkout'}
           </Button>
-          <p className="mt-2 text-center text-label-sm text-on-surface-variant">
-            Checkout, coupons, and delivery addresses land in the next phase.
-          </p>
         </div>
       </div>
 

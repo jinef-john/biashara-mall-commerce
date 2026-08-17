@@ -2,19 +2,30 @@ import 'dotenv/config';
 import express from 'express';
 import { clerkMiddleware } from '@clerk/express';
 import { errorMiddleware } from '@biashara-mall/error-handler';
+import { webhookRouter } from './routes/webhook';
+import { paymentRouter } from './routes/payment';
 
 const app = express();
 
-app.use(express.json());
-app.use(clerkMiddleware());
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.originalUrl}`);
   next();
 });
 
+// Mounted before express.json() and before clerkMiddleware(): Stripe signs
+// this request rather than authenticating it with a session. The route
+// itself applies express.raw() (see routes/webhook.ts) — doing it here would
+// consume the body stream for every /api/* request, not just this one.
+app.use('/api', webhookRouter);
+
+app.use(express.json());
+app.use(clerkMiddleware());
+
 app.get('/api', (req, res) => {
   res.send({ message: 'Welcome to order-service!' });
 });
+
+app.use('/api', paymentRouter);
 
 app.use(errorMiddleware);
 
