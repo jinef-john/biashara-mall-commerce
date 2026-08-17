@@ -13,7 +13,13 @@ import { RichTextEditor } from '../../../components/create-product/rich-text-edi
 import { ImageUploader } from '../../../components/create-product/image-uploader';
 import type { CreateProductForm } from '../../../components/create-product/types';
 import { Field } from '../../../components/field';
-import { CURRENCY, MONEY_PATTERN, INTEGER_PATTERN } from '../../../lib/format';
+import { NumericInput } from '../../../components/numeric-input';
+import {
+  CURRENCY,
+  MONEY_PATTERN,
+  INTEGER_PATTERN,
+  money,
+} from '../../../lib/format';
 import { Button } from '@biashara-mall/ui/components/ui/button';
 import { Input } from '@biashara-mall/ui/components/ui/input';
 import { Textarea } from '@biashara-mall/ui/components/ui/textarea';
@@ -97,8 +103,8 @@ export default function CreateProductPage() {
           .split(',')
           .map((tag) => tag.trim())
           .filter(Boolean),
-        regularPrice: Number(data.regularPrice),
-        salePrice: Number(data.salePrice),
+        regularPrice: money(data.regularPrice).value,
+        salePrice: money(data.salePrice).value,
         stock: Number(data.stock),
       });
       router.push('/dashboard/all-products');
@@ -171,7 +177,6 @@ export default function CreateProductPage() {
               label="Short description"
               htmlFor="shortDescription"
               required
-              hint="Shown on the product card in search results."
               error={errors.shortDescription?.message}
             >
               <Textarea
@@ -292,7 +297,7 @@ export default function CreateProductPage() {
                 <Input id="brand" {...register('brand')} />
               </Field>
 
-              <Field label="Tags" htmlFor="tags" hint="Separate with commas.">
+              <Field label="Tags" htmlFor="tags">
                 <Input
                   id="tags"
                   {...register('tags')}
@@ -301,11 +306,7 @@ export default function CreateProductPage() {
               </Field>
             </div>
 
-            <Field
-              label="Video URL"
-              htmlFor="videoUrl"
-              hint="A YouTube embed link."
-            >
+            <Field label="Video URL" htmlFor="videoUrl">
               <Input
                 id="videoUrl"
                 {...register('videoUrl')}
@@ -325,20 +326,21 @@ export default function CreateProductPage() {
                 label={`Regular price (${CURRENCY})`}
                 htmlFor="regularPrice"
                 required
-                hint="Digits only, e.g. 450 or 450.00"
                 error={errors.regularPrice?.message}
               >
-                <Input
+                <NumericInput
                   id="regularPrice"
-                  inputMode="decimal"
+                  variant="decimal"
                   placeholder="450.00"
-                  {...register('regularPrice', {
+                  control={control}
+                  name="regularPrice"
+                  rules={{
                     required: 'Required',
                     pattern: {
                       value: MONEY_PATTERN,
-                      message: 'Digits only, e.g. 450 or 450.00',
+                      message: 'Enter an amount like 450 or 450.00',
                     },
-                  })}
+                  }}
                 />
               </Field>
 
@@ -346,25 +348,27 @@ export default function CreateProductPage() {
                 label={`Sale price (${CURRENCY})`}
                 htmlFor="salePrice"
                 required
-                hint="What buyers actually pay."
                 error={errors.salePrice?.message}
               >
-                <Input
+                <NumericInput
                   id="salePrice"
-                  inputMode="decimal"
+                  variant="decimal"
                   placeholder="419.00"
-                  {...register('salePrice', {
+                  control={control}
+                  name="salePrice"
+                  rules={{
                     required: 'Required',
                     pattern: {
                       value: MONEY_PATTERN,
-                      message: 'Digits only, e.g. 419 or 419.00',
+                      message: 'Enter an amount like 419 or 419.00',
                     },
                     validate: (value) =>
                       !regularPrice ||
-                      !MONEY_PATTERN.test(value) ||
-                      Number(value) <= Number(regularPrice) ||
+                      !MONEY_PATTERN.test(String(value)) ||
+                      money(String(value)).value <=
+                        money(String(regularPrice)).value ||
                       'Cannot exceed the regular price',
-                  })}
+                  }}
                 />
               </Field>
 
@@ -372,20 +376,21 @@ export default function CreateProductPage() {
                 label="Stock"
                 htmlFor="stock"
                 required
-                hint="Whole number, e.g. 35"
                 error={errors.stock?.message}
               >
-                <Input
+                <NumericInput
                   id="stock"
-                  inputMode="numeric"
+                  variant="integer"
                   placeholder="35"
-                  {...register('stock', {
+                  control={control}
+                  name="stock"
+                  rules={{
                     required: 'Required',
                     pattern: {
                       value: INTEGER_PATTERN,
                       message: 'Whole number, e.g. 35',
                     },
-                  })}
+                  }}
                 />
               </Field>
             </div>
@@ -409,11 +414,7 @@ export default function CreateProductPage() {
                 />
               </Field>
 
-              <Field
-                label="Warranty"
-                htmlFor="warranty"
-                hint="Free text, e.g. 1 year or 6 months"
-              >
+              <Field label="Warranty" htmlFor="warranty">
                 <Input
                   id="warranty"
                   {...register('warranty')}
