@@ -1,0 +1,11 @@
+{
+  "name": "@biashara-mall/auth",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "dependencies": {
+    "@biashara-mall/prisma": "workspace:*",
+    "@clerk/express": "^2.1.57",
+    "express": "^5.1.0"
+  }
+}

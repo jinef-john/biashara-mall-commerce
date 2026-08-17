@@ -1,0 +1,9 @@
+{
+  "name": "@biashara-mall/redis",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "dependencies": {
+    "ioredis": "^5.4.2"
+  }
+}

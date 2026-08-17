@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import { clerkMiddleware } from '@clerk/express';
+import { errorMiddleware } from '@biashara-mall/error-handler';
 import { shopsRouter } from './routes/shops';
 
 const app = express();
@@ -19,6 +20,8 @@ app.get('/api', (req, res) => {
 });
 
 app.use('/api/shops', shopsRouter);
+
+app.use(errorMiddleware);
 
 const port = process.env.PORT || 6003;
 const server = app.listen(port, () => {

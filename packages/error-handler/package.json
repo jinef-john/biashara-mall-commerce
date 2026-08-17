@@ -1,0 +1,9 @@
+{
+  "name": "@biashara-mall/error-handler",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}

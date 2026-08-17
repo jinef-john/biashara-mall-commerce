@@ -61,6 +61,9 @@
     }
   },
   "dependencies": {
+    "@biashara-mall/auth": "workspace:*",
+    "@biashara-mall/config": "workspace:*",
+    "@biashara-mall/error-handler": "workspace:*",
     "@biashara-mall/prisma": "workspace:*",
     "@clerk/express": "^2.1.57",
     "cors": "^2.8.6",

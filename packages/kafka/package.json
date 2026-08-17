@@ -1,0 +1,9 @@
+{
+  "name": "@biashara-mall/kafka",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "dependencies": {
+    "kafkajs": "^2.2.4"
+  }
+}
