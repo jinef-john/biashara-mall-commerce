@@ -63,6 +63,8 @@
       "name": "@biashara-mall/admin-ui",
       "version": "0.0.1",
       "dependencies": {
+        "@biashara-mall/design-tokens": "workspace:*",
+        "@biashara-mall/ui": "workspace:*",
         "@clerk/nextjs": "^7.7.6",
         "next": "~16.1.6",
         "react": "^19.0.0",
@@ -118,10 +120,13 @@
       "name": "@biashara-mall/seller-ui",
       "version": "0.0.1",
       "dependencies": {
+        "@biashara-mall/design-tokens": "workspace:*",
+        "@biashara-mall/ui": "workspace:*",
         "@clerk/nextjs": "^7.7.6",
         "@tanstack/react-query": "^5.101.4",
         "@tanstack/react-table": "^9.1.2",
         "axios": "^1.19.0",
+        "currency.js": "^2.0.4",
         "next": "~16.1.6",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
@@ -145,6 +150,8 @@
       "name": "@biashara-mall/user-ui",
       "version": "0.0.1",
       "dependencies": {
+        "@biashara-mall/design-tokens": "workspace:*",
+        "@biashara-mall/ui": "workspace:*",
         "@clerk/nextjs": "^7.7.6",
         "next": "~16.1.6",
         "react": "^19.0.0",
@@ -1702,6 +1709,8 @@
     "csso": ["csso@5.0.5", "", { "dependencies": { "css-tree": "~2.2.0" } }, "sha512-0LrrStPOdJj+SPCCrGhzryycLjwcgUSHBtxNA8aIDxf0GLsRh1cKYhB00Gd1lDOS4yGH69+SNn13+TWbVHETFQ=="],
 
     "csstype": ["csstype@3.2.3", "", {}, "sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ=="],
+
+    "currency.js": ["currency.js@2.0.4", "", {}, "sha512-6/OplJYgJ0RUlli74d93HJ/OsKVBi8lB1+Z6eJYS1YZzBuIp4qKKHpJ7ad+GvTlWmLR/hLJOWTykN5Nm8NJ7+w=="],
 
     "damerau-levenshtein": ["damerau-levenshtein@1.0.8", "", {}, "sha512-sdQSFB7+llfUcQHUQO3+B8ERRj0Oa4w9POWMI/puGtuf7gFywGmkaLCElnudfTiKZV+NvHqL0ifzdrI8Ro7ESA=="],
 

@@ -3,10 +3,13 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+    "@biashara-mall/design-tokens": "workspace:*",
+    "@biashara-mall/ui": "workspace:*",
     "@clerk/nextjs": "^7.7.6",
     "@tanstack/react-query": "^5.101.4",
     "@tanstack/react-table": "^9.1.2",
     "axios": "^1.19.0",
+    "currency.js": "^2.0.4",
     "next": "~16.1.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
