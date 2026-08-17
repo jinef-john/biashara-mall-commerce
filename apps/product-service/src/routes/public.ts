@@ -120,10 +120,12 @@ async function filtered(req: Request, res: Response, kind: 'products' | 'events'
   const sizes = list(req.query.sizes);
   const price = priceFilter(req.query.priceRange);
   const q = typeof req.query.q === 'string' ? req.query.q.trim() : '';
+  const shopId = typeof req.query.shopId === 'string' ? req.query.shopId : '';
 
   const where: Prisma.ProductWhereInput = {
     ...VISIBLE,
     ...(kind === 'events' ? IS_EVENT : IS_PRODUCT),
+    ...(shopId ? { shopId } : {}),
     ...(categories.length ? { category: { in: categories } } : {}),
     ...(colors.length ? { colors: { hasSome: colors } } : {}),
     ...(sizes.length ? { sizes: { hasSome: sizes } } : {}),

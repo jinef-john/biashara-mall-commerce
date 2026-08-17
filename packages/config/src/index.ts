@@ -42,6 +42,21 @@ export const MAX_DISCOUNT_CODES_PER_SHOP = 8;
 /** Soft-deleted products are purged this long after deletion. */
 export const PRODUCT_PURGE_DELAY_MS = 24 * 60 * 60 * 1000;
 
+/** Swatches offered by the product form's color picker and the storefront's color filter. */
+export const DEFAULT_COLORS = [
+  '#000000',
+  '#ffffff',
+  '#ef4444',
+  '#22c55e',
+  '#3b82f6',
+  '#eab308',
+  '#ec4899',
+  '#06b6d4',
+];
+
+/** Sizes offered by the product form's size picker and the storefront's size filter. */
+export const DEFAULT_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+
 /** Markets shops can trade from — drives the storefront's shop-country filter. */
 export const COUNTRIES = [
   'Kenya',

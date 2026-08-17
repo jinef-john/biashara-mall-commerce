@@ -3,8 +3,7 @@
 import { Controller, type Control } from 'react-hook-form';
 import type { CreateProductForm } from './types';
 import { Toggle } from '@biashara-mall/ui/components/ui/toggle';
-
-const DEFAULT_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+import { DEFAULT_SIZES } from '@biashara-mall/config';
 
 export function SizeSelector({ control }: { control: Control<CreateProductForm> }) {
   return (

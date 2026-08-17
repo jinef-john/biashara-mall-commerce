@@ -5,17 +5,7 @@ import { Controller, type Control } from 'react-hook-form';
 import type { CreateProductForm } from './types';
 import { Check } from 'lucide-react';
 import { Toggle } from '@biashara-mall/ui/components/ui/toggle';
-
-const DEFAULT_COLORS = [
-  '#000000',
-  '#ffffff',
-  '#ef4444',
-  '#22c55e',
-  '#3b82f6',
-  '#eab308',
-  '#ec4899',
-  '#06b6d4',
-];
+import { DEFAULT_COLORS } from '@biashara-mall/config';
 
 /** White-ish swatches need a dark checkmark to stay visible. */
 function isLight(hex: string) {

@@ -20,7 +20,8 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@biashara-mall/ui/*": ["../../packages/ui/src/*"]
+      "@biashara-mall/ui/*": ["../../packages/ui/src/*"],
+      "@biashara-mall/config": ["../../packages/config/src/index.ts"]
     },
     "outDir": "dist",
     "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo"
@@ -28,6 +29,7 @@
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
+    "../../packages/config/src/**/*.ts",
     "src/**/*.js",
     "src/**/*.jsx",
     "../../apps/user-ui/.next/types/**/*.ts",
