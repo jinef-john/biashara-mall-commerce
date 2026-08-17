@@ -20,7 +20,8 @@
     "next": "~16.1.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "@prisma/client": "6.19.3"
+    "@prisma/client": "6.19.3",
+    "@biashara-mall/prisma": "workspace:*"
   },
   "devDependencies": {
     "@eslint/js": "^9.8.0",

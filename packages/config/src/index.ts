@@ -32,7 +32,7 @@ export const DEFAULT_SUBCATEGORIES: Record<string, string[]> = {
   'Beauty & Personal Care': ['Skincare', 'Haircare', 'Makeup', 'Fragrance'],
   'Sports & Outdoors': ['Fitness Equipment', 'Outdoor Gear', 'Team Sports'],
   'Toys & Games': ['Action Figures', 'Board Games', 'Educational'],
-  'Books & Stationery': ['Fiction', 'Non-fiction', 'Office Supplies'],
+  'Books & Stationery': ['Fiction', 'Non-fiction', 'Office Supplies', 'Music & Media'],
   Groceries: ['Snacks', 'Beverages', 'Pantry Staples'],
 };
 

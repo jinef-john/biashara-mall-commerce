@@ -5,6 +5,7 @@
     "": {
       "name": "@org/source",
       "dependencies": {
+        "@biashara-mall/prisma": "workspace:*",
         "@prisma/client": "6.19.3",
         "express": "^5.1.0",
         "next": "~16.1.6",
