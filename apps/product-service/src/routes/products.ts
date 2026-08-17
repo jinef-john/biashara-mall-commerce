@@ -3,6 +3,7 @@ import { prisma } from '@biashara-mall/prisma';
 import { PRODUCT_PURGE_DELAY_MS } from '@biashara-mall/config';
 import { requireShop } from '../middleware/require-shop';
 import { imagekit } from '../lib/imagekit';
+import { IS_EVENT, IS_PRODUCT } from '../lib/product-kind';
 
 export const productsRouter: Router = Router();
 
@@ -191,8 +192,8 @@ productsRouter.get('/', requireShop, async (req: Request, res: Response) => {
     where: {
       shopId: shop.id,
       ...(includeDeleted ? {} : { isDeleted: false }),
-      ...(kind === 'events' ? { startingDate: { not: null } } : {}),
-      ...(kind === 'products' ? { startingDate: null } : {}),
+      ...(kind === 'events' ? IS_EVENT : {}),
+      ...(kind === 'products' ? IS_PRODUCT : {}),
     },
     include: { images: true },
     orderBy: { createdAt: 'desc' },

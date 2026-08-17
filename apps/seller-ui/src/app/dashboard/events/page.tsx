@@ -30,11 +30,60 @@ interface EventProduct {
   images: { id: string; fileUrl: string }[];
 }
 
-function eventState(event: EventProduct) {
+type EventState = 'live' | 'upcoming' | 'ended';
+
+function eventState(event: EventProduct): EventState {
   const now = new Date();
   if (new Date(event.endingDate) < now) return 'ended';
   if (new Date(event.startingDate) > now) return 'upcoming';
   return 'live';
+}
+
+/** "2d 4h" / "5h 12m" / "8m" — coarse enough that it doesn't need a ticker. */
+function untilLabel(target: string) {
+  const ms = new Date(target).getTime() - Date.now();
+  if (ms <= 0) return null;
+  const mins = Math.floor(ms / 60_000);
+  const days = Math.floor(mins / 1440);
+  const hours = Math.floor((mins % 1440) / 60);
+  if (days) return `${days}d ${hours}h`;
+  if (hours) return `${hours}h ${mins % 60}m`;
+  return `${mins}m`;
+}
+
+const STATE_STYLES: Record<EventState, string> = {
+  live: 'border-transparent bg-secondary-container text-on-secondary-container',
+  upcoming: 'border-transparent bg-primary-fixed text-on-primary-fixed-variant',
+  ended: 'border-outline-variant bg-transparent text-on-surface-variant',
+};
+
+function StatusCell({ event }: { event: EventProduct }) {
+  const state = eventState(event);
+  const until =
+    state === 'live'
+      ? untilLabel(event.endingDate)
+      : state === 'upcoming'
+        ? untilLabel(event.startingDate)
+        : null;
+
+  return (
+    <div className="flex flex-col items-start gap-1">
+      <Badge variant="outline" className={`gap-1.5 ${STATE_STYLES[state]}`}>
+        {state === 'live' && (
+          <span className="relative flex size-2">
+            <span className="absolute inline-flex size-full animate-ping rounded-full bg-secondary opacity-75" />
+            <span className="relative inline-flex size-2 rounded-full bg-secondary" />
+          </span>
+        )}
+        {state === 'live' ? 'Live' : state === 'upcoming' ? 'Upcoming' : 'Ended'}
+      </Badge>
+      {until && (
+        <span className="text-body-sm text-on-surface-variant">
+          {state === 'live' ? `ends in ${until}` : `starts in ${until}`}
+        </span>
+      )}
+    </div>
+  );
 }
 
 export default function EventsPage() {
@@ -126,9 +175,12 @@ export default function EventsPage() {
             </TableHeader>
             <TableBody>
               {events!.map((event) => {
-                const state = eventState(event);
+                const isEnded = eventState(event) === 'ended';
                 return (
-                  <TableRow key={event.id}>
+                  <TableRow
+                    key={event.id}
+                    className={isEnded ? 'opacity-60' : undefined}
+                  >
                     <TableCell>
                       <div className="flex items-center gap-3">
                         {event.images[0] ? (
@@ -161,17 +213,7 @@ export default function EventsPage() {
                       {new Date(event.endingDate).toLocaleDateString()}
                     </TableCell>
                     <TableCell>
-                      <Badge
-                        variant={
-                          state === 'live'
-                            ? 'default'
-                            : state === 'upcoming'
-                              ? 'secondary'
-                              : 'outline'
-                        }
-                      >
-                        {state}
-                      </Badge>
+                      <StatusCell event={event} />
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">

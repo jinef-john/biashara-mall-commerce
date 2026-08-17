@@ -1,9 +1,9 @@
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-2 bg-surface">
+    <main className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-16">
       <h1 className="text-headline-xl text-on-surface">Biashara Mall</h1>
       <p className="text-body-md text-on-surface-variant">
-        user-ui is running
+        The storefront sections land in Phase 2.3.
       </p>
     </main>
   );
