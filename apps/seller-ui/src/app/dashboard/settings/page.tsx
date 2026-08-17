@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -73,7 +72,6 @@ export default function SettingsPage() {
     register,
     control,
     handleSubmit,
-    reset,
     formState: { errors, isDirty },
   } = useForm<SettingsForm>({
     defaultValues: {
@@ -87,11 +85,10 @@ export default function SettingsPage() {
       facebook: '',
       x: '',
     },
-  });
-
-  useEffect(() => {
-    if (!shop) return;
-    reset({
+    // `values` (not a reset() in an effect) is what syncs asynchronously loaded
+    // defaults: a reset() racing the first mount never reaches Controller-wrapped
+    // fields, which is why the Selects came back blank while the inputs didn't.
+    values: shop && {
       bio: shop.bio ?? '',
       address: shop.address ?? '',
       country: shop.country ?? '',
@@ -101,8 +98,8 @@ export default function SettingsPage() {
       instagram: shop.socialLinks?.instagram ?? '',
       facebook: shop.socialLinks?.facebook ?? '',
       x: shop.socialLinks?.x ?? '',
-    });
-  }, [shop, reset]);
+    },
+  });
 
   const save = useMutation({
     mutationFn: ({ instagram, facebook, x, ...rest }: SettingsForm) =>
