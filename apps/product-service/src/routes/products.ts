@@ -3,7 +3,7 @@ import { prisma } from '@biashara-mall/prisma';
 import { requireShop } from '../middleware/require-shop';
 import { imagekit } from '../lib/imagekit';
 
-export const productsRouter = Router();
+export const productsRouter: Router = Router();
 
 /** "Nike Air Max 90" -> "nike-air-max-90" */
 function slugify(title: string) {
@@ -50,13 +50,13 @@ productsRouter.post(
         folder: '/products',
       });
 
-      res.status(201).json({
+      return res.status(201).json({
         fileId: uploaded.fileId,
         fileUrl: uploaded.url,
       });
     } catch (err) {
       console.error('ImageKit upload failed', err);
-      res.status(502).json({ message: 'Could not upload image' });
+      return res.status(502).json({ message: 'Could not upload image' });
     }
   },
 );
@@ -70,7 +70,7 @@ productsRouter.delete(
   requireShop,
   async (req: Request, res: Response) => {
     try {
-      await imagekit.deleteFile(req.params.fileId);
+      await imagekit.deleteFile(String(req.params.fileId));
       res.json({ success: true });
     } catch (err) {
       console.error('ImageKit delete failed', err);
@@ -103,7 +103,7 @@ productsRouter.delete(
     const shop = req.shop!;
 
     const product = await prisma.product.findUnique({
-      where: { id: req.params.id },
+      where: { id: String(req.params.id) },
     });
 
     if (!product || product.shopId !== shop.id) {
@@ -115,7 +115,7 @@ productsRouter.delete(
       data: { isDeleted: true, deletedAt: new Date() },
     });
 
-    res.json({ product: updated });
+    return res.json({ product: updated });
   },
 );
 
@@ -126,7 +126,7 @@ productsRouter.post(
     const shop = req.shop!;
 
     const product = await prisma.product.findUnique({
-      where: { id: req.params.id },
+      where: { id: String(req.params.id) },
     });
 
     if (!product || product.shopId !== shop.id) {
@@ -138,7 +138,7 @@ productsRouter.post(
       data: { isDeleted: false, deletedAt: null },
     });
 
-    res.json({ product: updated });
+    return res.json({ product: updated });
   },
 );
 
@@ -249,5 +249,5 @@ productsRouter.post('/', requireShop, async (req: Request, res: Response) => {
     include: { images: true },
   });
 
-  res.status(201).json({ product });
+  return res.status(201).json({ product });
 });

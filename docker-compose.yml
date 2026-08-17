@@ -24,5 +24,45 @@ services:
       mongosh --host mongodb --quiet --eval
       "try { rs.status(); } catch (e) { rs.initiate({_id:'rs0',members:[{_id:0,host:'127.0.0.1:27017'}]}); }"
 
+  redis:
+    image: redis:8-alpine
+    container_name: biashara-mall-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # Kafka-wire-compatible single-node broker for local dev; production targets
+  # Confluent Cloud via KAFKA_BROKERS/KAFKA_API_KEY/KAFKA_API_SECRET instead.
+  redpanda:
+    image: redpandadata/redpanda:latest
+    container_name: biashara-mall-redpanda
+    restart: unless-stopped
+    command:
+      - redpanda
+      - start
+      - --mode=dev-container
+      - --smp=1
+      - --kafka-addr=PLAINTEXT://0.0.0.0:9092
+      - --advertise-kafka-addr=PLAINTEXT://localhost:9092
+    ports:
+      - "9092:9092"
+    volumes:
+      - redpanda-data:/var/lib/redpanda/data
+    healthcheck:
+      test: ["CMD-SHELL", "rpk cluster health | grep -q 'Healthy:.*true'"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
 volumes:
   mongodb-data:
+  redis-data:
+  redpanda-data:

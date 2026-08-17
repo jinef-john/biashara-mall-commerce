@@ -2,7 +2,7 @@ import { Router, type Request, type Response } from 'express';
 import { getAuth } from '@clerk/express';
 import { prisma } from '@biashara-mall/prisma';
 
-export const shopsRouter = Router();
+export const shopsRouter: Router = Router();
 
 shopsRouter.post('/', async (req: Request, res: Response) => {
   const { userId, orgId, orgRole } = getAuth(req);
@@ -42,7 +42,7 @@ shopsRouter.post('/', async (req: Request, res: Response) => {
     update: { name, bio, address, openingHours, website, category },
   });
 
-  res.status(201).json({ shop });
+  return res.status(201).json({ shop });
 });
 
 shopsRouter.get('/me', async (req: Request, res: Response) => {
@@ -57,5 +57,5 @@ shopsRouter.get('/me', async (req: Request, res: Response) => {
 
   const shop = await prisma.shops.findUnique({ where: { clerkOrgId: orgId } });
 
-  res.json({ shop });
+  return res.json({ shop });
 });

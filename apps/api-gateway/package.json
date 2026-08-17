@@ -61,8 +61,14 @@
     }
   },
   "dependencies": {
+    "@biashara-mall/error-handler": "workspace:*",
     "express": "^5.1.0",
+    "express-rate-limit": "^8.0.1",
     "http-proxy-middleware": "^4.2.0",
-    "cors": "^2.8.6"
+    "cors": "^2.8.6",
+    "morgan": "^1.10.1"
+  },
+  "devDependencies": {
+    "@types/morgan": "^1.9.10"
   }
 }

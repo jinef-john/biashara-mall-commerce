@@ -1,13 +1,11 @@
 import 'dotenv/config';
 import express from 'express';
-import cors from 'cors';
 import { clerkMiddleware } from '@clerk/express';
 import { errorMiddleware } from '@biashara-mall/error-handler';
 import { webhooksRouter } from './routes/webhooks';
 
 const app = express();
 
-app.use(cors());
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.originalUrl}`);
   next();

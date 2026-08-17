@@ -65,7 +65,6 @@
     "@biashara-mall/error-handler": "workspace:*",
     "@biashara-mall/prisma": "workspace:*",
     "@clerk/express": "^2.1.57",
-    "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.1.0"
   }
