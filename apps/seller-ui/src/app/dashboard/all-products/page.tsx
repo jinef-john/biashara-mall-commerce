@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { PackagePlus, RotateCcw, Trash2 } from 'lucide-react';
 import { useApi } from '../../../lib/api';
+import { formatMoney } from '../../../lib/format';
 import { Button } from '@biashara-mall/ui/components/ui/button';
 import { Badge } from '@biashara-mall/ui/components/ui/badge';
 import { Input } from '@biashara-mall/ui/components/ui/input';
@@ -175,10 +176,12 @@ export default function AllProductsPage() {
                     {product.category} › {product.subcategory}
                   </TableCell>
                   <TableCell className="text-right tabular-nums">
-                    <span className="text-on-surface">{product.salePrice}</span>
+                    <span className="text-on-surface">
+                      {formatMoney(product.salePrice)}
+                    </span>
                     {product.salePrice < product.regularPrice && (
                       <span className="ml-2 text-on-surface-variant line-through">
-                        {product.regularPrice}
+                        {formatMoney(product.regularPrice)}
                       </span>
                     )}
                   </TableCell>
@@ -199,8 +202,10 @@ export default function AllProductsPage() {
                         variant="ghost"
                         size="icon-sm"
                         aria-label={`Restore ${product.title}`}
+                        title="Restore"
                         disabled={restore.isPending}
                         onClick={() => restore.mutate(product.id)}
+                        className="text-on-surface-variant hover:bg-secondary-container hover:text-on-secondary-container"
                       >
                         <RotateCcw />
                       </Button>
@@ -210,8 +215,10 @@ export default function AllProductsPage() {
                         variant="ghost"
                         size="icon-sm"
                         aria-label={`Delete ${product.title}`}
+                        title="Delete"
                         disabled={remove.isPending}
                         onClick={() => remove.mutate(product.id)}
+                        className="text-on-surface-variant hover:bg-error-container hover:text-on-error-container"
                       >
                         <Trash2 />
                       </Button>

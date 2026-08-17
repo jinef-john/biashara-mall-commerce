@@ -191,18 +191,27 @@ productsRouter.post('/', requireShop, async (req: Request, res: Response) => {
   const regular = Number(regularPrice);
   const stockCount = Number(stock);
 
-  if (Number.isNaN(sale) || Number.isNaN(regular) || Number.isNaN(stockCount)) {
+  if (
+    !Number.isFinite(sale) ||
+    !Number.isFinite(regular) ||
+    !Number.isFinite(stockCount)
+  ) {
     return res
       .status(400)
       .json({ message: 'Stock and prices must be numbers' });
+  }
+  if (sale < 0 || regular < 0 || stockCount < 0) {
+    return res
+      .status(400)
+      .json({ message: 'Stock and prices cannot be negative' });
+  }
+  if (!Number.isInteger(stockCount)) {
+    return res.status(400).json({ message: 'Stock must be a whole number' });
   }
   if (sale > regular) {
     return res
       .status(400)
       .json({ message: 'Sale price cannot be higher than the regular price' });
-  }
-  if (stockCount < 0) {
-    return res.status(400).json({ message: 'Stock cannot be negative' });
   }
 
   const product = await prisma.product.create({

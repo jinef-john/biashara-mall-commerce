@@ -13,6 +13,7 @@ import { RichTextEditor } from '../../../components/create-product/rich-text-edi
 import { ImageUploader } from '../../../components/create-product/image-uploader';
 import type { CreateProductForm } from '../../../components/create-product/types';
 import { Field } from '../../../components/field';
+import { CURRENCY, MONEY_PATTERN, INTEGER_PATTERN } from '../../../lib/format';
 import { Button } from '@biashara-mall/ui/components/ui/button';
 import { Input } from '@biashara-mall/ui/components/ui/input';
 import { Textarea } from '@biashara-mall/ui/components/ui/textarea';
@@ -321,37 +322,46 @@ export default function CreateProductPage() {
           <CardContent className="flex flex-col gap-5">
             <div className="grid gap-5 sm:grid-cols-3">
               <Field
-                label="Regular price"
+                label={`Regular price (${CURRENCY})`}
                 htmlFor="regularPrice"
                 required
+                hint="Digits only, e.g. 450 or 450.00"
                 error={errors.regularPrice?.message}
               >
                 <Input
                   id="regularPrice"
-                  type="number"
-                  step="0.01"
+                  inputMode="decimal"
+                  placeholder="450.00"
                   {...register('regularPrice', {
                     required: 'Required',
-                    min: { value: 0, message: 'Must be positive' },
+                    pattern: {
+                      value: MONEY_PATTERN,
+                      message: 'Digits only, e.g. 450 or 450.00',
+                    },
                   })}
                 />
               </Field>
 
               <Field
-                label="Sale price"
+                label={`Sale price (${CURRENCY})`}
                 htmlFor="salePrice"
                 required
+                hint="What buyers actually pay."
                 error={errors.salePrice?.message}
               >
                 <Input
                   id="salePrice"
-                  type="number"
-                  step="0.01"
+                  inputMode="decimal"
+                  placeholder="419.00"
                   {...register('salePrice', {
                     required: 'Required',
-                    min: { value: 0, message: 'Must be positive' },
+                    pattern: {
+                      value: MONEY_PATTERN,
+                      message: 'Digits only, e.g. 419 or 419.00',
+                    },
                     validate: (value) =>
                       !regularPrice ||
+                      !MONEY_PATTERN.test(value) ||
                       Number(value) <= Number(regularPrice) ||
                       'Cannot exceed the regular price',
                   })}
@@ -362,14 +372,19 @@ export default function CreateProductPage() {
                 label="Stock"
                 htmlFor="stock"
                 required
+                hint="Whole number, e.g. 35"
                 error={errors.stock?.message}
               >
                 <Input
                   id="stock"
-                  type="number"
+                  inputMode="numeric"
+                  placeholder="35"
                   {...register('stock', {
                     required: 'Required',
-                    min: { value: 0, message: 'Must be positive' },
+                    pattern: {
+                      value: INTEGER_PATTERN,
+                      message: 'Whole number, e.g. 35',
+                    },
                   })}
                 />
               </Field>
@@ -394,7 +409,11 @@ export default function CreateProductPage() {
                 />
               </Field>
 
-              <Field label="Warranty" htmlFor="warranty">
+              <Field
+                label="Warranty"
+                htmlFor="warranty"
+                hint="Free text, e.g. 1 year or 6 months"
+              >
                 <Input
                   id="warranty"
                   {...register('warranty')}
