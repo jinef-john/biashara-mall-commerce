@@ -7,11 +7,64 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ---------------------------------------------------------------------------
+// Identity
+// ---------------------------------------------------------------------------
+
+enum UserRole {
+  user
+  admin
+}
+
+// Mirror of a Clerk user, kept in sync by the webhook in apps/user-service.
+// clerkId is what getAuth(req) returns; id is what every relation points at.
+model User {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  clerkId String   @unique
+  email   String   @unique
+  name    String?
+  avatarUrl String?
+  role    UserRole @default(user)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  addresses      Address[]
+  orders         Order[]
+  shopReviews    ShopReview[]
+  productReviews ProductReview[]
+  following      Follower[]
+  analytics      UserAnalytics?
+}
+
+model Address {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  label     String
+  name      String
+  street    String
+  city      String
+  zip       String
+  country   String
+  isDefault Boolean @default(false)
+
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// ---------------------------------------------------------------------------
+// Shops & catalogue
+// ---------------------------------------------------------------------------
+
 // A shop is owned by a seller. Shop identity/membership is handled by Clerk
-// Organizations (see apps/seller-service's Clerk webhook) — clerkOrgId is the
+// Organizations (see apps/user-service's Clerk webhook) — clerkOrgId is the
 // bridge between a Clerk Organization and this record.
 model Shops {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
   clerkOrgId String @unique
   ownerId    String // Clerk user id of the shop owner
 
@@ -30,28 +83,41 @@ model Shops {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  products       Product[]
-  discountCodes  DiscountCodes[]
+  products      Product[]
+  discountCodes DiscountCodes[]
+  orders        Order[]
+  reviews       ShopReview[]
+  followers     Follower[]
+  analytics     ShopAnalytics?
 }
 
 model SiteConfig {
-  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
   categories    String[]
   subcategories Json
+  logoUrl       String?
+  bannerUrl     String?
+}
+
+enum DiscountType {
+  percentage
+  flat
 }
 
 model DiscountCodes {
-  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
   publicName    String
-  discountType  String // "percentage" | "flat"
+  discountType  DiscountType
   discountValue Float
-  discountCode  String @unique
+  discountCode  String       @unique
 
   shopId String @db.ObjectId
   shop   Shops  @relation(fields: [shopId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([shopId])
 }
 
 model Images {
@@ -70,13 +136,13 @@ enum ProductStatus {
 }
 
 model Product {
-  id                   String  @id @default(auto()) @map("_id") @db.ObjectId
-  title                String
-  slug                 String  @unique
-  category             String
-  subcategory          String
-  shortDescription     String
-  detailedDescription  String
+  id                  String @id @default(auto()) @map("_id") @db.ObjectId
+  title               String
+  slug                String @unique
+  category            String
+  subcategory         String
+  shortDescription    String
+  detailedDescription String
 
   images Images[]
 
@@ -86,6 +152,7 @@ model Product {
   colors   String[]
   sizes    String[]
 
+  // Non-null on both = this product is an "event" (a time-limited offer).
   startingDate DateTime?
   endingDate   DateTime?
 
@@ -93,6 +160,7 @@ model Product {
   salePrice    Float
   regularPrice Float
   ratings      Float   @default(5)
+  totalSales   Int     @default(0)
   warranty     String?
 
   customSpecifications Json?
@@ -112,4 +180,285 @@ model Product {
 
   shopId String @db.ObjectId
   shop   Shops  @relation(fields: [shopId], references: [id])
+
+  reviews   ProductReview[]
+  analytics ProductAnalytics?
+
+  @@index([shopId])
+  @@index([category, subcategory])
+  @@index([startingDate])
+  @@index([isDeleted])
+}
+
+// ---------------------------------------------------------------------------
+// Orders
+// ---------------------------------------------------------------------------
+
+enum OrderStatus {
+  ordered
+  packed
+  shipped
+  out_for_delivery
+  delivered
+}
+
+enum PaymentStatus {
+  pending
+  paid
+  failed
+  refunded
+}
+
+type OrderItem {
+  productId       String @db.ObjectId
+  title           String
+  quantity        Int
+  salePrice       Float
+  selectedOptions Json?
+}
+
+// Snapshotted onto the order rather than referenced, so editing or deleting a
+// saved Address can never rewrite or dangle the address an order shipped to.
+type ShippingAddress {
+  label   String
+  name    String
+  street  String
+  city    String
+  zip     String
+  country String
+}
+
+model Order {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
+
+  shopId String @db.ObjectId
+  shop   Shops  @relation(fields: [shopId], references: [id])
+
+  items OrderItem[]
+
+  total          Float
+  discountAmount Float  @default(0)
+  platformFee    Float  @default(0)
+  couponCode     String?
+
+  status        OrderStatus   @default(ordered)
+  paymentStatus PaymentStatus @default(pending)
+
+  paymentIntentId String?
+  shippingAddress ShippingAddress
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([shopId, createdAt])
+  @@index([userId, createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Social
+// ---------------------------------------------------------------------------
+
+model ShopReview {
+  id     String  @id @default(auto()) @map("_id") @db.ObjectId
+  rating Float
+  review String?
+
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
+
+  shopId String @db.ObjectId
+  shop   Shops  @relation(fields: [shopId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, shopId])
+  @@index([shopId])
+}
+
+model ProductReview {
+  id     String  @id @default(auto()) @map("_id") @db.ObjectId
+  rating Float
+  review String?
+
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
+
+  productId String  @db.ObjectId
+  product   Product @relation(fields: [productId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, productId])
+  @@index([productId])
+}
+
+model Follower {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
+
+  shopId String @db.ObjectId
+  shop   Shops  @relation(fields: [shopId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, shopId])
+  @@index([shopId])
+}
+
+enum NotificationStatus {
+  unread
+  read
+}
+
+// receiverId is polymorphic on purpose: a Clerk user id, a Shops id, or the
+// literal "admin". Deliberately not a relation.
+model Notification {
+  id           String             @id @default(auto()) @map("_id") @db.ObjectId
+  receiverId   String
+  title        String
+  message      String
+  redirectLink String?
+  status       NotificationStatus @default(unread)
+
+  createdAt DateTime @default(now())
+
+  @@index([receiverId, status])
+}
+
+// ---------------------------------------------------------------------------
+// Analytics (written by the Kafka consumer in apps/kafka-service)
+// ---------------------------------------------------------------------------
+
+type UserAction {
+  productId String?  @db.ObjectId
+  shopId    String?  @db.ObjectId
+  action    String
+  timestamp DateTime
+}
+
+model UserAnalytics {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  userId String @unique @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
+
+  country String?
+  city    String?
+  device  String?
+
+  lastVisited DateTime     @default(now())
+  actions     UserAction[]
+
+  // Cached output of apps/recommendation-service; lastTrained gates retraining.
+  recommendations String[]  @db.ObjectId
+  lastTrained     DateTime?
+}
+
+model ProductAnalytics {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  productId String  @unique @db.ObjectId
+  product   Product @relation(fields: [productId], references: [id])
+
+  views        Int @default(0)
+  cartAdds     Int @default(0)
+  wishlistAdds Int @default(0)
+  purchases    Int @default(0)
+
+  updatedAt DateTime @updatedAt
+}
+
+model ShopAnalytics {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  shopId String @unique @db.ObjectId
+  shop   Shops  @relation(fields: [shopId], references: [id])
+
+  countryStats Json?
+  cityStats    Json?
+  deviceStats  Json?
+  visitors     Int   @default(0)
+
+  updatedAt DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// Chat
+// ---------------------------------------------------------------------------
+
+enum SenderType {
+  user
+  seller
+}
+
+enum MessageStatus {
+  sent
+  delivered
+  seen
+}
+
+model ConversationGroup {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  isGroup Boolean @default(false)
+  name    String?
+
+  creatorId String @db.ObjectId
+
+  // Queried with `hasEvery: [userId, shopId]` to reuse an existing 1:1 group.
+  participantIds String[] @db.ObjectId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  participants Participant[]
+  messages     Message[]
+}
+
+model Participant {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  conversationId String            @db.ObjectId
+  conversation   ConversationGroup @relation(fields: [conversationId], references: [id])
+
+  // Exactly one of these is set, depending on which side the participant is.
+  userId String? @db.ObjectId
+  shopId String? @db.ObjectId
+
+  lastSeenAt  DateTime?
+  isOnline    Boolean   @default(false)
+  unreadCount Int       @default(0)
+  muted       Boolean   @default(false)
+  joinedAt    DateTime  @default(now())
+
+  @@index([conversationId])
+  @@index([userId])
+  @@index([shopId])
+}
+
+model Message {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  conversationId String            @db.ObjectId
+  conversation   ConversationGroup @relation(fields: [conversationId], references: [id])
+
+  senderId   String     @db.ObjectId
+  senderType SenderType
+
+  content     String
+  attachments String[]
+  status      MessageStatus @default(sent)
+
+  createdAt DateTime @default(now())
+
+  // The Kafka consumer flushes in batches and unshifts failed batches back onto
+  // the buffer, so a replay must not be able to insert the same message twice.
+  @@unique([conversationId, senderId, content, createdAt])
+  @@index([conversationId, createdAt])
 }
