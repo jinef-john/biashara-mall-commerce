@@ -36,7 +36,7 @@ export function ProductDetailsCard({
         if (!next) setActiveImage(0);
       }}
     >
-      <DialogContent className="max-w-3xl">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
         {isPending || !product ? (
           <div className="grid gap-6 sm:grid-cols-2">
             <DialogTitle className="sr-only">Loading product</DialogTitle>

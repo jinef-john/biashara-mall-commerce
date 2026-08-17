@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
-import { Eye, Heart, ShoppingBag } from 'lucide-react';
+import { Eye, Heart, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { Badge } from '@biashara-mall/ui/components/ui/badge';
 import { Button } from '@biashara-mall/ui/components/ui/button';
@@ -75,8 +75,8 @@ export function ProductCard({ product }: { product: ProductCardData }) {
             <Button
               type="button"
               size="icon"
-              variant="secondary"
-              className="size-8 rounded-full shadow"
+              variant="outline"
+              className="size-8 rounded-full border-transparent bg-surface-container-lowest shadow hover:bg-surface-container-lowest"
               aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
               onClick={(e) => {
                 e.preventDefault();
@@ -90,13 +90,13 @@ export function ProductCard({ product }: { product: ProductCardData }) {
                 });
               }}
             >
-              <Heart className={cn(inWishlist && 'fill-primary text-primary')} />
+              <Heart className={cn(inWishlist && 'fill-red-500 text-red-500')} />
             </Button>
             <Button
               type="button"
               size="icon"
-              variant="secondary"
-              className="size-8 rounded-full shadow"
+              variant="outline"
+              className="size-8 rounded-full border-transparent bg-surface-container-lowest shadow hover:bg-surface-container-lowest"
               aria-label="Quick view"
               onClick={(e) => {
                 e.preventDefault();
@@ -108,13 +108,12 @@ export function ProductCard({ product }: { product: ProductCardData }) {
             <Button
               type="button"
               size="icon"
-              variant="secondary"
               className="size-8 rounded-full shadow"
               aria-label="Add to cart"
               disabled={outOfStock}
               onClick={quickAdd}
             >
-              <ShoppingBag />
+              <Plus />
             </Button>
           </div>
         </div>

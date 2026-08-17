@@ -132,7 +132,7 @@ export function AddToCartControls({
           aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
           onClick={() => toggleWishlist({ ...lineItem, quantity: 1 })}
         >
-          <Heart className={cn(inWishlist && 'fill-primary text-primary')} />
+          <Heart className={cn(inWishlist && 'fill-red-500 text-red-500')} />
         </Button>
       </div>
     </div>
