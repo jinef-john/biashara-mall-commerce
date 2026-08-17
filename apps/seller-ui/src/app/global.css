@@ -1,8 +1,3 @@
 @import "tailwindcss";
 @import "../../../../packages/design-tokens/tokens.css";
 @source "../../../../packages/ui/src";
-
-body {
-  background-color: var(--color-background);
-  color: var(--color-on-background);
-}

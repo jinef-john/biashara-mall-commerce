@@ -1,9 +1,13 @@
 import { SignUp } from '@clerk/nextjs';
+import { Header } from '../../../components/header';
 
 export default function SignUpPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-surface">
-      <SignUp fallbackRedirectUrl="/onboarding" />
-    </main>
+    <>
+      <Header />
+      <main className="flex min-h-[calc(100svh-var(--header-height))] items-center justify-center bg-surface">
+        <SignUp fallbackRedirectUrl="/onboarding" />
+      </main>
+    </>
   );
 }

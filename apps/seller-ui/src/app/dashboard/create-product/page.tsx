@@ -12,10 +12,10 @@ import { CustomProperties } from '../../../components/create-product/custom-prop
 import { RichTextEditor } from '../../../components/create-product/rich-text-editor';
 import { ImageUploader } from '../../../components/create-product/image-uploader';
 import type { CreateProductForm } from '../../../components/create-product/types';
+import { Field } from '../../../components/field';
 import { Button } from '@biashara-mall/ui/components/ui/button';
 import { Input } from '@biashara-mall/ui/components/ui/input';
 import { Textarea } from '@biashara-mall/ui/components/ui/textarea';
-import { Label } from '@biashara-mall/ui/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -41,14 +41,18 @@ export default function CreateProductPage() {
   const router = useRouter();
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const { data: categoryData, isLoading: categoriesLoading } =
-    useQuery<CategoriesResponse>({
-      queryKey: ['categories'],
-      queryFn: async () => {
-        const { data } = await api.get('/product/api/get-categories');
-        return data;
-      },
-    });
+  const {
+    data: categoryData,
+    isPending: categoriesLoading,
+    isError: categoriesFailed,
+    refetch: refetchCategories,
+  } = useQuery<CategoriesResponse>({
+    queryKey: ['categories'],
+    queryFn: async () => {
+      const { data } = await api.get('/product/api/get-categories');
+      return data;
+    },
+  });
 
   const {
     register,
@@ -111,9 +115,25 @@ export default function CreateProductPage() {
       <div>
         <h1 className="text-headline-lg text-on-surface">Create a product</h1>
         <p className="text-body-md text-on-surface-variant">
-          Everything buyers see on the product page.
+          Fields marked <span className="text-error">*</span> are required.
         </p>
       </div>
+
+      {categoriesFailed && (
+        <div className="flex items-center justify-between gap-4 rounded-lg border border-error bg-error-container px-4 py-3">
+          <p className="text-body-sm text-on-error-container">
+            Could not load categories. The product service may be offline.
+          </p>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => refetchCategories()}
+          >
+            Retry
+          </Button>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
         <Card>
@@ -132,22 +152,27 @@ export default function CreateProductPage() {
           <CardHeader>
             <CardTitle>Basics</CardTitle>
           </CardHeader>
-          <CardContent className="flex flex-col gap-4">
-            <div>
-              <Label htmlFor="title">Product title</Label>
+          <CardContent className="flex flex-col gap-5">
+            <Field
+              label="Product title"
+              htmlFor="title"
+              required
+              error={errors.title?.message}
+            >
               <Input
                 id="title"
                 {...register('title', { required: 'A title is required' })}
                 placeholder="e.g. Canvas Tote Bag"
-                className="mt-1"
               />
-              {errors.title && (
-                <p className="text-body-sm text-error">{errors.title.message}</p>
-              )}
-            </div>
+            </Field>
 
-            <div>
-              <Label htmlFor="shortDescription">Short description</Label>
+            <Field
+              label="Short description"
+              htmlFor="shortDescription"
+              required
+              hint="Shown on the product card in search results."
+              error={errors.shortDescription?.message}
+            >
               <Textarea
                 id="shortDescription"
                 rows={2}
@@ -158,41 +183,35 @@ export default function CreateProductPage() {
                     message: 'Keep this under 300 characters',
                   },
                 })}
-                placeholder="One or two lines shown on the product card"
-                className="mt-1"
+                placeholder="One or two lines summarising the product"
               />
-              {errors.shortDescription && (
-                <p className="text-body-sm text-error">
-                  {errors.shortDescription.message}
-                </p>
-              )}
-            </div>
+            </Field>
 
-            <div>
-              <Label htmlFor="detailedDescription">Detailed description</Label>
+            <Field
+              label="Detailed description"
+              required
+              error={errors.detailedDescription?.message}
+            >
               <Controller
                 name="detailedDescription"
                 control={control}
                 rules={{ required: 'A detailed description is required' }}
                 render={({ field }) => (
-                  <div className="mt-1">
-                    <RichTextEditor
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                  </div>
+                  <RichTextEditor
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
                 )}
               />
-              {errors.detailedDescription && (
-                <p className="text-body-sm text-error">
-                  {errors.detailedDescription.message}
-                </p>
-              )}
-            </div>
+            </Field>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="category">Category</Label>
+            <div className="grid gap-5 sm:grid-cols-2">
+              <Field
+                label="Category"
+                htmlFor="category"
+                required
+                error={errors.category?.message}
+              >
                 <Controller
                   name="category"
                   control={control}
@@ -202,15 +221,18 @@ export default function CreateProductPage() {
                       value={field.value}
                       onValueChange={(value) => {
                         field.onChange(value);
-                        // The old subcategory belongs to the old category.
                         setValue('subcategory', '');
                       }}
-                      disabled={categoriesLoading}
+                      disabled={categoriesLoading || categoriesFailed}
                     >
-                      <SelectTrigger id="category" className="mt-1 w-full">
+                      <SelectTrigger id="category" className="w-full">
                         <SelectValue
                           placeholder={
-                            categoriesLoading ? 'Loading…' : 'Select a category'
+                            categoriesFailed
+                              ? 'Unavailable'
+                              : categoriesLoading
+                                ? 'Loading…'
+                                : 'Select a category'
                           }
                         />
                       </SelectTrigger>
@@ -224,15 +246,14 @@ export default function CreateProductPage() {
                     </Select>
                   )}
                 />
-                {errors.category && (
-                  <p className="text-body-sm text-error">
-                    {errors.category.message}
-                  </p>
-                )}
-              </div>
+              </Field>
 
-              <div>
-                <Label htmlFor="subcategory">Subcategory</Label>
+              <Field
+                label="Subcategory"
+                htmlFor="subcategory"
+                required
+                error={errors.subcategory?.message}
+              >
                 <Controller
                   name="subcategory"
                   control={control}
@@ -243,7 +264,7 @@ export default function CreateProductPage() {
                       onValueChange={field.onChange}
                       disabled={!selectedCategory}
                     >
-                      <SelectTrigger id="subcategory" className="mt-1 w-full">
+                      <SelectTrigger id="subcategory" className="w-full">
                         <SelectValue
                           placeholder={
                             selectedCategory
@@ -262,39 +283,34 @@ export default function CreateProductPage() {
                     </Select>
                   )}
                 />
-                {errors.subcategory && (
-                  <p className="text-body-sm text-error">
-                    {errors.subcategory.message}
-                  </p>
-                )}
-              </div>
+              </Field>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="brand">Brand</Label>
-                <Input id="brand" {...register('brand')} className="mt-1" />
-              </div>
-              <div>
-                <Label htmlFor="tags">Tags</Label>
+            <div className="grid gap-5 sm:grid-cols-2">
+              <Field label="Brand" htmlFor="brand">
+                <Input id="brand" {...register('brand')} />
+              </Field>
+
+              <Field label="Tags" htmlFor="tags" hint="Separate with commas.">
                 <Input
                   id="tags"
                   {...register('tags')}
-                  placeholder="Comma separated, e.g. cotton, handmade"
-                  className="mt-1"
+                  placeholder="cotton, handmade"
                 />
-              </div>
+              </Field>
             </div>
 
-            <div>
-              <Label htmlFor="videoUrl">Video URL</Label>
+            <Field
+              label="Video URL"
+              htmlFor="videoUrl"
+              hint="A YouTube embed link."
+            >
               <Input
                 id="videoUrl"
                 {...register('videoUrl')}
-                placeholder="YouTube embed link (optional)"
-                className="mt-1"
+                placeholder="https://"
               />
-            </div>
+            </Field>
           </CardContent>
         </Card>
 
@@ -302,10 +318,14 @@ export default function CreateProductPage() {
           <CardHeader>
             <CardTitle>Pricing &amp; stock</CardTitle>
           </CardHeader>
-          <CardContent className="flex flex-col gap-4">
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <Label htmlFor="regularPrice">Regular price</Label>
+          <CardContent className="flex flex-col gap-5">
+            <div className="grid gap-5 sm:grid-cols-3">
+              <Field
+                label="Regular price"
+                htmlFor="regularPrice"
+                required
+                error={errors.regularPrice?.message}
+              >
                 <Input
                   id="regularPrice"
                   type="number"
@@ -314,17 +334,15 @@ export default function CreateProductPage() {
                     required: 'Required',
                     min: { value: 0, message: 'Must be positive' },
                   })}
-                  className="mt-1"
                 />
-                {errors.regularPrice && (
-                  <p className="text-body-sm text-error">
-                    {errors.regularPrice.message}
-                  </p>
-                )}
-              </div>
+              </Field>
 
-              <div>
-                <Label htmlFor="salePrice">Sale price</Label>
+              <Field
+                label="Sale price"
+                htmlFor="salePrice"
+                required
+                error={errors.salePrice?.message}
+              >
                 <Input
                   id="salePrice"
                   type="number"
@@ -337,17 +355,15 @@ export default function CreateProductPage() {
                       Number(value) <= Number(regularPrice) ||
                       'Cannot exceed the regular price',
                   })}
-                  className="mt-1"
                 />
-                {errors.salePrice && (
-                  <p className="text-body-sm text-error">
-                    {errors.salePrice.message}
-                  </p>
-                )}
-              </div>
+              </Field>
 
-              <div>
-                <Label htmlFor="stock">Stock</Label>
+              <Field
+                label="Stock"
+                htmlFor="stock"
+                required
+                error={errors.stock?.message}
+              >
                 <Input
                   id="stock"
                   type="number"
@@ -355,25 +371,18 @@ export default function CreateProductPage() {
                     required: 'Required',
                     min: { value: 0, message: 'Must be positive' },
                   })}
-                  className="mt-1"
                 />
-                {errors.stock && (
-                  <p className="text-body-sm text-error">
-                    {errors.stock.message}
-                  </p>
-                )}
-              </div>
+              </Field>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="cashOnDelivery">Cash on delivery</Label>
+            <div className="grid gap-5 sm:grid-cols-2">
+              <Field label="Cash on delivery" htmlFor="cashOnDelivery">
                 <Controller
                   name="cashOnDelivery"
                   control={control}
                   render={({ field }) => (
                     <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger id="cashOnDelivery" className="mt-1 w-full">
+                      <SelectTrigger id="cashOnDelivery" className="w-full">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -383,16 +392,15 @@ export default function CreateProductPage() {
                     </Select>
                   )}
                 />
-              </div>
-              <div>
-                <Label htmlFor="warranty">Warranty</Label>
+              </Field>
+
+              <Field label="Warranty" htmlFor="warranty">
                 <Input
                   id="warranty"
                   {...register('warranty')}
                   placeholder="e.g. 1 year"
-                  className="mt-1"
                 />
-              </div>
+              </Field>
             </div>
           </CardContent>
         </Card>
@@ -404,19 +412,13 @@ export default function CreateProductPage() {
               Colors and sizes buyers can choose from.
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex flex-col gap-4">
-            <div>
-              <Label>Colors</Label>
-              <div className="mt-2">
-                <ColorSelector control={control} />
-              </div>
-            </div>
-            <div>
-              <Label>Sizes</Label>
-              <div className="mt-2">
-                <SizeSelector control={control} />
-              </div>
-            </div>
+          <CardContent className="flex flex-col gap-5">
+            <Field label="Colors">
+              <ColorSelector control={control} />
+            </Field>
+            <Field label="Sizes">
+              <SizeSelector control={control} />
+            </Field>
           </CardContent>
         </Card>
 
@@ -427,26 +429,22 @@ export default function CreateProductPage() {
               Fixed specs, plus any custom options buyers pick from.
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex flex-col gap-4">
-            <div>
-              <Label>Custom specifications</Label>
-              <div className="mt-2">
-                <CustomSpecifications control={control} />
-              </div>
-            </div>
-            <div>
-              <Label>Custom properties</Label>
-              <div className="mt-2">
-                <CustomProperties control={control} />
-              </div>
-            </div>
+          <CardContent className="flex flex-col gap-5">
+            <Field label="Custom specifications">
+              <CustomSpecifications control={control} />
+            </Field>
+            <Field label="Custom properties">
+              <CustomProperties control={control} />
+            </Field>
           </CardContent>
         </Card>
 
-        {submitError && <p className="text-body-sm text-error">{submitError}</p>}
+        {submitError && (
+          <p className="text-body-sm text-error">{submitError}</p>
+        )}
 
         <div className="flex justify-end">
-          <Button type="submit" disabled={isSubmitting}>
+          <Button type="submit" size="lg" disabled={isSubmitting}>
             {isSubmitting ? 'Creating…' : 'Create product'}
           </Button>
         </div>

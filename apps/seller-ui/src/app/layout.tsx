@@ -1,6 +1,5 @@
 import { ClerkProvider } from '@clerk/nextjs';
 import { Inter } from 'next/font/google';
-import { Header } from '../components/header';
 import { QueryProvider } from '../components/query-provider';
 import './global.css';
 
@@ -25,10 +24,7 @@ export default function RootLayout({
           signInFallbackRedirectUrl="/"
           signUpFallbackRedirectUrl="/onboarding"
         >
-          <QueryProvider>
-            <Header />
-            {children}
-          </QueryProvider>
+          <QueryProvider>{children}</QueryProvider>
         </ClerkProvider>
       </body>
     </html>

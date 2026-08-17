@@ -1,17 +1,19 @@
 import { CreateOrganization } from '@clerk/nextjs';
+import { Header } from '../../components/header';
 
 export default function OnboardingPage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-surface px-4">
-      <div className="text-center">
-        <h1 className="text-headline-lg text-on-surface">
-          Set up your shop
-        </h1>
-        <p className="text-body-md text-on-surface-variant">
-          Your shop is how buyers will find you on Biashara Mall.
-        </p>
-      </div>
-      <CreateOrganization afterCreateOrganizationUrl="/onboarding/shop-details" />
-    </main>
+    <>
+      <Header />
+      <main className="flex min-h-[calc(100svh-var(--header-height))] flex-col items-center justify-center gap-6 bg-surface px-4">
+        <div className="text-center">
+          <h1 className="text-headline-lg text-on-surface">Set up your shop</h1>
+          <p className="text-body-md text-on-surface-variant">
+            Your shop is how buyers will find you on Biashara Mall.
+          </p>
+        </div>
+        <CreateOrganization afterCreateOrganizationUrl="/onboarding/shop-details" />
+      </main>
+    </>
   );
 }

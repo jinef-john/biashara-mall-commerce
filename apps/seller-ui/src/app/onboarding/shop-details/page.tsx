@@ -5,10 +5,11 @@ import { Controller, useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useApi } from '../../../lib/api';
+import { Header } from '../../../components/header';
+import { Field } from '../../../components/field';
 import { Button } from '@biashara-mall/ui/components/ui/button';
 import { Input } from '@biashara-mall/ui/components/ui/input';
 import { Textarea } from '@biashara-mall/ui/components/ui/textarea';
-import { Label } from '@biashara-mall/ui/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -75,117 +76,116 @@ export default function ShopDetailsPage() {
     } catch (err) {
       console.error('Failed to save shop details', err);
       const message =
-        (err as { response?: { data?: { message?: string } } })?.response
-          ?.data?.message ?? 'Could not save shop details. Please try again.';
+        (err as { response?: { data?: { message?: string } } })?.response?.data
+          ?.message ?? 'Could not save shop details. Please try again.';
       setSubmitError(message);
     }
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-surface px-4 py-8">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-headline-lg">
-            Tell buyers about {organization?.name ?? 'your shop'}
-          </CardTitle>
-          <CardDescription>
-            This shows up on your public shop page.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col gap-4"
-          >
-            <div>
-              <Label htmlFor="bio">Shop bio</Label>
-              <Textarea
-                id="bio"
-                {...register('bio', {
-                  required: 'A short bio helps buyers trust your shop',
-                  maxLength: { value: 500, message: 'Keep it under 100 words' },
-                })}
-                rows={3}
-                placeholder="A one-line summary of what your shop sells"
-                className="mt-1"
-              />
-              {errors.bio && (
-                <p className="text-body-sm text-error">{errors.bio.message}</p>
+    <>
+      <Header />
+      <main className="flex min-h-[calc(100svh-var(--header-height))] items-center justify-center bg-surface px-4 py-8">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle className="text-headline-lg">
+              Tell buyers about {organization?.name ?? 'your shop'}
+            </CardTitle>
+            <CardDescription>
+              This shows up on your public shop page.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="flex flex-col gap-5"
+            >
+              <Field
+                label="Shop bio"
+                htmlFor="bio"
+                required
+                error={errors.bio?.message}
+              >
+                <Textarea
+                  id="bio"
+                  {...register('bio', {
+                    required: 'A short bio helps buyers trust your shop',
+                    maxLength: {
+                      value: 500,
+                      message: 'Keep it under 100 words',
+                    },
+                  })}
+                  rows={3}
+                  placeholder="A one-line summary of what your shop sells"
+                />
+              </Field>
+
+              <Field
+                label="Address"
+                htmlFor="address"
+                required
+                error={errors.address?.message}
+              >
+                <Input
+                  id="address"
+                  {...register('address', { required: 'Address is required' })}
+                />
+              </Field>
+
+              <Field label="Opening hours" htmlFor="openingHours">
+                <Input
+                  id="openingHours"
+                  {...register('openingHours')}
+                  placeholder="e.g. Mon–Sat, 9am–6pm"
+                />
+              </Field>
+
+              <Field label="Website" htmlFor="website">
+                <Input
+                  id="website"
+                  {...register('website')}
+                  placeholder="https://"
+                />
+              </Field>
+
+              <Field
+                label="Category"
+                htmlFor="category"
+                required
+                error={errors.category?.message}
+              >
+                <Controller
+                  name="category"
+                  control={control}
+                  rules={{ required: 'Pick a category' }}
+                  render={({ field }) => (
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger id="category" className="w-full">
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {SHOP_CATEGORIES.map((c) => (
+                          <SelectItem key={c} value={c}>
+                            {c}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              </Field>
+
+              {submitError && (
+                <p className="text-body-sm text-error">{submitError}</p>
               )}
-            </div>
 
-            <div>
-              <Label htmlFor="address">Address</Label>
-              <Input
-                id="address"
-                {...register('address', { required: 'Address is required' })}
-                className="mt-1"
-              />
-              {errors.address && (
-                <p className="text-body-sm text-error">
-                  {errors.address.message}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="openingHours">Opening hours</Label>
-              <Input
-                id="openingHours"
-                {...register('openingHours')}
-                placeholder="e.g. Mon–Sat, 9am–6pm"
-                className="mt-1"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="website">Website</Label>
-              <Input
-                id="website"
-                {...register('website')}
-                placeholder="https://"
-                className="mt-1"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="category">Category</Label>
-              <Controller
-                name="category"
-                control={control}
-                rules={{ required: 'Pick a category' }}
-                render={({ field }) => (
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger id="category" className="mt-1 w-full">
-                      <SelectValue placeholder="Select a category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {SHOP_CATEGORIES.map((c) => (
-                        <SelectItem key={c} value={c}>
-                          {c}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-              {errors.category && (
-                <p className="text-body-sm text-error">
-                  {errors.category.message}
-                </p>
-              )}
-            </div>
-
-            {submitError && (
-              <p className="text-body-sm text-error">{submitError}</p>
-            )}
-
-            <Button type="submit" disabled={isSubmitting} className="mt-2">
-              {isSubmitting ? 'Saving…' : 'Finish setup'}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-    </main>
+              <Button type="submit" disabled={isSubmitting} className="mt-2">
+                {isSubmitting ? 'Saving…' : 'Finish setup'}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </main>
+    </>
   );
 }

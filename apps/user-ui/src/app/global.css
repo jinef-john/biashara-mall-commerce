@@ -1,7 +1,2 @@
 @import "tailwindcss";
 @import "../../../../packages/design-tokens/tokens.css";
-
-body {
-  background-color: var(--color-background);
-  color: var(--color-on-background);
-}

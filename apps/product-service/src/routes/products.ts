@@ -79,6 +79,69 @@ productsRouter.delete(
   },
 );
 
+productsRouter.get('/', requireShop, async (req: Request, res: Response) => {
+  const shop = req.shop!;
+  const includeDeleted = req.query.includeDeleted === 'true';
+
+  const products = await prisma.product.findMany({
+    where: {
+      shopId: shop.id,
+      ...(includeDeleted ? {} : { isDeleted: false }),
+    },
+    include: { images: true },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  res.json({ products });
+});
+
+/** Soft delete — the record stays so the seller can restore it. */
+productsRouter.delete(
+  '/:id',
+  requireShop,
+  async (req: Request, res: Response) => {
+    const shop = req.shop!;
+
+    const product = await prisma.product.findUnique({
+      where: { id: req.params.id },
+    });
+
+    if (!product || product.shopId !== shop.id) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    const updated = await prisma.product.update({
+      where: { id: product.id },
+      data: { isDeleted: true, deletedAt: new Date() },
+    });
+
+    res.json({ product: updated });
+  },
+);
+
+productsRouter.post(
+  '/:id/restore',
+  requireShop,
+  async (req: Request, res: Response) => {
+    const shop = req.shop!;
+
+    const product = await prisma.product.findUnique({
+      where: { id: req.params.id },
+    });
+
+    if (!product || product.shopId !== shop.id) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    const updated = await prisma.product.update({
+      where: { id: product.id },
+      data: { isDeleted: false, deletedAt: null },
+    });
+
+    res.json({ product: updated });
+  },
+);
+
 productsRouter.post('/', requireShop, async (req: Request, res: Response) => {
   const shop = req.shop!;
 
@@ -113,7 +176,9 @@ productsRouter.post('/', requireShop, async (req: Request, res: Response) => {
     ['salePrice', salePrice],
     ['regularPrice', regularPrice],
   ]
-    .filter(([, value]) => value === undefined || value === null || value === '')
+    .filter(
+      ([, value]) => value === undefined || value === null || value === '',
+    )
     .map(([name]) => name);
 
   if (missing.length) {
@@ -163,7 +228,9 @@ productsRouter.post('/', requireShop, async (req: Request, res: Response) => {
       shopId: shop.id,
       images: {
         create: images
-          .filter((image: { fileId?: string; fileUrl?: string }) => image?.fileId)
+          .filter(
+            (image: { fileId?: string; fileUrl?: string }) => image?.fileId,
+          )
           .map((image: { fileId: string; fileUrl: string }) => ({
             fileId: image.fileId,
             fileUrl: image.fileUrl,
