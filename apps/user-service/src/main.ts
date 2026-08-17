@@ -3,6 +3,7 @@ import express from 'express';
 import { clerkMiddleware } from '@clerk/express';
 import { errorMiddleware } from '@biashara-mall/error-handler';
 import { webhooksRouter } from './routes/webhooks';
+import { addressesRouter } from './routes/addresses';
 
 const app = express();
 
@@ -22,6 +23,8 @@ app.use(clerkMiddleware());
 app.get('/api', (req, res) => {
   res.send({ message: 'Welcome to user-service!' });
 });
+
+app.use('/api/addresses', addressesRouter);
 
 app.use(errorMiddleware);
 

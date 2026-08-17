@@ -1,18 +1,22 @@
-/**
- * This is not a production server yet!
- * This is only a minimal backend to get started.
- */
-
+import 'dotenv/config';
 import express from 'express';
-import * as path from 'path';
+import { clerkMiddleware } from '@clerk/express';
+import { errorMiddleware } from '@biashara-mall/error-handler';
 
 const app = express();
 
-app.use('/assets', express.static(path.join(__dirname, 'assets')));
+app.use(express.json());
+app.use(clerkMiddleware());
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.originalUrl}`);
+  next();
+});
 
 app.get('/api', (req, res) => {
   res.send({ message: 'Welcome to order-service!' });
 });
+
+app.use(errorMiddleware);
 
 const port = process.env.PORT || 6004;
 const server = app.listen(port, () => {

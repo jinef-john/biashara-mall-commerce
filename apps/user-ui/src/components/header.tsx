@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { SignInButton, SignUpButton, Show, UserButton } from '@clerk/nextjs';
-import { Heart, Search, ShoppingCart, Store } from 'lucide-react';
+import { Heart, MapPin, Search, ShoppingCart, Store } from 'lucide-react';
 import { Button } from '@biashara-mall/ui/components/ui/button';
 import { Input } from '@biashara-mall/ui/components/ui/input';
 import { useSiteConfig } from '../lib/use-site-config';
@@ -105,6 +105,11 @@ export function Header() {
               </SignUpButton>
             </Show>
             <Show when="signed-in">
+              <Button asChild variant="ghost" size="icon" aria-label="Profile">
+                <Link href="/profile">
+                  <MapPin />
+                </Link>
+              </Button>
               <div className="pl-2">
                 <UserButton />
               </div>
