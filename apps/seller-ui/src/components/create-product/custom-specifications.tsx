@@ -1,8 +1,12 @@
 'use client';
 
 import { useFieldArray, Controller, type Control } from 'react-hook-form';
+import type { CreateProductForm } from './types';
+import { Plus, X } from 'lucide-react';
+import { Button } from '@biashara-mall/ui/components/ui/button';
+import { Input } from '@biashara-mall/ui/components/ui/input';
 
-export function CustomSpecifications({ control }: { control: Control<any> }) {
+export function CustomSpecifications({ control }: { control: Control<CreateProductForm> }) {
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'customSpecifications',
@@ -17,10 +21,10 @@ export function CustomSpecifications({ control }: { control: Control<any> }) {
             control={control}
             rules={{ required: true }}
             render={({ field: nameField }) => (
-              <input
+              <Input
                 {...nameField}
                 placeholder="Specification name (e.g. Material)"
-                className="flex-1 rounded border border-outline-variant px-4 py-2 text-body-sm text-on-surface"
+                className="flex-1"
               />
             )}
           />
@@ -29,29 +33,34 @@ export function CustomSpecifications({ control }: { control: Control<any> }) {
             control={control}
             rules={{ required: true }}
             render={({ field: valueField }) => (
-              <input
+              <Input
                 {...valueField}
                 placeholder="Value (e.g. Aluminum)"
-                className="flex-1 rounded border border-outline-variant px-4 py-2 text-body-sm text-on-surface"
+                className="flex-1"
               />
             )}
           />
-          <button
+          <Button
             type="button"
+            variant="destructive"
+            size="icon"
             onClick={() => remove(index)}
-            className="text-body-sm text-error"
+            aria-label="Remove specification"
           >
-            Remove
-          </button>
+            <X />
+          </Button>
         </div>
       ))}
-      <button
+      <Button
         type="button"
+        variant="outline"
+        size="sm"
+        className="w-fit"
         onClick={() => append({ name: '', value: '' })}
-        className="w-fit text-label-md text-primary"
       >
-        + Add specification
-      </button>
+        <Plus />
+        Add specification
+      </Button>
     </div>
   );
 }

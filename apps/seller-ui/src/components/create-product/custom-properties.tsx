@@ -2,13 +2,18 @@
 
 import { useEffect, useState } from 'react';
 import { useController, type Control } from 'react-hook-form';
+import type { CreateProductForm } from './types';
+import { Plus, X } from 'lucide-react';
+import { Button } from '@biashara-mall/ui/components/ui/button';
+import { Input } from '@biashara-mall/ui/components/ui/input';
+import { Badge } from '@biashara-mall/ui/components/ui/badge';
 
 interface Property {
   label: string;
   values: string[];
 }
 
-export function CustomProperties({ control }: { control: Control<any> }) {
+export function CustomProperties({ control }: { control: Control<CreateProductForm> }) {
   const { field } = useController({
     name: 'customProperties',
     control,
@@ -51,64 +56,67 @@ export function CustomProperties({ control }: { control: Control<any> }) {
       {properties.map((property) => (
         <div
           key={property.label}
-          className="rounded border border-outline-variant p-2"
+          className="rounded-lg border border-outline-variant p-2"
         >
           <div className="mb-1 flex items-center justify-between">
             <span className="text-label-md text-on-surface">
               {property.label}
             </span>
-            <button
+            <Button
               type="button"
+              variant="destructive"
+              size="icon-sm"
               onClick={() => removeProperty(property.label)}
-              className="text-body-sm text-error"
+              aria-label={`Remove ${property.label}`}
             >
-              Remove
-            </button>
+              <X />
+            </Button>
           </div>
           <div className="mb-1 flex flex-wrap gap-1">
             {property.values.map((v) => (
-              <span
-                key={v}
-                className="rounded-full bg-surface-container px-2 py-1 text-body-sm text-on-surface"
-              >
+              <Badge key={v} variant="secondary">
                 {v}
-              </span>
+              </Badge>
             ))}
           </div>
           {activeLabel === property.label && (
             <div className="flex gap-1">
-              <input
+              <Input
                 value={newValue}
                 onChange={(e) => setNewValue(e.target.value)}
                 placeholder="Add option value"
-                className="flex-1 rounded border border-outline-variant px-2 py-1 text-body-sm text-on-surface"
+                className="flex-1"
               />
-              <button
+              <Button
                 type="button"
+                variant="outline"
+                size="sm"
                 onClick={() => addValue(property.label)}
-                className="text-label-md text-primary"
               >
                 Add
-              </button>
+              </Button>
             </div>
           )}
         </div>
       ))}
 
       <div className="flex gap-1">
-        <input
+        <Input
           value={newLabel}
           onChange={(e) => setNewLabel(e.target.value)}
           placeholder="Property label (e.g. Material)"
-          className="flex-1 rounded border border-outline-variant px-4 py-2 text-body-sm text-on-surface"
+          className="flex-1"
         />
-        <button
+        <Button
           type="button"
+          variant="outline"
+          size="sm"
+          className="w-fit"
           onClick={addProperty}
-          className="w-fit text-label-md text-primary"
         >
-          + Add property
-        </button>
+          <Plus />
+          Add property
+        </Button>
       </div>
     </div>
   );

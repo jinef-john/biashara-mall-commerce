@@ -61,11 +61,12 @@
     }
   },
   "dependencies": {
-    "express": "^5.1.0",
-    "@clerk/express": "^2.1.57",
     "@biashara-mall/prisma": "workspace:*",
-    "dotenv": "^17.4.2",
+    "@clerk/express": "^2.1.57",
     "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.1.0",
+    "imagekit": "^6.0.0",
     "node-cron": "^4.6.0"
   }
 }

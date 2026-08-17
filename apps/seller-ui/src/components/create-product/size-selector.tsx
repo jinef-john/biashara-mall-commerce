@@ -1,10 +1,12 @@
 'use client';
 
 import { Controller, type Control } from 'react-hook-form';
+import type { CreateProductForm } from './types';
+import { Toggle } from '@biashara-mall/ui/components/ui/toggle';
 
 const DEFAULT_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
-export function SizeSelector({ control }: { control: Control<any> }) {
+export function SizeSelector({ control }: { control: Control<CreateProductForm> }) {
   return (
     <Controller
       name="sizes"
@@ -23,18 +25,14 @@ export function SizeSelector({ control }: { control: Control<any> }) {
         return (
           <div className="flex flex-wrap gap-2">
             {DEFAULT_SIZES.map((size) => (
-              <button
+              <Toggle
                 key={size}
-                type="button"
-                onClick={() => toggle(size)}
-                className={`rounded border px-4 py-1 text-body-sm ${
-                  selected.includes(size)
-                    ? 'border-primary bg-primary-container text-on-primary-container'
-                    : 'border-outline-variant text-on-surface'
-                }`}
+                variant="outline"
+                pressed={selected.includes(size)}
+                onPressedChange={() => toggle(size)}
               >
                 {size}
-              </button>
+              </Toggle>
             ))}
           </div>
         );

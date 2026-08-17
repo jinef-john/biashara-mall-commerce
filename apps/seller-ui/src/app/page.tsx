@@ -21,6 +21,9 @@ export default async function Home() {
     if (!data.shop) {
       redirect('/onboarding/shop-details');
     }
+
+    // Onboarding is finished — the dashboard is the real landing page.
+    redirect('/dashboard/create-product');
   }
 
   return (
@@ -29,7 +32,7 @@ export default async function Home() {
         Biashara Mall — Seller
       </h1>
       <p className="text-body-md text-on-surface-variant">
-        seller-ui is running
+        Sign in to manage your shop.
       </p>
     </main>
   );
