@@ -45,6 +45,56 @@ shopsRouter.post('/', async (req: Request, res: Response) => {
   return res.status(201).json({ shop });
 });
 
+shopsRouter.patch('/', async (req: Request, res: Response) => {
+  const { userId, orgId, orgRole } = getAuth(req);
+
+  if (!userId) {
+    return res.status(401).json({ message: 'Not authenticated' });
+  }
+  if (!orgId) {
+    return res
+      .status(400)
+      .json({ message: 'No active organization on this session' });
+  }
+  if (orgRole !== 'org:admin') {
+    return res
+      .status(403)
+      .json({ message: 'Only the shop owner can update shop details' });
+  }
+
+  const existing = await prisma.shops.findUnique({
+    where: { clerkOrgId: orgId },
+  });
+  if (!existing) {
+    return res
+      .status(404)
+      .json({ message: 'Shop not found — finish onboarding first' });
+  }
+
+  const allowed = [
+    'bio',
+    'address',
+    'openingHours',
+    'website',
+    'category',
+    'logoUrl',
+    'coverUrl',
+    'socialLinks',
+  ] as const;
+
+  const data: Record<string, unknown> = {};
+  for (const key of allowed) {
+    if (key in req.body) data[key] = req.body[key];
+  }
+
+  const shop = await prisma.shops.update({
+    where: { id: existing.id },
+    data,
+  });
+
+  return res.json({ shop });
+});
+
 shopsRouter.get('/me', async (req: Request, res: Response) => {
   const { userId, orgId } = getAuth(req);
 

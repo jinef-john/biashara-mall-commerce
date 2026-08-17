@@ -3,9 +3,11 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { PackagePlus, RotateCcw, Trash2 } from 'lucide-react';
+import { PackagePlus, Pencil, RotateCcw, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { useApi } from '../../../lib/api';
 import { formatMoney } from '../../../lib/format';
+import { ConfirmDialog } from '../../../components/confirm-dialog';
 import { Button } from '@biashara-mall/ui/components/ui/button';
 import { Badge } from '@biashara-mall/ui/components/ui/badge';
 import { Input } from '@biashara-mall/ui/components/ui/input';
@@ -42,6 +44,7 @@ export default function AllProductsPage() {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [showDeleted, setShowDeleted] = useState(false);
+  const [toDelete, setToDelete] = useState<Product | null>(null);
 
   const {
     data: products,
@@ -52,20 +55,36 @@ export default function AllProductsPage() {
     queryKey: ['products', showDeleted],
     queryFn: async () => {
       const { data } = await api.get('/product/api/products', {
-        params: showDeleted ? { includeDeleted: 'true' } : undefined,
+        params: {
+          kind: 'products',
+          ...(showDeleted ? { includeDeleted: 'true' } : {}),
+        },
       });
       return data.products;
     },
   });
 
   const remove = useMutation({
-    mutationFn: (id: string) => api.delete(`/product/api/products/${id}`),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['products'] }),
+    mutationFn: (product: Product) =>
+      api.delete(`/product/api/products/${product.id}`),
+    onSuccess: (_data, product) => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      setToDelete(null);
+      toast.success(`“${product.title}” moved to deleted`, {
+        description: 'It will be removed for good in 24 hours.',
+      });
+    },
+    onError: () => toast.error('Could not delete the product'),
   });
 
   const restore = useMutation({
-    mutationFn: (id: string) => api.post(`/product/api/products/${id}/restore`),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['products'] }),
+    mutationFn: (product: Product) =>
+      api.post(`/product/api/products/${product.id}/restore`),
+    onSuccess: (_data, product) => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      toast.success(`“${product.title}” restored`);
+    },
+    onError: () => toast.error('Could not restore the product'),
   });
 
   const visible = (products ?? []).filter((p) =>
@@ -196,33 +215,50 @@ export default function AllProductsPage() {
                     )}
                   </TableCell>
                   <TableCell>
-                    {product.isDeleted ? (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon-sm"
-                        aria-label={`Restore ${product.title}`}
-                        title="Restore"
-                        disabled={restore.isPending}
-                        onClick={() => restore.mutate(product.id)}
-                        className="text-on-surface-variant hover:bg-secondary-container hover:text-on-secondary-container"
-                      >
-                        <RotateCcw />
-                      </Button>
-                    ) : (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon-sm"
-                        aria-label={`Delete ${product.title}`}
-                        title="Delete"
-                        disabled={remove.isPending}
-                        onClick={() => remove.mutate(product.id)}
-                        className="text-on-surface-variant hover:bg-error-container hover:text-on-error-container"
-                      >
-                        <Trash2 />
-                      </Button>
-                    )}
+                    <div className="flex items-center gap-1">
+                      {product.isDeleted ? (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon-sm"
+                          aria-label={`Restore ${product.title}`}
+                          title="Restore"
+                          disabled={restore.isPending}
+                          onClick={() => restore.mutate(product)}
+                          className="text-on-surface-variant hover:bg-secondary-container hover:text-on-secondary-container"
+                        >
+                          <RotateCcw />
+                        </Button>
+                      ) : (
+                        <>
+                          <Button
+                            asChild
+                            variant="ghost"
+                            size="icon-sm"
+                            className="text-on-surface-variant hover:bg-secondary-container hover:text-on-secondary-container"
+                          >
+                            <Link
+                              href={`/dashboard/products/${product.id}/edit`}
+                              aria-label={`Edit ${product.title}`}
+                              title="Edit"
+                            >
+                              <Pencil />
+                            </Link>
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon-sm"
+                            aria-label={`Delete ${product.title}`}
+                            title="Delete"
+                            onClick={() => setToDelete(product)}
+                            className="text-on-surface-variant hover:bg-error-container hover:text-on-error-container"
+                          >
+                            <Trash2 />
+                          </Button>
+                        </>
+                      )}
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -230,6 +266,17 @@ export default function AllProductsPage() {
           </Table>
         </div>
       )}
+
+      <ConfirmDialog
+        open={toDelete !== null}
+        onOpenChange={(open) => !open && setToDelete(null)}
+        title={`Delete “${toDelete?.title}”?`}
+        description="The product moves to a deleted state and is removed for good after 24 hours. You can restore it any time before then."
+        confirmLabel="Delete product"
+        destructive
+        pending={remove.isPending}
+        onConfirm={() => toDelete && remove.mutate(toDelete)}
+      />
     </div>
   );
 }

@@ -26,4 +26,8 @@ export interface CreateProductForm {
   images: UploadedImage[];
   customSpecifications: { name: string; value: string }[];
   customProperties: { label: string; values: string[] }[];
+  discountCodes: string[];
+  /** yyyy-mm-dd; both set only for events */
+  startingDate: string;
+  endingDate: string;
 }

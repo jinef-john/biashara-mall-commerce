@@ -2,7 +2,15 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Package, PackagePlus } from 'lucide-react';
+import {
+  CalendarPlus,
+  CalendarRange,
+  LayoutDashboard,
+  Package,
+  PackagePlus,
+  Settings,
+  TicketPercent,
+} from 'lucide-react';
 import {
   Sidebar as SidebarRoot,
   SidebarContent,
@@ -17,6 +25,16 @@ import {
 
 const NAV = [
   {
+    title: 'Overview',
+    items: [
+      {
+        label: 'Dashboard',
+        href: '/dashboard',
+        icon: LayoutDashboard,
+      },
+    ],
+  },
+  {
     title: 'Products',
     items: [
       {
@@ -28,6 +46,36 @@ const NAV = [
         label: 'All Products',
         href: '/dashboard/all-products',
         icon: Package,
+      },
+    ],
+  },
+  {
+    title: 'Events',
+    items: [
+      {
+        label: 'Create Event',
+        href: '/dashboard/events/create',
+        icon: CalendarPlus,
+      },
+      {
+        label: 'All Events',
+        href: '/dashboard/events',
+        icon: CalendarRange,
+      },
+    ],
+  },
+  {
+    title: 'Shop',
+    items: [
+      {
+        label: 'Discount Codes',
+        href: '/dashboard/discount-codes',
+        icon: TicketPercent,
+      },
+      {
+        label: 'Settings',
+        href: '/dashboard/settings',
+        icon: Settings,
       },
     ],
   },

@@ -14,7 +14,8 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.85.0",
-    "react-quill-new": "^3.8.3"
+    "react-quill-new": "^3.8.3",
+    "sonner": "^2.0.8"
   },
   "devDependencies": {
     "tailwindcss": "^4.3.3",

@@ -4,7 +4,9 @@ import { clerkMiddleware } from '@clerk/express';
 import { errorMiddleware } from '@biashara-mall/error-handler';
 import { categoriesRouter } from './routes/categories';
 import { productsRouter } from './routes/products';
+import { discountCodesRouter } from './routes/discount-codes';
 import { initializeConfig } from './lib/init-config';
+import './jobs/product-purge.job';
 
 const app = express();
 
@@ -21,6 +23,7 @@ app.get('/api', (req, res) => {
 
 app.use('/api/get-categories', categoriesRouter);
 app.use('/api/products', productsRouter);
+app.use('/api/discount-codes', discountCodesRouter);
 
 app.use(errorMiddleware);
 

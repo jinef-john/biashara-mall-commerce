@@ -4,6 +4,8 @@ import { useOrganization } from '@clerk/nextjs';
 import { Controller, useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { useApi } from '../../../lib/api';
 import { Header } from '../../../components/header';
 import { Field } from '../../../components/field';
@@ -25,17 +27,6 @@ import {
   CardDescription,
 } from '@biashara-mall/ui/components/ui/card';
 
-const SHOP_CATEGORIES = [
-  'Fashion & Apparel',
-  'Electronics',
-  'Home & Living',
-  'Beauty & Personal Care',
-  'Food & Groceries',
-  'Software and Technology Services',
-  'Health & Wellness',
-  'Other',
-];
-
 interface ShopDetailsForm {
   bio: string;
   address: string;
@@ -49,6 +40,15 @@ export default function ShopDetailsPage() {
   const api = useApi();
   const router = useRouter();
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  // Same list the product form uses — one source of truth in SiteConfig.
+  const { data: categoryData } = useQuery<{ categories: string[] }>({
+    queryKey: ['categories'],
+    queryFn: async () => {
+      const { data } = await api.get('/product/api/get-categories');
+      return data;
+    },
+  });
 
   const {
     register,
@@ -72,6 +72,7 @@ export default function ShopDetailsPage() {
         name: organization?.name,
         ...data,
       });
+      toast.success('Shop details saved — welcome aboard!');
       router.push('/');
     } catch (err) {
       console.error('Failed to save shop details', err);
@@ -164,7 +165,7 @@ export default function ShopDetailsPage() {
                         <SelectValue placeholder="Select a category" />
                       </SelectTrigger>
                       <SelectContent>
-                        {SHOP_CATEGORIES.map((c) => (
+                        {(categoryData?.categories ?? []).map((c) => (
                           <SelectItem key={c} value={c}>
                             {c}
                           </SelectItem>

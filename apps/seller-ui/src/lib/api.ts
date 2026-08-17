@@ -4,10 +4,6 @@ import { useAuth } from '@clerk/nextjs';
 import axios from 'axios';
 import { useMemo } from 'react';
 
-export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_GATEWAY_URL,
-});
-
 /** Axios instance that attaches the current Clerk session token to every request. */
 export function useApi() {
   const { getToken } = useAuth();
