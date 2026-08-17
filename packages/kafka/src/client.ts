@@ -12,7 +12,11 @@ function buildConfig(): KafkaConfig {
   return {
     clientId: 'biashara-mall',
     brokers,
-    logLevel: logLevel.ERROR,
+    logLevel: logLevel.NOTHING,
+    connectionTimeout: 2000,
+    // Bounded, unlike kafkajs's default (effectively unbounded retries) —
+    // a broker outage must fail sendLog fast, never hang the caller.
+    retry: { retries: 2, initialRetryTime: 300, maxRetryTime: 2000 },
     ...(apiKey && apiSecret
       ? {
           ssl: true,
