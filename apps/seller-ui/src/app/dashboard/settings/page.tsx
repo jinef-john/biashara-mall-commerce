@@ -5,7 +5,9 @@ import { Controller, useForm } from 'react-hook-form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useApi } from '../../../lib/api';
+import { COUNTRIES } from '@biashara-mall/config';
 import { Field } from '../../../components/field';
+import { FormSkeleton } from '../../../components/skeletons';
 import { Button } from '@biashara-mall/ui/components/ui/button';
 import { Input } from '@biashara-mall/ui/components/ui/input';
 import { Textarea } from '@biashara-mall/ui/components/ui/textarea';
@@ -28,6 +30,7 @@ interface Shop {
   name: string;
   bio: string | null;
   address: string | null;
+  country: string | null;
   openingHours: string | null;
   website: string | null;
   category: string | null;
@@ -37,6 +40,7 @@ interface Shop {
 interface SettingsForm {
   bio: string;
   address: string;
+  country: string;
   openingHours: string;
   website: string;
   category: string;
@@ -75,6 +79,7 @@ export default function SettingsPage() {
     defaultValues: {
       bio: '',
       address: '',
+      country: '',
       openingHours: '',
       website: '',
       category: '',
@@ -89,6 +94,7 @@ export default function SettingsPage() {
     reset({
       bio: shop.bio ?? '',
       address: shop.address ?? '',
+      country: shop.country ?? '',
       openingHours: shop.openingHours ?? '',
       website: shop.website ?? '',
       category: shop.category ?? '',
@@ -118,7 +124,9 @@ export default function SettingsPage() {
 
   if (isPending) {
     return (
-      <p className="text-body-md text-on-surface-variant">Loading settings…</p>
+      <div className="mx-auto flex max-w-3xl flex-col gap-6">
+        <FormSkeleton fields={6} />
+      </div>
     );
   }
 
@@ -165,6 +173,33 @@ export default function SettingsPage() {
               <Input
                 id="address"
                 {...register('address', { required: 'Address is required' })}
+              />
+            </Field>
+
+            <Field
+              label="Country"
+              htmlFor="country"
+              required
+              error={errors.country?.message}
+            >
+              <Controller
+                name="country"
+                control={control}
+                rules={{ required: 'Buyers filter shops by country' }}
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger id="country" className="w-full">
+                      <SelectValue placeholder="Select a country" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {COUNTRIES.map((c) => (
+                        <SelectItem key={c} value={c}>
+                          {c}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
               />
             </Field>
 

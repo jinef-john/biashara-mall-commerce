@@ -21,7 +21,8 @@ shopsRouter.post('/', async (req: Request, res: Response) => {
       .json({ message: 'Only the shop owner can set up shop details' });
   }
 
-  const { name, bio, address, openingHours, website, category } = req.body;
+  const { name, bio, address, country, openingHours, website, category } =
+    req.body;
 
   if (!name) {
     return res.status(400).json({ message: 'Shop name is required' });
@@ -35,11 +36,12 @@ shopsRouter.post('/', async (req: Request, res: Response) => {
       name,
       bio,
       address,
+      country,
       openingHours,
       website,
       category,
     },
-    update: { name, bio, address, openingHours, website, category },
+    update: { name, bio, address, country, openingHours, website, category },
   });
 
   return res.status(201).json({ shop });
@@ -74,6 +76,7 @@ shopsRouter.patch('/', async (req: Request, res: Response) => {
   const allowed = [
     'bio',
     'address',
+    'country',
     'openingHours',
     'website',
     'category',

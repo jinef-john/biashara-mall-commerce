@@ -129,6 +129,7 @@
       "name": "@biashara-mall/seller-ui",
       "version": "0.0.1",
       "dependencies": {
+        "@biashara-mall/config": "workspace:*",
         "@biashara-mall/design-tokens": "workspace:*",
         "@biashara-mall/ui": "workspace:*",
         "@clerk/nextjs": "^7.7.6",

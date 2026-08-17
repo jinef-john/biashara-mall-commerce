@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { useApi } from '../../../lib/api';
 import { formatMoney } from '../../../lib/format';
 import { ConfirmDialog } from '../../../components/confirm-dialog';
+import { TableSkeleton } from '../../../components/skeletons';
 import { Button } from '@biashara-mall/ui/components/ui/button';
 import { Badge } from '@biashara-mall/ui/components/ui/badge';
 import {
@@ -151,7 +152,10 @@ export default function EventsPage() {
           </Button>
         </div>
       ) : isPending ? (
-        <p className="text-body-md text-on-surface-variant">Loading events…</p>
+        <TableSkeleton
+          columns={['Event', 'Price', 'Runs', 'Status', '']}
+          leadingAvatar
+        />
       ) : (events?.length ?? 0) === 0 ? (
         <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-outline px-6 py-16 text-center">
           <p className="text-body-lg text-on-surface">No events yet.</p>

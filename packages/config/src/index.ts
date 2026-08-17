@@ -41,3 +41,20 @@ export const MAX_DISCOUNT_CODES_PER_SHOP = 8;
 
 /** Soft-deleted products are purged this long after deletion. */
 export const PRODUCT_PURGE_DELAY_MS = 24 * 60 * 60 * 1000;
+
+/** Markets shops can trade from — drives the storefront's shop-country filter. */
+export const COUNTRIES = [
+  'Kenya',
+  'Uganda',
+  'Tanzania',
+  'Rwanda',
+  'Burundi',
+  'South Sudan',
+  'Ethiopia',
+  'Somalia',
+  'Nigeria',
+  'Ghana',
+  'South Africa',
+  'United Kingdom',
+  'United States',
+];

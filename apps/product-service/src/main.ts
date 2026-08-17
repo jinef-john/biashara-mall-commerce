@@ -6,6 +6,7 @@ import { categoriesRouter } from './routes/categories';
 import { productsRouter } from './routes/products';
 import { discountCodesRouter } from './routes/discount-codes';
 import { siteConfigRouter } from './routes/site-config';
+import { publicRouter } from './routes/public';
 import { initializeConfig } from './lib/init-config';
 import './jobs/product-purge.job';
 
@@ -26,6 +27,7 @@ app.use('/api/get-categories', categoriesRouter);
 app.use('/api/site-config', siteConfigRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/discount-codes', discountCodesRouter);
+app.use('/api', publicRouter);
 
 app.use(errorMiddleware);
 

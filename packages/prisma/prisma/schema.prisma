@@ -74,6 +74,7 @@ model Shops {
   name         String
   bio          String?
   address      String?
+  country      String?
   openingHours String?
   website      String?
   category     String?

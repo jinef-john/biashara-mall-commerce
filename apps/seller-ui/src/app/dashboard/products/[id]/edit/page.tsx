@@ -4,6 +4,7 @@ import { use } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useApi } from '../../../../../lib/api';
 import { ProductForm } from '../../../../../components/create-product/product-form';
+import { FormSkeleton } from '../../../../../components/skeletons';
 import type { CreateProductForm } from '../../../../../components/create-product/types';
 
 interface ApiProduct {
@@ -79,7 +80,9 @@ export default function EditProductPage({
 
   if (isPending) {
     return (
-      <p className="text-body-md text-on-surface-variant">Loading product…</p>
+      <div className="mx-auto flex max-w-3xl flex-col gap-6">
+        <FormSkeleton fields={6} />
+      </div>
     );
   }
   if (isError || !product) {

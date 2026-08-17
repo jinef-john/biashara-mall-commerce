@@ -10,6 +10,7 @@ import { CURRENCY } from '../../../lib/format';
 import { Field } from '../../../components/field';
 import { NumericInput } from '../../../components/numeric-input';
 import { ConfirmDialog } from '../../../components/confirm-dialog';
+import { TableSkeleton } from '../../../components/skeletons';
 import { Button } from '@biashara-mall/ui/components/ui/button';
 import { Badge } from '@biashara-mall/ui/components/ui/badge';
 import { Input } from '@biashara-mall/ui/components/ui/input';
@@ -156,7 +157,7 @@ export default function DiscountCodesPage() {
           </Button>
         </div>
       ) : isPending ? (
-        <p className="text-body-md text-on-surface-variant">Loading codes…</p>
+        <TableSkeleton columns={['Name', 'Code', 'Discount', '']} rows={3} />
       ) : (codes?.length ?? 0) === 0 ? (
         <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-outline px-6 py-16 text-center">
           <p className="text-body-lg text-on-surface">No discount codes yet.</p>

@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+    "@biashara-mall/config": "workspace:*",
     "@biashara-mall/design-tokens": "workspace:*",
     "@biashara-mall/ui": "workspace:*",
     "@clerk/nextjs": "^7.7.6",

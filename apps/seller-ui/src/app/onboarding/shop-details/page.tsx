@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { COUNTRIES } from '@biashara-mall/config';
 import { useApi } from '../../../lib/api';
 import { Header } from '../../../components/header';
 import { Field } from '../../../components/field';
@@ -30,6 +31,7 @@ import {
 interface ShopDetailsForm {
   bio: string;
   address: string;
+  country: string;
   openingHours: string;
   website: string;
   category: string;
@@ -59,6 +61,7 @@ export default function ShopDetailsPage() {
     defaultValues: {
       bio: '',
       address: '',
+      country: '',
       openingHours: '',
       website: '',
       category: '',
@@ -130,6 +133,33 @@ export default function ShopDetailsPage() {
                 <Input
                   id="address"
                   {...register('address', { required: 'Address is required' })}
+                />
+              </Field>
+
+              <Field
+                label="Country"
+                htmlFor="country"
+                required
+                error={errors.country?.message}
+              >
+                <Controller
+                  name="country"
+                  control={control}
+                  rules={{ required: 'Pick the country you trade from' }}
+                  render={({ field }) => (
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger id="country" className="w-full">
+                        <SelectValue placeholder="Select a country" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {COUNTRIES.map((c) => (
+                          <SelectItem key={c} value={c}>
+                            {c}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
                 />
               </Field>
 

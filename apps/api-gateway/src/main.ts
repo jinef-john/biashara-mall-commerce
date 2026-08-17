@@ -32,7 +32,10 @@ const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   // Signed-in clients get a higher ceiling. The token isn't verified here —
   // services do that — so this only tiers abuse protection, not access.
-  limit: (req) => (req.headers.authorization ? 1000 : 100),
+  // Anonymous storefront browsing is legitimately chatty — a single product
+  // page fans out to several reads — so it gets its own tier above 100.
+  limit: (req) =>
+    req.headers.authorization ? 1000 : req.method === 'GET' ? 600 : 100,
   standardHeaders: true,
   legacyHeaders: false,
   message: { status: 'error', message: 'Too many requests, please try again later' },
