@@ -7,6 +7,7 @@ import { Button } from '@biashara-mall/ui/components/ui/button';
 import { Toggle } from '@biashara-mall/ui/components/ui/toggle';
 import { cn } from '@biashara-mall/ui/lib/utils';
 import { useStore } from '../../store';
+import { useCartActions } from '../hooks/use-cart-actions';
 import type { ProductCardData, ProductDetail } from '../types';
 
 function isLight(hex: string) {
@@ -27,8 +28,7 @@ export function AddToCartControls({
   const [size, setSize] = useState<string | undefined>(sizes[0]);
   const [quantity, setQuantity] = useState(1);
 
-  const addToCart = useStore((s) => s.addToCart);
-  const toggleWishlist = useStore((s) => s.toggleWishlist);
+  const { addToCart, addToWishlist, removeFromWishlist } = useCartActions();
   const inWishlist = useStore((s) => s.wishlist.some((i) => i.id === product.id));
 
   const outOfStock = product.stock <= 0;
@@ -41,6 +41,8 @@ export function AddToCartControls({
     price: product.salePrice,
     color,
     size,
+    shopId: product.shop.id,
+    shopName: product.shop.name,
   };
 
   return (
@@ -130,7 +132,11 @@ export function AddToCartControls({
           variant="outline"
           size="icon"
           aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
-          onClick={() => toggleWishlist({ ...lineItem, quantity: 1 })}
+          onClick={() =>
+            inWishlist
+              ? removeFromWishlist(product.id)
+              : addToWishlist({ ...lineItem, quantity: 1 })
+          }
         >
           <Heart className={cn(inWishlist && 'fill-red-500 text-red-500')} />
         </Button>

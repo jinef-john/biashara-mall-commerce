@@ -9,6 +9,7 @@ import { Badge } from '@biashara-mall/ui/components/ui/badge';
 import { Button } from '@biashara-mall/ui/components/ui/button';
 import { cn } from '@biashara-mall/ui/lib/utils';
 import { useStore } from '../../../store';
+import { useCartActions } from '../../hooks/use-cart-actions';
 import { useCountdown } from '../../hooks/use-countdown';
 import { formatPrice } from '../../../lib/format';
 import { Ratings } from '../ratings';
@@ -17,8 +18,7 @@ import type { ProductCardData } from '../../types';
 
 export function ProductCard({ product }: { product: ProductCardData }) {
   const [quickView, setQuickView] = useState(false);
-  const addToCart = useStore((s) => s.addToCart);
-  const toggleWishlist = useStore((s) => s.toggleWishlist);
+  const { addToCart, addToWishlist, removeFromWishlist } = useCartActions();
   const inWishlist = useStore((s) => s.wishlist.some((i) => i.id === product.id));
 
   const isEvent = Boolean(product.startingDate);
@@ -38,6 +38,8 @@ export function ProductCard({ product }: { product: ProductCardData }) {
       imageUrl: product.images[0]?.fileUrl,
       price: product.salePrice,
       quantity: 1,
+      shopId: product.shop.id,
+      shopName: product.shop.name,
     });
     toast.success(`${product.title} added to cart`);
   };
@@ -80,14 +82,18 @@ export function ProductCard({ product }: { product: ProductCardData }) {
               aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
               onClick={(e) => {
                 e.preventDefault();
-                toggleWishlist({
+                const item = {
                   id: product.id,
                   slug: product.slug,
                   title: product.title,
                   imageUrl: product.images[0]?.fileUrl,
                   price: product.salePrice,
                   quantity: 1,
-                });
+                  shopId: product.shop.id,
+                  shopName: product.shop.name,
+                };
+                if (inWishlist) removeFromWishlist(product.id);
+                else addToWishlist(item);
               }}
             >
               <Heart className={cn(inWishlist && 'fill-red-500 text-red-500')} />
