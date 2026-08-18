@@ -22,7 +22,7 @@ interface CartInput {
   size?: string;
 }
 
-/** Re-derives cart line items from the database — a client-supplied price is
+/** Re-derives cart line items from the database: a client-supplied price is
  * never trusted for anything that ends up in a PaymentIntent amount. */
 async function normalizeCart(cart: CartInput[]): Promise<
   { error: string } | { items: SessionCartItem[] }
@@ -160,7 +160,7 @@ paymentRouter.post(
   },
 );
 
-/** Mock-mode only — stands in for the Stripe webhook, which never fires
+/** Mock-mode only: stands in for the Stripe webhook, which never fires
  * without a real Stripe account. Gated on the active provider so it can
  * never be used to fabricate a paid order once real Stripe is configured. */
 paymentRouter.post(

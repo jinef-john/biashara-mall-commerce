@@ -3,8 +3,8 @@ import type { PaymentProvider } from './types';
 
 /**
  * Fakes a successful provider with no real charge, transfer, or account.
- * Selected automatically when STRIPE_SECRET_KEY isn't set (see index.ts) —
- * lets the whole checkout flow be exercised end to end without a Stripe
+ * Selected automatically when STRIPE_SECRET_KEY isn't set (see index.ts),
+ * letting the whole checkout flow be exercised end to end without a Stripe
  * account. `verifyWebhook` always returns null: the mock flow never receives
  * a real webhook, order creation happens via order-service's
  * `confirm-mock-payment` route instead, which is gated to only work when

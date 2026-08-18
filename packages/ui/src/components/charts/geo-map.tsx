@@ -20,7 +20,7 @@ export interface GeoMapPoint {
 
 // The storefront's country field is a closed list (@biashara-mall/config's
 // COUNTRIES), but two of those names don't match world-atlas's topojson
-// properties.name — everything else lines up exactly.
+// properties.name; everything else lines up exactly.
 const COUNTRY_NAME_ALIASES: Record<string, string> = {
   'United States': 'United States of America',
   'South Sudan': 'S. Sudan',

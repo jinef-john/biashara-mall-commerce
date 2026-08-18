@@ -24,7 +24,7 @@ export default async function Home() {
       redirect('/onboarding/shop-details');
     }
 
-    // Onboarding is finished — the dashboard is the real landing page.
+    // Onboarding is finished: the dashboard is the real landing page.
     redirect('/dashboard/create-product');
   }
 

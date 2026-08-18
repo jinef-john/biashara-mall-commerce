@@ -185,7 +185,7 @@ ordersRouter.put('/update-status/:orderId', requireShop, async (req, res, next) 
     if (!nextStep || requestedIndex !== currentIndex + 1) {
       throw new ValidationError(
         nextStep
-          ? `Orders progress one step at a time — expected "${nextStep}"`
+          ? `Orders progress one step at a time: expected "${nextStep}"`
           : 'This order is already delivered',
       );
     }

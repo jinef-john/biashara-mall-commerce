@@ -5,7 +5,7 @@ import { deleteSession, getSession, type SessionCartItem } from './session';
 
 /**
  * Shared by both order-creation paths: the real Stripe webhook and the mock
- * provider's confirm-payment route. Idempotent — a missing session (already
+ * provider's confirm-payment route. Idempotent: a missing session (already
  * processed, or expired) is a silent no-op rather than an error, since
  * Stripe retries webhook deliveries.
  */
@@ -76,7 +76,7 @@ export async function createOrdersFromSession(sessionId: string, paymentIntentId
           metadata: { orderId: order.id },
         })
         .catch((err) => {
-          // The order is already recorded as paid — a failed transfer is a
+          // The order is already recorded as paid: a failed transfer is a
           // payout problem to reconcile manually, not a reason to lose the order.
           console.error(`[order ${order.id}] transfer to ${shopId} failed:`, err);
         });
@@ -112,7 +112,7 @@ export async function createOrdersFromSession(sessionId: string, paymentIntentId
     });
   }
 
-  // Order-confirmation email intentionally skipped — no email infrastructure
+  // Order-confirmation email intentionally skipped: no email infrastructure
   // exists anywhere in this codebase (nodemailer + ejs was cut when Clerk
   // replaced the transcript's custom auth); adding it just for this one
   // email would be a new dependency, not "wire up the existing logic."

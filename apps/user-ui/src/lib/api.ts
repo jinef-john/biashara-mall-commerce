@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 
 const baseURL = process.env.NEXT_PUBLIC_API_GATEWAY_URL;
 
-/** For the storefront's public reads — no session, usable outside React too. */
+/** For the storefront's public reads: no session, usable outside React too. */
 export const publicApi = axios.create({ baseURL });
 
 /** Axios instance that attaches the current Clerk session token to every request. */

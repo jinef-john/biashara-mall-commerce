@@ -7,7 +7,7 @@ import { errorMiddleware } from '@biashara-mall/error-handler';
 
 const app = express();
 
-// Behind ngrok/a reverse proxy in dev and prod — trust the first hop so
+// Behind ngrok/a reverse proxy in dev and prod: trust the first hop so
 // req.ip (rate-limit key) reflects the real client, not the proxy.
 app.set('trust proxy', 1);
 
@@ -25,15 +25,15 @@ app.use(
   }),
 );
 
-// NOTE: no express.json() here on purpose — bodies must stream through
+// NOTE: no express.json() here on purpose: bodies must stream through
 // untouched (ImageKit base64 uploads, signed webhook payloads).
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  // Signed-in clients get a higher ceiling. The token isn't verified here —
-  // services do that — so this only tiers abuse protection, not access.
-  // Anonymous storefront browsing is legitimately chatty — a single product
-  // page fans out to several reads — so it gets its own tier above 100.
+  // Signed-in clients get a higher ceiling. The token isn't verified here
+  // (services do that), so this only tiers abuse protection, not access.
+  // Anonymous storefront browsing is legitimately chatty (a single product
+  // page fans out to several reads), so it gets its own tier above 100.
   limit: (req) =>
     req.headers.authorization ? 1000 : req.method === 'GET' ? 600 : 100,
   standardHeaders: true,

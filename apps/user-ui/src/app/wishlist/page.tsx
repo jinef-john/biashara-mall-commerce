@@ -3,7 +3,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Minus, Plus, ShoppingCart, Trash2 } from 'lucide-react';
-import { toast } from 'sonner';
 import { Button } from '@biashara-mall/ui/components/ui/button';
 import { useStore, type LineItem } from '../../store';
 import { useCartActions } from '../../shared/hooks/use-cart-actions';
@@ -17,7 +16,6 @@ export default function WishlistPage() {
   const moveToCart = (item: LineItem) => {
     addToCart(item);
     removeFromWishlist(item.id);
-    toast.success(`${item.title} moved to cart`);
   };
 
   if (wishlist.length === 0) {

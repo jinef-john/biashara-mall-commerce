@@ -5,8 +5,8 @@ import { prisma } from '@biashara-mall/prisma';
 export const webhooksRouter: Router = Router();
 
 // Clerk sends an email-less user only in exotic setups (phone-only sign-up),
-// but User.email is @unique and required, so fall back rather than 500 —
-// a thrown error here would put Clerk into an indefinite retry loop.
+// but User.email is @unique and required, so fall back rather than 500.
+// A thrown error here would put Clerk into an indefinite retry loop.
 function primaryEmail(data: {
   id: string;
   email_addresses?: { id?: string; email_address: string }[];
@@ -57,7 +57,7 @@ webhooksRouter.post(
               avatarUrl,
               ...(isFirstUser && { role: 'admin' as const }),
             },
-            // role is intentionally not updated — admin promotion is managed
+            // role is intentionally not updated: admin promotion is managed
             // in the admin dashboard, not by Clerk profile edits.
             update: { email, name, avatarUrl, deletedAt: null },
           });
@@ -89,7 +89,7 @@ webhooksRouter.post(
           break;
       }
     } catch (err) {
-      // 5xx tells Svix to retry — correct for a transient DB failure.
+      // 5xx tells Svix to retry: correct for a transient DB failure.
       console.error(`[clerk-webhook] handling ${evt.type} failed:`, err);
       return res.status(500).send('Error handling webhook');
     }

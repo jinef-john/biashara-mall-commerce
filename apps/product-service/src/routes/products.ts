@@ -93,7 +93,7 @@ async function parseBody(req: Request, shopId: string): Promise<ParsedBody> {
     return { error: 'Sale price cannot be higher than the regular price' };
   }
 
-  // Events are products with a date window — both dates or neither.
+  // Events are products with a date window: both dates or neither.
   let start: Date | null = null;
   let end: Date | null = null;
   if (startingDate || endingDate) {
@@ -133,7 +133,7 @@ async function parseBody(req: Request, shopId: string): Promise<ParsedBody> {
 
 /**
  * Images are uploaded one at a time as the seller picks them, before the
- * product itself exists — so they come back as a {fileId, fileUrl} pair the
+ * product itself exists, so they come back as a {fileId, fileUrl} pair the
  * form holds onto and submits with the rest of the product.
  */
 productsRouter.post(
@@ -217,7 +217,7 @@ productsRouter.get('/:id', requireShop, async (req: Request, res: Response) => {
   return res.json({ product });
 });
 
-/** Soft delete — the record stays so the seller can restore it. */
+/** Soft delete: the record stays so the seller can restore it. */
 productsRouter.delete(
   '/:id',
   requireShop,
@@ -232,7 +232,7 @@ productsRouter.delete(
       return res.status(404).json({ message: 'Product not found' });
     }
 
-    // deletedAt holds the purge *deadline*, not the delete time — the hourly
+    // deletedAt holds the purge *deadline*, not the delete time. The hourly
     // job removes anything whose deadline has passed.
     const updated = await prisma.product.update({
       where: { id: product.id },

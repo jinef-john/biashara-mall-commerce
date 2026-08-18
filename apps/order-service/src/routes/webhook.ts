@@ -6,9 +6,9 @@ export const webhookRouter: Router = Router();
 
 /**
  * Mounted directly on order-service's own port (6004), never through the
- * gateway — the gateway's rate limiting and CORS would reject Stripe's
+ * gateway. The gateway's rate limiting and CORS would reject Stripe's
  * server-to-server calls. `express.raw()` is applied only to this one route
- * (not the whole router) — scoping it any wider would consume the body
+ * (not the whole router). Scoping it any wider would consume the body
  * stream before express.json() ever sees it, breaking every other route.
  */
 webhookRouter.post(

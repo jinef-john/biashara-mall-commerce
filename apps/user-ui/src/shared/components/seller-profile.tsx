@@ -67,7 +67,7 @@ function ReviewsTab({ reviews }: { reviews: ShopReview[] }) {
   if (!reviews.length) {
     return (
       <p className="text-body-md text-on-surface-variant">
-        No reviews yet — reviews appear here once buyers complete an order.
+        No reviews yet. Reviews appear here once buyers complete an order.
       </p>
     );
   }

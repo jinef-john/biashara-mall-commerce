@@ -39,7 +39,7 @@ followRouter.post(
 
     await prisma.follower
       .delete({ where: { userId_shopId: { userId: req.appUser!.id, shopId } } })
-      .catch(() => null); // already unfollowed — treat as success
+      .catch(() => null); // already unfollowed, treat as success
 
     return res.json({ following: false });
   },

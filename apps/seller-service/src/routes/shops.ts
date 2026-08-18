@@ -70,7 +70,7 @@ shopsRouter.patch('/', async (req: Request, res: Response) => {
   if (!existing) {
     return res
       .status(404)
-      .json({ message: 'Shop not found — finish onboarding first' });
+      .json({ message: 'Shop not found. Finish onboarding first.' });
   }
 
   const allowed = [

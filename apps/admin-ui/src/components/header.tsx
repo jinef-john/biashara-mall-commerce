@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { SignInButton, Show, UserButton } from '@clerk/nextjs';
 import { Button } from '@biashara-mall/ui/components/ui/button';
+import { Badge } from '@biashara-mall/ui/components/ui/badge';
 import { useLayout } from '../lib/use-layout';
 
 export function Header({ leading }: { leading?: React.ReactNode }) {
@@ -13,14 +14,17 @@ export function Header({ leading }: { leading?: React.ReactNode }) {
       <div className="flex items-center gap-3">
         {leading}
         {layout?.logoUrl ? (
-          <Image
-            src={layout.logoUrl}
-            alt="Biashara Mall"
-            width={140}
-            height={32}
-            className="h-8 w-auto"
-            priority
-          />
+          <>
+            <Image
+              src={layout.logoUrl}
+              alt="Biashara Mall"
+              width={140}
+              height={32}
+              className="h-8 w-auto"
+              priority
+            />
+            <Badge variant="secondary">Admin</Badge>
+          </>
         ) : (
           <span className="text-headline-sm text-on-surface">
             Biashara Mall * Admin

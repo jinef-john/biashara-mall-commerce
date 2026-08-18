@@ -59,7 +59,7 @@ discountCodesRouter.post(
     if (duplicate) {
       return res
         .status(409)
-        .json({ message: 'That code is already taken — pick another' });
+        .json({ message: 'That code is already taken. Pick another.' });
     }
 
     const created = await prisma.discountCodes.create({

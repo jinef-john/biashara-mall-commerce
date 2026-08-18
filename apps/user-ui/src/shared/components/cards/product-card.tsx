@@ -4,7 +4,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import { Eye, Heart, Plus } from 'lucide-react';
-import { toast } from 'sonner';
 import { Badge } from '@biashara-mall/ui/components/ui/badge';
 import { Button } from '@biashara-mall/ui/components/ui/button';
 import { cn } from '@biashara-mall/ui/lib/utils';
@@ -41,7 +40,6 @@ export function ProductCard({ product }: { product: ProductCardData }) {
       shopId: product.shop.id,
       shopName: product.shop.name,
     });
-    toast.success(`${product.title} added to cart`);
   };
 
   return (

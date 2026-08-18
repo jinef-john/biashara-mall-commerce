@@ -3,7 +3,7 @@ import { ProductListing } from '../../shared/components/product-listing';
 import { ProductGridSkeleton } from '../../shared/components/skeletons';
 
 export const metadata = {
-  title: 'Offers — Biashara Mall',
+  title: 'Offers | Biashara Mall',
 };
 
 export default function OffersPage() {

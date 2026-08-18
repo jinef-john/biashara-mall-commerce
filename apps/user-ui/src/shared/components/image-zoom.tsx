@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useRef, useState } from 'react';
 
 /**
- * Hover-zoom on the main image — a lens-free variant of the classic
+ * Hover-zoom on the main image, a lens-free variant of the classic
  * "zoom follows the cursor" pattern, done with a CSS transform instead of
  * the unmaintained react-image-magnify.
  */

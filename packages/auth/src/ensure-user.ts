@@ -3,7 +3,7 @@ import { prisma, type User } from '@biashara-mall/prisma';
 
 /**
  * Returns the User row for a Clerk id, creating it on demand if the webhook
- * has not delivered yet (or never will — a rotated tunnel URL in dev, a user
+ * has not delivered yet (or never will: a rotated tunnel URL in dev, a user
  * who predates the endpoint, a dropped delivery).
  *
  * Clerk is only called on a miss, so the steady-state cost is one indexed

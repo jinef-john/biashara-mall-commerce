@@ -2,7 +2,7 @@ import { Router, type Request, type Response } from 'express';
 import { getAuth } from '@clerk/express';
 import { prisma } from '@biashara-mall/prisma';
 
-/** Unauthenticated — the shop profile page reads this. */
+/** Unauthenticated: the shop profile page reads this. */
 export const publicShopsRouter: Router = Router();
 
 const SHOP_SELECT = {

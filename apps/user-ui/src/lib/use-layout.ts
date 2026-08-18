@@ -10,7 +10,7 @@ export interface Layout {
 
 /**
  * Narrower and shorter-cached than useSiteConfig (which is staleTime:
- * Infinity — a long-lived tab would never see a logo/banner change). This
+ * Infinity; a long-lived tab would never see a logo/banner change). This
  * hook exists so admin edits to storefront chrome propagate within an hour
  * instead of only on a fresh session.
  */

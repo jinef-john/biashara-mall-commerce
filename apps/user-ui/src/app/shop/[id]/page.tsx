@@ -28,13 +28,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const data = await getSeller(id);
 
   if (!data) {
-    return { title: 'Shop not found — Biashara Mall' };
+    return { title: 'Shop not found | Biashara Mall' };
   }
 
   const { shop } = data;
 
   return {
-    title: `${shop.name} — Biashara Mall`,
+    title: `${shop.name} | Biashara Mall`,
     description: shop.bio ?? `Shop ${shop.name} on Biashara Mall.`,
     openGraph: {
       title: shop.name,

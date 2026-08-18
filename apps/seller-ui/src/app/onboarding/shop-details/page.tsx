@@ -43,7 +43,7 @@ export default function ShopDetailsPage() {
   const router = useRouter();
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  // Same list the product form uses — one source of truth in SiteConfig.
+  // Same list the product form uses: one source of truth in SiteConfig.
   const { data: categoryData } = useQuery<{ categories: string[] }>({
     queryKey: ['categories'],
     queryFn: async () => {
@@ -75,7 +75,7 @@ export default function ShopDetailsPage() {
         name: organization?.name,
         ...data,
       });
-      toast.success('Shop details saved — welcome aboard!');
+      toast.success('Shop details saved, welcome aboard!');
       router.push('/');
     } catch (err) {
       console.error('Failed to save shop details', err);

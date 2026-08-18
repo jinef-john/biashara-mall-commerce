@@ -132,7 +132,7 @@ export default function SettingsPage() {
       <div>
         <h1 className="text-headline-lg text-on-surface">Shop settings</h1>
         <p className="text-body-md text-on-surface-variant">
-          {shop?.name} — what buyers see on your public page.
+          {shop?.name}: what buyers see on your public page.
         </p>
       </div>
 

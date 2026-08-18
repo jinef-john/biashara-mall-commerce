@@ -6,7 +6,7 @@ const urlEndpoint = process.env.IMAGEKIT_URL_ENDPOINT;
 
 if (!publicKey || !privateKey || !urlEndpoint) {
   throw new Error(
-    'Missing ImageKit credentials — set IMAGEKIT_PUBLIC_KEY, IMAGEKIT_PRIVATE_KEY and IMAGEKIT_URL_ENDPOINT',
+    'Missing ImageKit credentials: set IMAGEKIT_PUBLIC_KEY, IMAGEKIT_PRIVATE_KEY and IMAGEKIT_URL_ENDPOINT',
   );
 }
 

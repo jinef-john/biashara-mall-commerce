@@ -3,7 +3,7 @@ import { Skeleton } from '@biashara-mall/ui/components/ui/skeleton';
 import { CheckoutContent } from '../../shared/components/checkout/checkout-content';
 
 export const metadata = {
-  title: 'Checkout — Biashara Mall',
+  title: 'Checkout | Biashara Mall',
 };
 
 export default function CheckoutPage() {

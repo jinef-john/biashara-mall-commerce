@@ -138,10 +138,10 @@ export default function AdminSellersPage() {
                       {shop.name}
                     </TableCell>
                     <TableCell className="truncate text-on-surface-variant">
-                      {shop.category ?? '—'}
+                      {shop.category ?? 'N/A'}
                     </TableCell>
                     <TableCell className="truncate text-on-surface-variant">
-                      {shop.country ?? '—'}
+                      {shop.country ?? 'N/A'}
                     </TableCell>
                     <TableCell className="text-right tabular-nums text-on-surface">
                       {shop._count.products}

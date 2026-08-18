@@ -15,7 +15,7 @@ app.use((req, res, next) => {
 
 // Mounted before express.json() and before clerkMiddleware(): Stripe signs
 // this request rather than authenticating it with a session. The route
-// itself applies express.raw() (see routes/webhook.ts) — doing it here would
+// itself applies express.raw() (see routes/webhook.ts). Doing it here would
 // consume the body stream for every /api/* request, not just this one.
 app.use('/api', webhookRouter);
 

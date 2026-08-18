@@ -63,7 +63,7 @@ export function CheckoutContent() {
   const { data, isPending, isError } = useCheckoutSession(sessionId);
 
   if (!sessionId) {
-    return <CheckoutError message="No checkout session — start from your cart." />;
+    return <CheckoutError message="No checkout session. Start from your cart." />;
   }
   if (isPending) return <CheckoutSkeleton />;
   if (isError || !data) {
@@ -132,7 +132,7 @@ export function CheckoutContent() {
         <div className="rounded-xl border border-outline-variant bg-surface-container-lowest p-5">
           <h2 className="text-body-lg font-medium text-on-surface">Shipping to</h2>
           <p className="mt-2 text-body-sm text-on-surface-variant">
-            {address.name} — {address.street}, {address.city} {address.zip}, {address.country}
+            {address.name}, {address.street}, {address.city} {address.zip}, {address.country}
           </p>
         </div>
       </div>

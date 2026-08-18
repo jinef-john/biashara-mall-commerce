@@ -7,8 +7,8 @@ function csv(value: string | null): string[] {
 }
 
 /**
- * Filter state lives entirely in the URL — so a filtered listing can be
- * bookmarked or shared — rather than in component state.
+ * Filter state lives entirely in the URL (so a filtered listing can be
+ * bookmarked or shared) rather than in component state.
  */
 export function useProductFilters() {
   const router = useRouter();

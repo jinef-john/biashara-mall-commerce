@@ -37,7 +37,7 @@ function PayButton({ total }: { total: number }) {
       setError(confirmError.message ?? 'Payment failed');
       setSubmitting(false);
     }
-    // On success Stripe redirects to return_url — nothing else to do here.
+    // On success Stripe redirects to return_url: nothing else to do here.
   };
 
   return (

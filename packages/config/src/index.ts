@@ -15,7 +15,7 @@ export function sellerEarning(amount: number): number {
   return Math.round((amount - platformFee(amount)) * 100) / 100;
 }
 
-/** One-way progression — shared by order-service (enforces it) and both UIs
+/** One-way progression, shared by order-service (enforces it) and both UIs
  * (render it as a delivery progress bar / "advance to next" control). */
 export const ORDER_STATUS_STEPS = [
   'ordered',
@@ -79,7 +79,7 @@ export const DEFAULT_COLORS = [
 /** Sizes offered by the product form's size picker and the storefront's size filter. */
 export const DEFAULT_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
-/** Markets shops can trade from — drives the storefront's shop-country filter. */
+/** Markets shops can trade from: drives the storefront's shop-country filter. */
 export const COUNTRIES = [
   'Kenya',
   'Uganda',

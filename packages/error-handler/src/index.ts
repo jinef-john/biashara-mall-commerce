@@ -56,7 +56,7 @@ export class RateLimitError extends AppError {
 }
 
 /**
- * Must be mounted last, and must declare all four parameters — Express only
+ * Must be mounted last, and must declare all four parameters: Express only
  * treats a handler as an error handler when arity is 4, so dropping the unused
  * `next` silently disables it.
  */

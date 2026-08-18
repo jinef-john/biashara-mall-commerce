@@ -1,7 +1,7 @@
 import { Router, type Request, type Response } from 'express';
 import { prisma } from '@biashara-mall/prisma';
 
-/** Public — the storefront chrome (logo, banner, nav categories) reads this. */
+/** Public: the storefront chrome (logo, banner, nav categories) reads this. */
 export const siteConfigRouter: Router = Router();
 
 siteConfigRouter.get('/', async (req: Request, res: Response) => {

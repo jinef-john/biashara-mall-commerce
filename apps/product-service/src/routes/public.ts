@@ -2,7 +2,7 @@ import { Router, type Request, type Response } from 'express';
 import { prisma, type Prisma } from '@biashara-mall/prisma';
 import { IS_EVENT, IS_PRODUCT } from '../lib/product-kind';
 
-/** Everything here is unauthenticated — it is what the storefront reads. */
+/** Everything here is unauthenticated: it is what the storefront reads. */
 export const publicRouter: Router = Router();
 
 /** A buyer must never see a soft-deleted or draft/pending listing, or one from a banned shop. */
@@ -32,7 +32,7 @@ function paginate(query: Request['query']) {
   return { page, limit, skip: (page - 1) * limit };
 }
 
-/** `?priceRange=0,5000` — either bound may be blank. */
+/** `?priceRange=0,5000`: either bound may be blank. */
 function priceFilter(value: unknown): Prisma.FloatFilter | undefined {
   const [min, max] = list(value).map(Number);
   const filter: Prisma.FloatFilter = {};

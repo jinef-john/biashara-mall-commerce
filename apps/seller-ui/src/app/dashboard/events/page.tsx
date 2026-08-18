@@ -40,7 +40,7 @@ function eventState(event: EventProduct): EventState {
   return 'live';
 }
 
-/** "2d 4h" / "5h 12m" / "8m" — coarse enough that it doesn't need a ticker. */
+/** "2d 4h" / "5h 12m" / "8m": coarse enough that it doesn't need a ticker. */
 function untilLabel(target: string) {
   const ms = new Date(target).getTime() - Date.now();
   if (ms <= 0) return null;

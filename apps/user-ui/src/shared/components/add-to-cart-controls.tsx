@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { Check, Heart, Minus, Plus } from 'lucide-react';
-import { toast } from 'sonner';
 import { Button } from '@biashara-mall/ui/components/ui/button';
 import { Toggle } from '@biashara-mall/ui/components/ui/toggle';
 import { cn } from '@biashara-mall/ui/lib/utils';
@@ -119,10 +118,7 @@ export function AddToCartControls({
           type="button"
           className="flex-1"
           disabled={outOfStock}
-          onClick={() => {
-            addToCart({ ...lineItem, quantity });
-            toast.success(`${product.title} added to cart`);
-          }}
+          onClick={() => addToCart({ ...lineItem, quantity })}
         >
           {outOfStock ? 'Out of stock' : 'Add to Cart'}
         </Button>

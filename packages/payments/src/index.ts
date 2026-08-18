@@ -7,7 +7,7 @@ export * from './types';
 /**
  * `PAYMENT_PROVIDER=stripe` forces the real provider; otherwise mock is used
  * unless a Stripe key is actually configured. Order-service and seller-service
- * must only ever import this factory — never `stripe` directly.
+ * must only ever import this factory, never `stripe` directly.
  */
 export function getPaymentProvider(): PaymentProvider {
   const forced = process.env.PAYMENT_PROVIDER;

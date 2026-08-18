@@ -11,6 +11,7 @@ import { Input } from '@biashara-mall/ui/components/ui/input';
 import { useLayout } from '../lib/use-layout';
 import { useStore } from '../store';
 import { useHydrated } from '../lib/use-hydrated';
+import { CartDrawer } from '../shared/components/cart-drawer';
 import { HeaderBottom } from './header-bottom';
 
 const SELLER_URL = process.env.NEXT_PUBLIC_SELLER_URL ?? 'http://localhost:3001';
@@ -119,6 +120,7 @@ export function Header() {
       </header>
 
       <HeaderBottom />
+      <CartDrawer />
     </>
   );
 }

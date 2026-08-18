@@ -40,7 +40,7 @@ export interface PaymentSessionData {
 const SESSION_TTL_SECONDS = 600;
 const SESSION_KEY = (sessionId: string) => `payment-session:${sessionId}`;
 
-/** Stable fingerprint of a cart's economically-relevant fields — used to
+/** Stable fingerprint of a cart's economically-relevant fields, used to
  * detect "this is the same checkout attempt" so re-opening checkout reuses
  * a session instead of orphaning the previous one in Redis. */
 export function fingerprintCart(cart: SessionCartItem[]): string {

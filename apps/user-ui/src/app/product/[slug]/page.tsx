@@ -20,13 +20,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const product = await getProduct(slug);
 
   if (!product) {
-    return { title: 'Product not found — Biashara Mall' };
+    return { title: 'Product not found | Biashara Mall' };
   }
 
   const image = product.images[0]?.fileUrl;
 
   return {
-    title: `${product.title} — Biashara Mall`,
+    title: `${product.title} | Biashara Mall`,
     description: product.shortDescription,
     openGraph: {
       title: product.title,

@@ -278,7 +278,7 @@ export default function CustomizationPage() {
             </Field>
             <Field
               label="Hero banner"
-              hint="Best fit: wide images around 4:1 (e.g. 1600×400) — this preview matches how it's cropped on the storefront."
+              hint="Best fit: wide images around 4:1 (e.g. 1600×400). This preview matches how it's cropped on the storefront."
             >
               <Controller
                 name="banner"
@@ -303,7 +303,7 @@ export default function CustomizationPage() {
           <CardContent className="flex flex-col gap-3">
             <Field
               label="Categories"
-              hint="Removing a category won't affect products or shops already using it — they just won't be offered it in dropdowns going forward."
+              hint="Removing a category won't affect products or shops already using it. They just won't be offered it in dropdowns going forward."
             >
               <CategoryChips control={control} />
             </Field>

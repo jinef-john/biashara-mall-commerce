@@ -24,7 +24,7 @@ export function ProductFilters() {
   const { data: config } = useSiteConfig();
   // The query cache can already be warm from an earlier page (e.g. the
   // header), so the client's first render can see categories the server
-  // never did — gate on hydration so both first renders agree.
+  // never did. Gate on hydration so both first renders agree.
   const hydrated = useHydrated();
   const { categories, colors, sizes, priceRange, toggle, update, clear, hasFilters } =
     useProductFilters();

@@ -14,7 +14,7 @@ export interface CreateCheckoutIntentParams {
   amount: number;
   currency: string;
   platformFeeBps: number;
-  /** null when the cart spans more than one shop — no single destination
+  /** null when the cart spans more than one shop: no single destination
    * applies at intent-creation time, so funds land on the platform account
    * and get split via separate `createTransfer` calls after payment succeeds. */
   destinationAccountId: string | null;
@@ -23,7 +23,7 @@ export interface CreateCheckoutIntentParams {
 
 export interface CheckoutIntentResult {
   intentId: string;
-  /** null in mock mode — there's nothing for Stripe Elements to mount. */
+  /** null in mock mode: there's nothing for Stripe Elements to mount. */
   clientSecret: string | null;
 }
 
@@ -48,7 +48,7 @@ export interface PaymentProvider {
   createOnboardingLink(params: CreateOnboardingLinkParams): Promise<{ url: string }>;
   createCheckoutIntent(params: CreateCheckoutIntentParams): Promise<CheckoutIntentResult>;
   createTransfer(params: CreateTransferParams): Promise<{ transferId: string }>;
-  /** Returns null on a missing/invalid signature — never throws. */
+  /** Returns null on a missing/invalid signature, never throws. */
   verifyWebhook(
     rawBody: Buffer,
     signature: string | undefined,

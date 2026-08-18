@@ -59,7 +59,7 @@ interface DiscountCode {
   discountCode: string;
 }
 
-/** Local-date helpers — toISOString() would shift the day across timezones. */
+/** Local-date helpers: toISOString() would shift the day across timezones. */
 function toDateString(date: Date) {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');

@@ -16,7 +16,7 @@ const TTL_MS = 20 * 24 * 60 * 60 * 1000;
 
 /**
  * IP geolocation, cached in localStorage for 20 days. ip-api.com's free tier
- * is HTTP-only — fine served from localhost, but would need a server-side
+ * is HTTP-only: fine served from localhost, but would need a server-side
  * proxy if this app is ever deployed behind HTTPS (mixed content).
  */
 export function useLocationTracking(): LocationInfo | null {
@@ -55,7 +55,7 @@ export function useLocationTracking(): LocationInfo | null {
         setLocation(value);
       })
       .catch(() => {
-        // Best-effort tracking — a failed lookup shouldn't break the cart.
+        // Best-effort tracking: a failed lookup shouldn't break the cart.
       });
   }, []);
 

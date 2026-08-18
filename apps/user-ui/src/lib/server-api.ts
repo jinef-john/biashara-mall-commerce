@@ -2,7 +2,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL;
 
 /**
  * Fetch helper for server components (product/[slug] and shop/[id] need
- * data before render for generateMetadata) — a plain `fetch`, not the axios
+ * data before render for generateMetadata), a plain `fetch`, not the axios
  * `publicApi` instance, since that file is `'use client'`.
  */
 export async function serverGet<T>(path: string): Promise<T | null> {

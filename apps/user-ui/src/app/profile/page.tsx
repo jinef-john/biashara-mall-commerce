@@ -3,7 +3,7 @@ import { Skeleton } from '@biashara-mall/ui/components/ui/skeleton';
 import { ProfileTabs } from '../../shared/components/profile-tabs';
 
 export const metadata = {
-  title: 'Your profile — Biashara Mall',
+  title: 'Your profile | Biashara Mall',
 };
 
 export default function ProfilePage() {

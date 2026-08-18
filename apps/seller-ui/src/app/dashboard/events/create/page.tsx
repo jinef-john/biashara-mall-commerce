@@ -8,7 +8,7 @@ export default function CreateEventPage() {
       <div>
         <h1 className="text-headline-lg text-on-surface">Create an event</h1>
         <p className="text-body-md text-on-surface-variant">
-          A time-limited offer — buyers see it with a countdown.
+          A time-limited offer. Buyers see it with a countdown.
         </p>
       </div>
       <ProductForm mode="create" isEvent />

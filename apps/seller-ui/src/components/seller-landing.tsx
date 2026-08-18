@@ -28,7 +28,7 @@ const FEATURES = [
     icon: LayoutDashboard,
     title: 'One dashboard for everything',
     description:
-      'Products, events, discount codes, and stock — manage your whole shop in one place.',
+      'Products, events, discount codes, and stock: manage your whole shop in one place.',
   },
   {
     icon: CalendarClock,
@@ -131,7 +131,7 @@ export function SellerLanding() {
           </p>
           <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
             <SignUpButton mode="modal">
-              <Button size="lg">Start selling — it's free</Button>
+              <Button size="lg">Start selling, it's free</Button>
             </SignUpButton>
             <Button asChild variant="outline" size="lg">
               <a href="#how-it-works">See how it works</a>

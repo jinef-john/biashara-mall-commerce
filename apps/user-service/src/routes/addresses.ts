@@ -68,7 +68,7 @@ addressesRouter.delete(
 
     await prisma.address.delete({ where: { id: address.id } });
 
-    // Keep exactly one default — promote the most recent remaining address.
+    // Keep exactly one default: promote the most recent remaining address.
     if (address.isDefault) {
       const next = await prisma.address.findFirst({
         where: { userId },

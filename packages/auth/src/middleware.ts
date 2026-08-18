@@ -59,7 +59,7 @@ export async function requireShop(
   try {
     const shop = await prisma.shops.findUnique({ where: { clerkOrgId: orgId } });
     if (!shop) {
-      res.status(404).json({ message: 'Shop not found — finish onboarding first' });
+      res.status(404).json({ message: 'Shop not found. Finish onboarding first.' });
       return;
     }
     if (shop.status === 'banned') {

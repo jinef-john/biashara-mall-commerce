@@ -23,7 +23,7 @@ export function ProductListing({ kind }: { kind: 'products' | 'offers' }) {
   const type = searchParams.get('type') ?? undefined;
 
   const filters = { page, limit: 20, q, type, categories, colors, sizes, priceRange };
-  // Both hooks are always called — hook order must stay stable — but only the
+  // Both hooks are always called (hook order must stay stable), but only the
   // one matching `kind` is enabled, so only one ever actually fetches.
   const productsQuery = useProducts(filters, { enabled: kind === 'products' });
   const eventsQuery = useEvents(filters, { enabled: kind === 'offers' });

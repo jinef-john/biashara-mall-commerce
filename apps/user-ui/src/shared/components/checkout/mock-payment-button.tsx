@@ -8,9 +8,9 @@ import { useApi } from '../../../lib/api';
 import { formatPrice } from '../../../lib/format';
 
 /** Stands in for the Stripe Elements form when no payment provider is
- * configured — confirms the order instantly through order-service's
+ * configured. Confirms the order instantly through order-service's
  * mock-only route instead of a real charge. The cart is cleared on the
- * success page itself, not here — the real Stripe path does a hard browser
+ * success page itself, not here. The real Stripe path does a hard browser
  * redirect straight past this component, so it's the one place guaranteed
  * to run for both flows. */
 export function MockPaymentButton({ sessionId, total }: { sessionId: string; total: number }) {
@@ -36,7 +36,7 @@ export function MockPaymentButton({ sessionId, total }: { sessionId: string; tot
         {confirm.isPending ? 'Placing order…' : `Pay ${formatPrice(total)} now (test mode)`}
       </Button>
       <p className="text-center text-label-sm text-on-surface-variant">
-        No payment provider is configured — this places the order without a
+        No payment provider is configured. This places the order without a
         real charge.
       </p>
     </div>

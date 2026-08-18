@@ -46,7 +46,7 @@ export const stripeProvider: PaymentProvider = {
       amount: amountMinor,
       currency,
       metadata,
-      // Single-shop carts use a destination charge — Stripe settles the
+      // Single-shop carts use a destination charge: Stripe settles the
       // seller's 90% automatically. Multi-shop carts omit this: funds land
       // on the platform account and get split via createTransfer once the
       // order-creation webhook fires, since one PaymentIntent can only name

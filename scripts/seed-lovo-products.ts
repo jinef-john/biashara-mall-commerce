@@ -42,7 +42,7 @@ async function main() {
   const items: AmazonItem[] = JSON.parse(raw);
 
   const shop = await prisma.shops.findFirst({ where: { name: 'Lovo' } });
-  if (!shop) throw new Error('Shop "Lovo" not found — create it in seller-ui first');
+  if (!shop) throw new Error('Shop "Lovo" not found: create it in seller-ui first');
 
   const usable = items.filter((item) => item.title && item.main_image_url && item.price);
   console.log(`${usable.length}/${items.length} sample items have usable data`);
@@ -72,7 +72,7 @@ async function main() {
         category: 'Books & Stationery',
         subcategory: 'Music & Media',
         shortDescription: item.brand ? `By ${item.brand}.` : 'Imported from a sample catalogue.',
-        detailedDescription: `<p>${title}${item.brand ? ` — ${item.brand}` : ''}</p><p>Seeded from sample marketplace data for local development.</p>`,
+        detailedDescription: `<p>${title}${item.brand ? `, ${item.brand}` : ''}</p><p>Seeded from sample marketplace data for local development.</p>`,
         brand: item.brand,
         tags: ['music', 'media'],
         stock: 10 + Math.floor(Math.random() * 40),

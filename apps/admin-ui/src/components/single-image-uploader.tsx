@@ -22,8 +22,8 @@ function fileToBase64(file: File) {
 
 /**
  * A single-slot version of seller-ui's ImageUploader, generalised away from
- * react-hook-form's `Control<CreateProductForm>` to plain value/onChange —
- * used for the site logo and hero banner, which aren't part of a product
+ * react-hook-form's `Control<CreateProductForm>` to plain value/onChange.
+ * Used for the site logo and hero banner, which aren't part of a product
  * form. Points at admin-service's own upload route (admin-gated, `/site-config`
  * ImageKit folder), not product-service's shop-scoped one.
  */
@@ -70,8 +70,8 @@ export function SingleImageUploader({
     if (!value) return;
     const removed = value;
     onChange(null);
-    // A logo/banner hydrated from SiteConfig only ever carries a URL — its
-    // ImageKit fileId was never persisted, so there's nothing to clean up.
+    // A logo/banner hydrated from SiteConfig only ever carries a URL.
+    // Its ImageKit fileId was never persisted, so there's nothing to clean up.
     if (!removed.fileId) return;
     try {
       await api.delete(`/admin/api/upload-image/${removed.fileId}`);
