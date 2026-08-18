@@ -15,6 +15,12 @@ Multi-vendor e-commerce SaaS. Storefront, seller dashboard, and admin panel as s
 **Product listing**
 ![Product listing](assets/all-product.png)
 
+**Admin dashboard**
+![Admin dashboard](assets/admin-ui.png)
+
+**Admin orders**
+![Admin orders](assets/admin-orderz.png)
+
 ## Prerequisites
 
 - bun or npm
@@ -64,7 +70,7 @@ Services read `.env` at boot only, restart after editing it.
 - [x] Cart, wishlist, order tracking
 - [x] Payments & checkout (Stripe but for now it's just a mock)
 - [x] Order management
-- [ ] Admin panel
+- [x] Admin panel
 - [ ] Real-time analytics (Kafka)
 - [ ] Live chat
 - [ ] ML-based product recommendations
