@@ -17,6 +17,7 @@ const SHOP_SELECT = {
   openingHours: true,
   website: true,
   socialLinks: true,
+  status: true,
   createdAt: true,
   _count: { select: { followers: true, products: true } },
 } as const;
@@ -40,7 +41,7 @@ publicShopsRouter.get('/get-seller/:id', async (req: Request, res: Response) => 
     },
   });
 
-  if (!shop) {
+  if (!shop || shop.status === 'banned') {
     return res.status(404).json({ message: 'Shop not found' });
   }
 

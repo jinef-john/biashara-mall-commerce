@@ -62,6 +62,10 @@ export async function requireShop(
       res.status(404).json({ message: 'Shop not found — finish onboarding first' });
       return;
     }
+    if (shop.status === 'banned') {
+      res.status(403).json({ message: 'This shop has been suspended' });
+      return;
+    }
     req.shop = shop;
     next();
   } catch (err) {

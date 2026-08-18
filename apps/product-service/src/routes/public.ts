@@ -5,8 +5,12 @@ import { IS_EVENT, IS_PRODUCT } from '../lib/product-kind';
 /** Everything here is unauthenticated — it is what the storefront reads. */
 export const publicRouter: Router = Router();
 
-/** A buyer must never see a soft-deleted or draft/pending listing. */
-const VISIBLE: Prisma.ProductWhereInput = { isDeleted: false, status: 'active' };
+/** A buyer must never see a soft-deleted or draft/pending listing, or one from a banned shop. */
+const VISIBLE: Prisma.ProductWhereInput = {
+  isDeleted: false,
+  status: 'active',
+  shop: { status: 'active' },
+};
 
 const CARD_INCLUDE = {
   images: { select: { id: true, fileUrl: true } },
@@ -99,6 +103,7 @@ publicRouter.get('/get-product/:slug', async (req: Request, res: Response) => {
           openingHours: true,
           website: true,
           socialLinks: true,
+          status: true,
           createdAt: true,
           _count: { select: { followers: true, products: true } },
         },
@@ -106,7 +111,12 @@ publicRouter.get('/get-product/:slug', async (req: Request, res: Response) => {
     },
   });
 
-  if (!product || product.isDeleted || product.status !== 'active') {
+  if (
+    !product ||
+    product.isDeleted ||
+    product.status !== 'active' ||
+    product.shop.status !== 'active'
+  ) {
     return res.status(404).json({ message: 'Product not found' });
   }
 
@@ -170,6 +180,7 @@ publicRouter.get('/get-filtered-shops', async (req: Request, res: Response) => {
   const countries = list(req.query.countries);
 
   const where: Prisma.ShopsWhereInput = {
+    status: 'active',
     ...(categories.length ? { category: { in: categories } } : {}),
     ...(countries.length ? { country: { in: countries } } : {}),
   };
@@ -237,7 +248,10 @@ publicRouter.get('/top-shops', async (req: Request, res: Response) => {
   // Before the first order lands, rank by catalogue size so the home page's
   // Top Shops rail is never empty.
   const shops = await prisma.shops.findMany({
-    where: ranked.size ? { id: { in: [...ranked.keys()] } } : {},
+    where: {
+      status: 'active',
+      ...(ranked.size ? { id: { in: [...ranked.keys()] } } : {}),
+    },
     select: {
       id: true,
       name: true,

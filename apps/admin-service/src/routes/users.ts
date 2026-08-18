@@ -1,7 +1,7 @@
 import { Router, type Request, type Response } from 'express';
 import { clerkClient } from '@clerk/express';
 import { prisma, type Prisma, type UserRole } from '@biashara-mall/prisma';
-import { NotFoundError, ValidationError } from '@biashara-mall/error-handler';
+import { ForbiddenError, NotFoundError, ValidationError } from '@biashara-mall/error-handler';
 
 export const usersRouter: Router = Router();
 
@@ -64,6 +64,28 @@ usersRouter.put('/add-new-admin', async (req: Request, res: Response, next) => {
     // session claim, same as the first-admin bootstrap in packages/auth/ensure-user.ts.
     await clerkClient.users.updateUserMetadata(user.clerkId, {
       publicMetadata: { role: 'admin' },
+    });
+
+    res.json({ user: updated });
+  } catch (err) {
+    next(err);
+  }
+});
+
+usersRouter.put('/update-user-status/:id', async (req: Request, res: Response, next) => {
+  try {
+    const { banned } = req.body as { banned?: boolean };
+    if (typeof banned !== 'boolean') throw new ValidationError('banned must be a boolean');
+
+    const targetId = String(req.params.id);
+    const user = await prisma.user.findUnique({ where: { id: targetId } });
+    if (!user) throw new NotFoundError('User not found');
+    if (user.role === 'admin') throw new ForbiddenError('Cannot ban a platform admin');
+    if (user.id === req.appUser!.id) throw new ForbiddenError('Cannot ban your own account');
+
+    const updated = await prisma.user.update({
+      where: { id: targetId },
+      data: { deletedAt: banned ? new Date() : null },
     });
 
     res.json({ user: updated });

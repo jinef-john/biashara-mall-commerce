@@ -84,6 +84,8 @@ model Shops {
 
   stripeAccountId String?
 
+  status ShopStatus @default(active)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -137,6 +139,11 @@ enum ProductStatus {
   active
   pending
   draft
+}
+
+enum ShopStatus {
+  active
+  banned
 }
 
 model Product {

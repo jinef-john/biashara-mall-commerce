@@ -1,5 +1,6 @@
 import { Router, type Request, type Response } from 'express';
 import { prisma, type Prisma } from '@biashara-mall/prisma';
+import { NotFoundError, ValidationError } from '@biashara-mall/error-handler';
 
 export const sellersRouter: Router = Router();
 
@@ -26,6 +27,7 @@ sellersRouter.get('/get-all-sellers', async (req: Request, res: Response) => {
         ownerId: true,
         category: true,
         country: true,
+        status: true,
         createdAt: true,
         _count: { select: { products: true } },
       },
@@ -40,4 +42,23 @@ sellersRouter.get('/get-all-sellers', async (req: Request, res: Response) => {
     shops,
     pagination: { total, page, totalPages: Math.ceil(total / limit) || 1 },
   });
+});
+
+sellersRouter.put('/update-seller-status/:id', async (req: Request, res: Response, next) => {
+  try {
+    const { banned } = req.body as { banned?: boolean };
+    if (typeof banned !== 'boolean') throw new ValidationError('banned must be a boolean');
+
+    const shop = await prisma.shops.findUnique({ where: { id: String(req.params.id) } });
+    if (!shop) throw new NotFoundError('Shop not found');
+
+    const updated = await prisma.shops.update({
+      where: { id: shop.id },
+      data: { status: banned ? 'banned' : 'active' },
+    });
+
+    res.json({ shop: updated });
+  } catch (err) {
+    next(err);
+  }
 });

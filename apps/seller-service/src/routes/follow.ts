@@ -14,7 +14,7 @@ followRouter.post(
     }
 
     const shop = await prisma.shops.findUnique({ where: { id: shopId } });
-    if (!shop) {
+    if (!shop || shop.status === 'banned') {
       return res.status(404).json({ message: 'Shop not found' });
     }
 
