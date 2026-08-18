@@ -44,9 +44,6 @@ function trackEvent(
 interface StoreState {
   cart: LineItem[];
   wishlist: LineItem[];
-  isCartOpen: boolean;
-  openCart: () => void;
-  closeCart: () => void;
   addToCart: (item: LineItem, ctx: TrackingContext) => void;
   removeFromCart: (id: string, ctx: TrackingContext) => void;
   addToWishlist: (item: LineItem, ctx: TrackingContext) => void;
@@ -60,10 +57,6 @@ export const useStore = create<StoreState>()(
     (set) => ({
       cart: [],
       wishlist: [],
-      isCartOpen: false,
-
-      openCart: () => set({ isCartOpen: true }),
-      closeCart: () => set({ isCartOpen: false }),
 
       addToCart: (item, ctx) => {
         set((s) => {
@@ -76,7 +69,6 @@ export const useStore = create<StoreState>()(
                     : i,
                 )
               : [...s.cart, item],
-            isCartOpen: true,
           };
         });
         trackEvent('add_to_cart', item, ctx);
@@ -116,10 +108,6 @@ export const useStore = create<StoreState>()(
 
       clearCart: () => set({ cart: [] }),
     }),
-    {
-      name: 'biashara-store',
-      // isCartOpen is ephemeral UI state, not something to restore on reload.
-      partialize: (s) => ({ cart: s.cart, wishlist: s.wishlist }),
-    },
+    { name: 'biashara-store' },
   ),
 );

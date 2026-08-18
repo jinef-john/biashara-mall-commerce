@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import { Toaster } from '@biashara-mall/ui/components/ui/sonner';
 import { QueryProvider } from '../components/query-provider';
 import { Header } from '../components/header';
+import { CartSidebar } from '../shared/components/cart-sidebar';
 import './global.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
@@ -27,8 +28,13 @@ export default function RootLayout({
           signUpFallbackRedirectUrl="/"
         >
           <QueryProvider>
-            <Header />
-            {children}
+            <div className="flex">
+              <div className="min-w-0 flex-1">
+                <Header />
+                {children}
+              </div>
+              <CartSidebar />
+            </div>
           </QueryProvider>
           <Toaster position="bottom-right" />
         </ClerkProvider>
