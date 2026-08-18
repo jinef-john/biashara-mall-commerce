@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { getAuth } from '@clerk/express';
-import { prisma, type OrderStatus } from '@biashara-mall/prisma';
+import { prisma, type OrderStatus, type Prisma } from '@biashara-mall/prisma';
 import { requireAdmin, requireShop, requireUser } from '@biashara-mall/auth';
 import { NotFoundError, ForbiddenError, ValidationError } from '@biashara-mall/error-handler';
 import { ORDER_STATUS_STEPS } from '@biashara-mall/config';
@@ -25,9 +25,22 @@ ordersRouter.get('/get-admin-orders', requireAdmin, async (req, res, next) => {
     const page = Math.max(1, Number(req.query.page) || 1);
     const limit = Math.min(100, Math.max(1, Number(req.query.limit) || 20));
     const skip = (page - 1) * limit;
+    const q = typeof req.query.q === 'string' ? req.query.q.trim() : '';
+
+    const where: Prisma.OrderWhereInput = q
+      ? {
+          user: {
+            OR: [
+              { name: { contains: q, mode: 'insensitive' } },
+              { email: { contains: q, mode: 'insensitive' } },
+            ],
+          },
+        }
+      : {};
 
     const [orders, total] = await Promise.all([
       prisma.order.findMany({
+        where,
         orderBy: { createdAt: 'desc' },
         include: {
           user: { select: { name: true, email: true } },
@@ -36,7 +49,7 @@ ordersRouter.get('/get-admin-orders', requireAdmin, async (req, res, next) => {
         skip,
         take: limit,
       }),
-      prisma.order.count(),
+      prisma.order.count({ where }),
     ]);
 
     res.json({
@@ -61,9 +74,10 @@ ordersRouter.get('/get-user-orders', requireUser, async (req, res, next) => {
   }
 });
 
-// Reached from both seller-ui (via get-seller-orders) and user-ui (via
-// get-user-orders), so authorization checks buyer-ownership OR seller-owns-shop
-// rather than requiring one specific role.
+// Reached from seller-ui (via get-seller-orders), user-ui (via
+// get-user-orders), and admin-ui (via get-admin-orders), so authorization
+// checks buyer-ownership OR seller-owns-shop OR platform-admin rather than
+// requiring one specific role.
 ordersRouter.get('/get-order-details/:id', requireUser, async (req, res, next) => {
   try {
     const order = await prisma.order.findUnique({ where: { id: String(req.params.id) } });
@@ -74,7 +88,8 @@ ordersRouter.get('/get-order-details/:id', requireUser, async (req, res, next) =
 
     const isBuyer = order.userId === req.appUser!.id;
     const isSeller = shop?.id === order.shopId;
-    if (!isBuyer && !isSeller) throw new ForbiddenError('Not your order');
+    const isAdmin = req.appUser!.role === 'admin';
+    if (!isBuyer && !isSeller && !isAdmin) throw new ForbiddenError('Not your order');
 
     const productIds = order.items.map((i) => i.productId);
     const [products, buyer, orderShop, discountCode] = await Promise.all([
