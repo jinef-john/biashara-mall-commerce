@@ -64,6 +64,7 @@
         "@clerk/express": "^2.1.57",
         "dotenv": "^17.4.2",
         "express": "^5.1.0",
+        "imagekit": "^6.0.0",
       },
     },
     "apps/admin-ui": {
@@ -81,6 +82,7 @@
         "next": "~16.1.6",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
+        "react-hook-form": "^7.85.0",
         "sonner": "^2.0.8",
       },
       "devDependencies": {

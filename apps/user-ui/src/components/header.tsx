@@ -8,7 +8,7 @@ import { SignInButton, SignUpButton, Show, UserButton } from '@clerk/nextjs';
 import { Heart, MapPin, Search, ShoppingCart, Store } from 'lucide-react';
 import { Button } from '@biashara-mall/ui/components/ui/button';
 import { Input } from '@biashara-mall/ui/components/ui/input';
-import { useSiteConfig } from '../lib/use-site-config';
+import { useLayout } from '../lib/use-layout';
 import { useStore } from '../store';
 import { useHydrated } from '../lib/use-hydrated';
 import { HeaderBottom } from './header-bottom';
@@ -27,7 +27,7 @@ function CountBadge({ count }: { count: number }) {
 export function Header() {
   const router = useRouter();
   const [query, setQuery] = useState('');
-  const { data: config } = useSiteConfig();
+  const { data: layout } = useLayout();
 
   // localStorage-backed counts would mismatch the server render on first paint.
   const hydrated = useHydrated();
@@ -45,9 +45,9 @@ export function Header() {
       <header className="border-b border-outline-variant bg-surface-container-lowest">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-4 px-4 py-4 md:flex-nowrap">
           <Link href="/" className="flex shrink-0 items-center gap-2">
-            {config?.logoUrl ? (
+            {layout?.logoUrl ? (
               <Image
-                src={config.logoUrl}
+                src={layout.logoUrl}
                 alt="Biashara Mall"
                 width={140}
                 height={32}

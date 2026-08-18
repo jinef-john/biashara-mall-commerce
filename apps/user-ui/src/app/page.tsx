@@ -3,26 +3,26 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@biashara-mall/ui/components/ui/button';
-import { useSiteConfig } from '../lib/use-site-config';
+import { useLayout } from '../lib/use-layout';
 import { useHomeEvents, useHomeProducts, useTopShops } from '../lib/queries';
 import { ProductSection } from '../shared/components/product-section';
 import { ShopSection } from '../shared/components/shop-section';
 import { HeroSkeleton } from '../shared/components/skeletons';
 
 export default function Home() {
-  const { data: config, isPending: configPending } = useSiteConfig();
+  const { data: layout, isPending: layoutPending } = useLayout();
   const { data: homeProducts, isPending: productsPending } = useHomeProducts();
   const { data: homeEvents, isPending: eventsPending } = useHomeEvents();
   const { data: topShops, isPending: shopsPending } = useTopShops();
 
   return (
     <main className="mx-auto flex max-w-7xl flex-col gap-10 px-4 py-8">
-      {configPending ? (
+      {layoutPending ? (
         <HeroSkeleton />
-      ) : config?.bannerUrl ? (
+      ) : layout?.bannerUrl ? (
         <div className="relative h-64 overflow-hidden rounded-xl sm:h-80">
           <Image
-            src={config.bannerUrl}
+            src={layout.bannerUrl}
             alt=""
             fill
             sizes="100vw"
