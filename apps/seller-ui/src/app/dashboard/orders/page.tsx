@@ -109,10 +109,8 @@ export default function OrdersPage() {
                   <TableCell className="truncate font-mono text-on-surface-variant" title={order.id}>
                     #{order.id.slice(-8)}
                   </TableCell>
-                  <TableCell className="min-w-0">
-                    <span className="truncate text-on-surface" title={order.user.email}>
-                      {order.user.name ?? order.user.email}
-                    </span>
+                  <TableCell className="truncate text-on-surface" title={order.user.email}>
+                    {order.user.name ?? order.user.email}
                   </TableCell>
                   <TableCell className="text-right tabular-nums text-on-surface">
                     {order.items.reduce((sum, i) => sum + i.quantity, 0)}

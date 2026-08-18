@@ -125,10 +125,8 @@ export default function AdminOrdersPage() {
                   >
                     #{order.id.slice(-8)}
                   </TableCell>
-                  <TableCell className="min-w-0">
-                    <span className="truncate text-on-surface" title={order.user.email}>
-                      {order.user.name ?? order.user.email}
-                    </span>
+                  <TableCell className="truncate text-on-surface" title={order.user.email}>
+                    {order.user.name ?? order.user.email}
                   </TableCell>
                   <TableCell
                     className="truncate text-on-surface-variant"
