@@ -57,7 +57,7 @@ Services read `.env` at boot only, restart after editing it.
 | order-service        | 6004 |
 | admin-service        | 6005 |
 
-## Roadmap
+## Roadmap (very high level)
 
 - [x] Foundation: auth, multi-tenant shops, product catalog
 - [x] Storefront: browsing, search, filters
