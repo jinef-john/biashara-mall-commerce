@@ -65,6 +65,7 @@ export function ProductFilters() {
           min={0}
           max={PRICE_CEILING}
           step={10}
+          minStepsBetweenThumbs={5}
           value={draftPrice}
           onValueChange={(v) => setDraftPrice(v as [number, number])}
           onValueCommit={(v) =>

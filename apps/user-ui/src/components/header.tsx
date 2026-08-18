@@ -61,15 +61,15 @@ export function Header() {
             )}
           </Link>
 
-          <form onSubmit={search} className="order-last flex w-full gap-2 md:order-none md:flex-1">
+          <form onSubmit={search} className="order-last flex w-full md:order-none md:flex-1">
             <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search for products, brands and shops"
               aria-label="Search"
-              className="flex-1"
+              className="flex-1 rounded-r-none rounded-l-full border-r-0"
             />
-            <Button type="submit" aria-label="Search">
+            <Button type="submit" size="icon" className="rounded-l-none rounded-r-full" aria-label="Search">
               <Search />
             </Button>
           </form>
