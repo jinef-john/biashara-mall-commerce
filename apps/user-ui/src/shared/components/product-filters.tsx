@@ -11,6 +11,7 @@ import { cn } from '@biashara-mall/ui/lib/utils';
 import { formatPrice } from '../../lib/format';
 import { useSiteConfig } from '../../lib/use-site-config';
 import { useProductFilters } from '../../lib/use-product-filters';
+import { useHydrated } from '../../lib/use-hydrated';
 
 const PRICE_CEILING = 2000;
 
@@ -21,6 +22,10 @@ function isLight(hex: string) {
 
 export function ProductFilters() {
   const { data: config } = useSiteConfig();
+  // The query cache can already be warm from an earlier page (e.g. the
+  // header), so the client's first render can see categories the server
+  // never did — gate on hydration so both first renders agree.
+  const hydrated = useHydrated();
   const { categories, colors, sizes, priceRange, toggle, update, clear, hasFilters } =
     useProductFilters();
 
@@ -40,7 +45,7 @@ export function ProductFilters() {
         )}
       </div>
 
-      {(config?.categories?.length ?? 0) > 0 && (
+      {hydrated && (config?.categories?.length ?? 0) > 0 && (
         <div className="flex flex-col gap-3">
           <h4 className="text-label-md text-on-surface">Category</h4>
           <div className="flex flex-col gap-2">

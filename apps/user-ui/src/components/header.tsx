@@ -31,7 +31,7 @@ export function Header() {
 
   // localStorage-backed counts would mismatch the server render on first paint.
   const hydrated = useHydrated();
-  const cartCount = useStore((s) => s.cart.length);
+  const cartCount = useStore((s) => s.cart.reduce((sum, i) => sum + i.quantity, 0));
   const wishlistCount = useStore((s) => s.wishlist.length);
 
   const search = (e: React.FormEvent) => {
