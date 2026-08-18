@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { getAuth } from '@clerk/express';
 import { prisma, type OrderStatus } from '@biashara-mall/prisma';
-import { requireShop, requireUser } from '@biashara-mall/auth';
+import { requireAdmin, requireShop, requireUser } from '@biashara-mall/auth';
 import { NotFoundError, ForbiddenError, ValidationError } from '@biashara-mall/error-handler';
 import { ORDER_STATUS_STEPS } from '@biashara-mall/config';
 
@@ -15,6 +15,34 @@ ordersRouter.get('/get-seller-orders', requireShop, async (req, res, next) => {
       include: { user: { select: { name: true, email: true } } },
     });
     res.json({ orders });
+  } catch (err) {
+    next(err);
+  }
+});
+
+ordersRouter.get('/get-admin-orders', requireAdmin, async (req, res, next) => {
+  try {
+    const page = Math.max(1, Number(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, Number(req.query.limit) || 20));
+    const skip = (page - 1) * limit;
+
+    const [orders, total] = await Promise.all([
+      prisma.order.findMany({
+        orderBy: { createdAt: 'desc' },
+        include: {
+          user: { select: { name: true, email: true } },
+          shop: { select: { name: true, logoUrl: true } },
+        },
+        skip,
+        take: limit,
+      }),
+      prisma.order.count(),
+    ]);
+
+    res.json({
+      orders,
+      pagination: { total, page, totalPages: Math.ceil(total / limit) || 1 },
+    });
   } catch (err) {
     next(err);
   }

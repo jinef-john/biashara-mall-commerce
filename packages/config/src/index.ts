@@ -1,5 +1,7 @@
 /** Platform-wide constants. Single source of truth across services and UIs. */
 
+export * from './product-kind';
+
 export const CURRENCY = 'USD';
 
 /** Platform commission in basis points. 1000 = 10%. */

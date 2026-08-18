@@ -1,18 +1,34 @@
-/**
- * This is not a production server yet!
- * This is only a minimal backend to get started.
- */
-
+import 'dotenv/config';
 import express from 'express';
-import * as path from 'path';
+import { clerkMiddleware } from '@clerk/express';
+import { errorMiddleware } from '@biashara-mall/error-handler';
+import { requireAdmin } from '@biashara-mall/auth';
+import { productsRouter } from './routes/products';
+import { sellersRouter } from './routes/sellers';
+import { usersRouter } from './routes/users';
+import { customizationRouter } from './routes/customization';
 
 const app = express();
 
-app.use('/assets', express.static(path.join(__dirname, 'assets')));
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.originalUrl}`);
+  next();
+});
+
+app.use(express.json());
+app.use(clerkMiddleware());
 
 app.get('/api', (req, res) => {
   res.send({ message: 'Welcome to admin-service!' });
 });
+
+app.use('/api', requireAdmin);
+app.use('/api', productsRouter);
+app.use('/api', sellersRouter);
+app.use('/api', usersRouter);
+app.use('/api', customizationRouter);
+
+app.use(errorMiddleware);
 
 const port = process.env.PORT || 6005;
 const server = app.listen(port, () => {
