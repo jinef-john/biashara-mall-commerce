@@ -4,6 +4,12 @@ Multi-vendor e-commerce SaaS. Storefront, seller dashboard, and admin panel as s
 
 **Stack:** Nx monorepo, bun, Next.js (App Router) + shadcn/ui, Express, Prisma + MongoDB (replica set), Redis, Clerk auth, Stripe.
 
+## Screenshots
+
+| Storefront                        | Seller dashboard                          | Product listing                            |
+| --------------------------------- | ----------------------------------------- | ------------------------------------------ |
+| ![Storefront](assets/user-ui.png) | ![Seller dashboard](assets/seller-ui.png) | ![Product listing](assets/all-product.png) |
+
 ## Prerequisites
 
 - bun or npm
@@ -45,3 +51,16 @@ Services read `.env` at boot only, restart after editing it.
 | seller-service       | 6003 |
 | order-service        | 6004 |
 | admin-service        | 6005 |
+
+## Roadmap
+
+- [x] Foundation: auth, multi-tenant shops, product catalog
+- [x] Storefront: browsing, search, filters
+- [x] Cart, wishlist, order tracking
+- [x] Payments & checkout (Stripe)
+- [x] Order management
+- [ ] Admin panel
+- [ ] Real-time analytics (Kafka)
+- [ ] Live chat
+- [ ] ML-based product recommendations
+- [ ] Production hardening & deployment
