@@ -1,6 +1,7 @@
 import { ClerkProvider } from '@clerk/nextjs';
 import { Inter } from 'next/font/google';
-import { Header } from '../components/header';
+import { QueryProvider } from '../components/query-provider';
+import { Toaster } from '@biashara-mall/ui/components/ui/sonner';
 import './global.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
@@ -24,8 +25,8 @@ export default function RootLayout({
           signInFallbackRedirectUrl="/"
           signUpFallbackRedirectUrl="/"
         >
-          <Header />
-          {children}
+          <QueryProvider>{children}</QueryProvider>
+          <Toaster position="bottom-right" />
         </ClerkProvider>
       </body>
     </html>

@@ -28,7 +28,7 @@ export async function ensureUser(clerkId: string): Promise<User> {
 
   // upsert, not create: a webhook delivery can land between the findUnique
   // above and this write.
-  return prisma.user.upsert({
+  const user = await prisma.user.upsert({
     where: { clerkId },
     create: {
       clerkId,
@@ -39,4 +39,16 @@ export async function ensureUser(clerkId: string): Promise<User> {
     },
     update: {},
   });
+
+  // Mirrored into Clerk publicMetadata so admin-ui's middleware can gate
+  // /dashboard on the session claim without a DB round trip. The only other
+  // place role can become 'admin' is admin-service's addNewAdmin route
+  // (Phase 6), which must sync this the same way when it's built.
+  if (isFirstUser) {
+    await clerkClient.users.updateUserMetadata(clerkId, {
+      publicMetadata: { role: 'admin' },
+    });
+  }
+
+  return user;
 }
