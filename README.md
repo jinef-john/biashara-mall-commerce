@@ -62,7 +62,7 @@ Services read `.env` at boot only, restart after editing it.
 - [x] Foundation: auth, multi-tenant shops, product catalog
 - [x] Storefront: browsing, search, filters
 - [x] Cart, wishlist, order tracking
-- [x] Payments & checkout (Stripe)
+- [x] Payments & checkout (Stripe but for now it's just a mock)
 - [x] Order management
 - [ ] Admin panel
 - [ ] Real-time analytics (Kafka)
