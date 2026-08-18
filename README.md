@@ -6,9 +6,14 @@ Multi-vendor e-commerce SaaS. Storefront, seller dashboard, and admin panel as s
 
 ## Screenshots
 
-| Storefront                        | Seller dashboard                          | Product listing                            |
-| --------------------------------- | ----------------------------------------- | ------------------------------------------ |
-| ![Storefront](assets/user-ui.png) | ![Seller dashboard](assets/seller-ui.png) | ![Product listing](assets/all-product.png) |
+**Storefront**
+![Storefront](assets/user-ui.png)
+
+**Seller dashboard**
+![Seller dashboard](assets/seller-ui.png)
+
+**Product listing**
+![Product listing](assets/all-product.png)
 
 ## Prerequisites
 
