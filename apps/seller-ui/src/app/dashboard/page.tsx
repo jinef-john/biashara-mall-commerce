@@ -20,6 +20,14 @@ import {
   CardTitle,
 } from '@biashara-mall/ui/components/ui/card';
 import { Skeleton } from '@biashara-mall/ui/components/ui/skeleton';
+import { SalesChart, type SalesChartPoint } from '@biashara-mall/ui/components/charts/sales-chart';
+import { GeoMap, type GeoMapPoint } from '@biashara-mall/ui/components/charts/geo-map';
+
+interface OrderStats {
+  daily: SalesChartPoint[];
+  countries: GeoMapPoint[];
+  totals: { orders: number; revenue: number };
+}
 
 interface ProductRow {
   id: string;
@@ -78,6 +86,14 @@ export default function DashboardPage() {
     queryFn: async () => {
       const { data } = await api.get('/product/api/discount-codes');
       return data.discountCodes;
+    },
+  });
+
+  const { data: stats, isPending: statsPending } = useQuery<OrderStats>({
+    queryKey: ['seller-order-stats'],
+    queryFn: async () => {
+      const { data } = await api.get('/order/api/get-seller-order-stats');
+      return data;
     },
   });
 
@@ -164,6 +180,40 @@ export default function DashboardPage() {
           </Button>
         </CardContent>
       </Card>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Sales, last 30 days</CardTitle>
+            <CardDescription>
+              {statsPending
+                ? 'Loading…'
+                : `${stats?.totals.orders ?? 0} orders, ${(stats?.totals.revenue ?? 0).toLocaleString(undefined, { style: 'currency', currency: 'USD' })} revenue`}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {statsPending ? (
+              <Skeleton className="h-64 w-full" />
+            ) : (
+              <SalesChart data={stats?.daily ?? []} />
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Where orders ship to</CardTitle>
+            <CardDescription>Order volume by country, last 30 days.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {statsPending ? (
+              <Skeleton className="h-64 w-full" />
+            ) : (
+              <GeoMap data={stats?.countries ?? []} />
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

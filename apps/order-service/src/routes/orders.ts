@@ -4,8 +4,13 @@ import { prisma, type OrderStatus, type Prisma } from '@biashara-mall/prisma';
 import { requireAdmin, requireShop, requireUser } from '@biashara-mall/auth';
 import { NotFoundError, ForbiddenError, ValidationError } from '@biashara-mall/error-handler';
 import { ORDER_STATUS_STEPS } from '@biashara-mall/config';
+import { buildOrderStats } from '../lib/order-stats';
 
 export const ordersRouter: Router = Router();
+
+function statsDays(req: { query: { days?: unknown } }) {
+  return Math.min(365, Math.max(1, Number(req.query.days) || 30));
+}
 
 ordersRouter.get('/get-seller-orders', requireShop, async (req, res, next) => {
   try {
@@ -15,6 +20,25 @@ ordersRouter.get('/get-seller-orders', requireShop, async (req, res, next) => {
       include: { user: { select: { name: true, email: true } } },
     });
     res.json({ orders });
+  } catch (err) {
+    next(err);
+  }
+});
+
+ordersRouter.get('/get-seller-order-stats', requireShop, async (req, res, next) => {
+  try {
+    const days = statsDays(req);
+    const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+    const orders = await prisma.order.findMany({
+      where: { shopId: req.shop!.id, createdAt: { gte: since } },
+      select: {
+        createdAt: true,
+        total: true,
+        paymentStatus: true,
+        shippingAddress: { select: { country: true } },
+      },
+    });
+    res.json(buildOrderStats(orders, days));
   } catch (err) {
     next(err);
   }
@@ -56,6 +80,30 @@ ordersRouter.get('/get-admin-orders', requireAdmin, async (req, res, next) => {
       orders,
       pagination: { total, page, totalPages: Math.ceil(total / limit) || 1 },
     });
+  } catch (err) {
+    next(err);
+  }
+});
+
+ordersRouter.get('/get-admin-order-stats', requireAdmin, async (req, res, next) => {
+  try {
+    const days = statsDays(req);
+    const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+    const [orders, shops, users] = await Promise.all([
+      prisma.order.findMany({
+        where: { createdAt: { gte: since } },
+        select: {
+          createdAt: true,
+          total: true,
+          paymentStatus: true,
+          shippingAddress: { select: { country: true } },
+        },
+      }),
+      prisma.shops.count(),
+      prisma.user.count(),
+    ]);
+    const stats = buildOrderStats(orders, days);
+    res.json({ ...stats, totals: { ...stats.totals, shops, users } });
   } catch (err) {
     next(err);
   }

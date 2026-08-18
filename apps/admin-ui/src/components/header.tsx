@@ -7,7 +7,7 @@ export function Header({ leading }: { leading?: React.ReactNode }) {
       <div className="flex items-center gap-3">
         {leading}
         <span className="text-headline-sm text-on-surface">
-          Biashara Mall — Admin
+          Biashara Mall * Admin
         </span>
       </div>
       <div className="flex items-center gap-2">

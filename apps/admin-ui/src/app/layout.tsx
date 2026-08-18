@@ -7,7 +7,7 @@ import './global.css';
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 export const metadata = {
-  title: 'Biashara Mall — Admin',
+  title: 'Biashara Mall * Admin',
   description: 'Admin dashboard for Biashara Mall',
 };
 

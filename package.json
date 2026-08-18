@@ -21,7 +21,8 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "@prisma/client": "6.19.3",
-    "@biashara-mall/prisma": "workspace:*"
+    "@biashara-mall/prisma": "workspace:*",
+    "@biashara-mall/config": "workspace:*"
   },
   "devDependencies": {
     "@eslint/js": "^9.8.0",
