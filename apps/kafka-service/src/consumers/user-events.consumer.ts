@@ -1,4 +1,10 @@
-import { kafka, TOPICS, type UserEvent, type UserEventAction } from '@biashara-mall/kafka';
+import {
+  kafka,
+  restartOnCrash,
+  TOPICS,
+  type UserEvent,
+  type UserEventAction,
+} from '@biashara-mall/kafka';
 import {
   updateProductAnalytics,
   updateShopAnalytics,
@@ -17,6 +23,7 @@ const VALID_ACTIONS = new Set<UserEventAction>([
 const BATCH_INTERVAL_MS = 3000;
 let eventQueue: UserEvent[] = [];
 let processing = false;
+let processTimer: ReturnType<typeof setInterval> | undefined;
 
 function groupBy<T, K extends string>(items: T[], key: (item: T) => K | undefined) {
   const groups = new Map<K, T[]>();
@@ -68,6 +75,8 @@ async function processQueue() {
 
 export async function startUserEventsConsumer(): Promise<void> {
   const consumer = kafka.consumer({ groupId: 'user-events-group' });
+  restartOnCrash(consumer, 'user-events', startUserEventsConsumer);
+
   await consumer.connect();
   await consumer.subscribe({ topic: TOPICS.USERS_EVENTS.topic, fromBeginning: false });
 
@@ -87,6 +96,8 @@ export async function startUserEventsConsumer(): Promise<void> {
     },
   });
 
-  setInterval(processQueue, BATCH_INTERVAL_MS);
+  // Guarded: a crash restart re-enters this function, and a second interval
+  // would double-process the same queue.
+  processTimer ??= setInterval(processQueue, BATCH_INTERVAL_MS);
   console.log('[user-events] consumer group "user-events-group" running');
 }

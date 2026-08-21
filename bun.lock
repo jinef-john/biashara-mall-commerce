@@ -112,7 +112,10 @@
       "name": "@biashara-mall/chatting-service",
       "version": "0.0.1",
       "dependencies": {
+        "@biashara-mall/auth": "workspace:*",
         "@biashara-mall/error-handler": "workspace:*",
+        "@biashara-mall/kafka": "workspace:*",
+        "@biashara-mall/prisma": "workspace:*",
         "@biashara-mall/redis": "workspace:*",
         "@clerk/express": "^2.1.57",
         "dotenv": "^17.4.2",
