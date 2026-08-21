@@ -1,0 +1,74 @@
+{
+  "name": "@biashara-mall/chatting-service",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "targets": {
+      "prune-lockfile": {
+        "dependsOn": [
+          "build"
+        ],
+        "cache": true,
+        "executor": "@nx/js:prune-lockfile",
+        "outputs": [
+          "{workspaceRoot}/apps/chatting-service/dist/package.json",
+          "{workspaceRoot}/apps/chatting-service/dist/bun.lock"
+        ],
+        "options": {
+          "buildTarget": "build"
+        }
+      },
+      "copy-workspace-modules": {
+        "dependsOn": [
+          "build"
+        ],
+        "cache": true,
+        "outputs": [
+          "{workspaceRoot}/apps/chatting-service/dist/workspace_modules"
+        ],
+        "executor": "@nx/js:copy-workspace-modules",
+        "options": {
+          "buildTarget": "build"
+        }
+      },
+      "prune": {
+        "dependsOn": [
+          "prune-lockfile",
+          "copy-workspace-modules"
+        ],
+        "executor": "nx:noop"
+      },
+      "serve": {
+        "continuous": true,
+        "executor": "@nx/js:node",
+        "defaultConfiguration": "development",
+        "dependsOn": [
+          "build"
+        ],
+        "options": {
+          "buildTarget": "@biashara-mall/chatting-service:build",
+          "runBuildTargetDependencies": false
+        },
+        "configurations": {
+          "development": {
+            "buildTarget": "@biashara-mall/chatting-service:build:development"
+          },
+          "production": {
+            "buildTarget": "@biashara-mall/chatting-service:build:production"
+          }
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "@biashara-mall/error-handler": "workspace:*",
+    "@biashara-mall/redis": "workspace:*",
+    "@clerk/express": "^2.1.57",
+    "dotenv": "^17.4.2",
+    "express": "^5.1.0",
+    "ws": "^8.21.3"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.5.10"
+  }
+}

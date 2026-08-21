@@ -35,6 +35,9 @@
     },
     {
       "path": "./apps/kafka-service"
+    },
+    {
+      "path": "./apps/chatting-service"
     }
   ],
   "compilerOptions": {}

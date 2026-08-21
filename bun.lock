@@ -108,6 +108,21 @@
         "@types/morgan": "^1.9.10",
       },
     },
+    "apps/chatting-service": {
+      "name": "@biashara-mall/chatting-service",
+      "version": "0.0.1",
+      "dependencies": {
+        "@biashara-mall/error-handler": "workspace:*",
+        "@biashara-mall/redis": "workspace:*",
+        "@clerk/express": "^2.1.57",
+        "dotenv": "^17.4.2",
+        "express": "^5.1.0",
+        "ws": "^8.21.3",
+      },
+      "devDependencies": {
+        "@types/ws": "^8.5.10",
+      },
+    },
     "apps/kafka-service": {
       "name": "@biashara-mall/kafka-service",
       "version": "0.0.1",
@@ -570,6 +585,8 @@
     "@biashara-mall/api-gateway": ["@biashara-mall/api-gateway@workspace:apps/api-gateway"],
 
     "@biashara-mall/auth": ["@biashara-mall/auth@workspace:packages/auth"],
+
+    "@biashara-mall/chatting-service": ["@biashara-mall/chatting-service@workspace:apps/chatting-service"],
 
     "@biashara-mall/config": ["@biashara-mall/config@workspace:packages/config"],
 
