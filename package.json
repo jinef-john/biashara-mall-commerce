@@ -16,13 +16,14 @@
   },
   "private": true,
   "dependencies": {
+    "@biashara-mall/config": "workspace:*",
+    "@biashara-mall/prisma": "workspace:*",
+    "@prisma/client": "6.19.3",
+    "axios": "^1.6.0",
     "express": "^5.1.0",
     "next": "~16.1.6",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "@prisma/client": "6.19.3",
-    "@biashara-mall/prisma": "workspace:*",
-    "@biashara-mall/config": "workspace:*"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.8.0",
@@ -41,6 +42,7 @@
     "@swc/cli": "~0.8.1",
     "@swc/core": "1.15.8",
     "@swc/helpers": "0.5.18",
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.0",
     "@types/node": "^24.0.0",
     "@types/react": "^19.0.0",
@@ -54,15 +56,14 @@
     "eslint-plugin-react-hooks": "5.0.0",
     "nx": "23.1.1",
     "prettier": "^3.8.1",
+    "prisma": "6.19.3",
     "react-refresh": "^0.10.0",
     "tslib": "^2.3.0",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.58.0",
     "webpack": "^5.101.3",
     "webpack-cli": "^7.0.0",
-    "webpack-dev-server": "^5.2.1",
-    "prisma": "6.19.3",
-    "@types/cors": "^2.8.19"
+    "webpack-dev-server": "^5.2.1"
   },
   "workspaces": [
     "apps/*",

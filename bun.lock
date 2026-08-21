@@ -8,6 +8,7 @@
         "@biashara-mall/config": "workspace:*",
         "@biashara-mall/prisma": "workspace:*",
         "@prisma/client": "6.19.3",
+        "axios": "^1.6.0",
         "express": "^5.1.0",
         "next": "~16.1.6",
         "react": "^19.0.0",
@@ -105,6 +106,14 @@
       },
       "devDependencies": {
         "@types/morgan": "^1.9.10",
+      },
+    },
+    "apps/kafka-service": {
+      "name": "@biashara-mall/kafka-service",
+      "version": "0.0.1",
+      "dependencies": {
+        "@biashara-mall/kafka": "workspace:*",
+        "dotenv": "^17.4.2",
       },
     },
     "apps/order-service": {
@@ -564,6 +573,8 @@
     "@biashara-mall/error-handler": ["@biashara-mall/error-handler@workspace:packages/error-handler"],
 
     "@biashara-mall/kafka": ["@biashara-mall/kafka@workspace:packages/kafka"],
+
+    "@biashara-mall/kafka-service": ["@biashara-mall/kafka-service@workspace:apps/kafka-service"],
 
     "@biashara-mall/order-service": ["@biashara-mall/order-service@workspace:apps/order-service"],
 

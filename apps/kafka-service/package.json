@@ -1,0 +1,67 @@
+{
+  "name": "@biashara-mall/kafka-service",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "targets": {
+      "prune-lockfile": {
+        "dependsOn": [
+          "build"
+        ],
+        "cache": true,
+        "executor": "@nx/js:prune-lockfile",
+        "outputs": [
+          "{workspaceRoot}/apps/kafka-service/dist/package.json",
+          "{workspaceRoot}/apps/kafka-service/dist/bun.lock"
+        ],
+        "options": {
+          "buildTarget": "build"
+        }
+      },
+      "copy-workspace-modules": {
+        "dependsOn": [
+          "build"
+        ],
+        "cache": true,
+        "outputs": [
+          "{workspaceRoot}/apps/kafka-service/dist/workspace_modules"
+        ],
+        "executor": "@nx/js:copy-workspace-modules",
+        "options": {
+          "buildTarget": "build"
+        }
+      },
+      "prune": {
+        "dependsOn": [
+          "prune-lockfile",
+          "copy-workspace-modules"
+        ],
+        "executor": "nx:noop"
+      },
+      "serve": {
+        "continuous": true,
+        "executor": "@nx/js:node",
+        "defaultConfiguration": "development",
+        "dependsOn": [
+          "build"
+        ],
+        "options": {
+          "buildTarget": "@biashara-mall/kafka-service:build",
+          "runBuildTargetDependencies": false
+        },
+        "configurations": {
+          "development": {
+            "buildTarget": "@biashara-mall/kafka-service:build:development"
+          },
+          "production": {
+            "buildTarget": "@biashara-mall/kafka-service:build:production"
+          }
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "@biashara-mall/kafka": "workspace:*",
+    "dotenv": "^17.4.2"
+  }
+}
