@@ -30,11 +30,8 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   ]);
 }
 
-/**
- * Fire-and-forget log event for apps/logger-service (Phase 9) to stream to
- * the admin dashboard. Bounded to SEND_TIMEOUT_MS and never throws: a broker
- * outage must not add latency to, or fail, the request being logged.
- */
+// Fire-and-forget: bounded to SEND_TIMEOUT_MS and never throws, since a
+// broker outage must not add latency to, or fail, the request being logged.
 export async function sendLog(event: Omit<LogEvent, 'timestamp'>): Promise<void> {
   try {
     const p = await withTimeout(getProducer(), SEND_TIMEOUT_MS);

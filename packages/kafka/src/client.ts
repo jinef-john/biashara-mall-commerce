@@ -2,8 +2,8 @@ import { Kafka, logLevel, type KafkaConfig } from 'kafkajs';
 
 const globalForKafka = globalThis as unknown as { kafka?: Kafka };
 
-// SASL only when both credentials are set: Redpanda (local, Phase 0.7) needs
-// none; Confluent Cloud (production) requires ssl + sasl.
+// SASL only when both credentials are set: Redpanda (local) needs none;
+// Confluent Cloud (production) requires ssl + sasl.
 function buildConfig(): KafkaConfig {
   const brokers = (process.env.KAFKA_BROKERS ?? 'localhost:9092').split(',');
   const apiKey = process.env.KAFKA_API_KEY;

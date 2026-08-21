@@ -30,11 +30,8 @@ function groupBy<T, K extends string>(items: T[], key: (item: T) => K | undefine
   return groups;
 }
 
-/**
- * Grouped by entity so each user/product/shop gets exactly one read + one
- * write for the whole window, not one per event — see updateUserAnalytics's
- * doc comment for why per-event writes lose updates under concurrency.
- */
+// Grouped by entity so each user/product/shop gets exactly one read + one
+// write per window, not one per event (see updateUserAnalytics for why).
 async function processQueue() {
   if (processing || eventQueue.length === 0) return;
   processing = true;

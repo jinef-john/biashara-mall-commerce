@@ -1,6 +1,3 @@
-// Shared contract between the user-ui producer (actions/track-user.ts) and
-// the kafka-service consumer (user-events.consumer.ts) for the
-// `users-events` topic — kept here so neither side can drift from the other.
 export type UserEventAction =
   | 'product_view'
   | 'add_to_cart'

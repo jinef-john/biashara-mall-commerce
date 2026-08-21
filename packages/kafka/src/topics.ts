@@ -1,20 +1,13 @@
 import { kafka } from './client';
 
-// Partition counts: 6 for users-events per the plan (parallel analytics
-// consumers keyed by userId later). chat.new.message is keyed by
-// conversationId, so 3 partitions gives some parallelism while keeping a
-// single conversation's messages in order. logs has one reader (the
-// logger-service WS fan-out) and no ordering key, so 1 partition is enough.
+// chat.new.message is keyed by conversationId (partitioned for parallelism,
+// ordered per conversation); logs has a single WS-fan-out reader, so 1 is enough.
 export const TOPICS = {
   USERS_EVENTS: { topic: 'users-events', numPartitions: 6 },
   CHAT_NEW_MESSAGE: { topic: 'chat.new.message', numPartitions: 3 },
   LOGS: { topic: 'logs', numPartitions: 1 },
 } as const;
 
-/**
- * Idempotent: createTopics() only creates topics that don't already exist
- * and returns which ones it created, so this is safe to call on every boot.
- */
 export async function ensureTopics(): Promise<void> {
   const admin = kafka.admin();
   await admin.connect();

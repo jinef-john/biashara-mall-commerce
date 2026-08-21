@@ -9,13 +9,8 @@ function formatDevice(event: UserEvent): string | undefined {
   return [event.deviceType, event.browser, event.os].filter(Boolean).join(' · ');
 }
 
-/**
- * Applies the transcript's dedup rules for cart/wishlist actions so the
- * actions array reflects current state, not a raw event log: product_view
- * always appends; add_to_cart/add_to_wishlist append once per product;
- * remove_from_cart/remove_from_wishlist drop the matching add instead of
- * appending a "removal" entry.
- */
+// add_to_cart/add_to_wishlist append once per product; the matching remove
+// drops that entry instead of appending a "removal" record.
 function applyAction(actions: UserAction[], event: UserEvent) {
   const matches = (a: UserAction, action: string) =>
     a.action === action && a.productId === (event.productId ?? null);
@@ -48,15 +43,10 @@ function applyAction(actions: UserAction[], event: UserEvent) {
   return actions;
 }
 
-/**
- * One call per user per batch window, folding every one of that user's
- * queued events into a single read + single write. Calling this once per
- * *event* instead (each with its own read-modify-write) is a lost-update
- * race: concurrent upserts on the same UserAnalytics document all read the
- * same "existing" state and the last write wins, silently dropping the
- * others. Grouping by user first is what makes "one bulk write per 3s
- * window" in the plan actually true, not just batched timing.
- */
+// One call per user per batch window (all of that user's queued events
+// folded into a single read + write) — calling this per event instead is a
+// lost-update race, since concurrent upserts on the same document all read
+// the same "existing" state and the last write wins.
 export async function updateUserAnalytics(events: UserEvent[]): Promise<void> {
   if (events.length === 0) return;
   const clerkId = events[0].clerkId;

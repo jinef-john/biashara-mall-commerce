@@ -3,8 +3,7 @@ import Redis from 'ioredis';
 const globalForRedis = globalThis as unknown as { redis?: Redis };
 
 // lazyConnect: constructing the client must not throw or block when Redis
-// isn't reachable yet (e.g. before Phase 0.7 provisions it). The first real
-// command triggers the connection instead.
+// isn't reachable yet. The first real command triggers the connection instead.
 export const redis =
   globalForRedis.redis ??
   new Redis(process.env.REDIS_URL ?? 'redis://localhost:6379', {

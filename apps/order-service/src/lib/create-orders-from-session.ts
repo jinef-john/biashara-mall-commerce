@@ -113,9 +113,8 @@ export async function createOrdersFromSession(sessionId: string, paymentIntentId
   }
 
   // Order-confirmation email intentionally skipped: no email infrastructure
-  // exists anywhere in this codebase (nodemailer + ejs was cut when Clerk
-  // replaced the transcript's custom auth); adding it just for this one
-  // email would be a new dependency, not "wire up the existing logic."
+  // exists anywhere in this codebase. Adding it just for this one email
+  // would be a new dependency, not "wire up the existing logic."
 
   await deleteSession(sessionId);
   return createdOrders;

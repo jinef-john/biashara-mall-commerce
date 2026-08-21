@@ -41,9 +41,9 @@ export async function ensureUser(clerkId: string): Promise<User> {
   });
 
   // Mirrored into Clerk publicMetadata so admin-ui's middleware can gate
-  // /dashboard on the session claim without a DB round trip. The only other
-  // place role can become 'admin' is admin-service's addNewAdmin route
-  // (Phase 6), which must sync this the same way when it's built.
+  // /dashboard on the session claim without a DB round trip. Any other place
+  // that can set role to 'admin' (e.g. admin-service's addNewAdmin route)
+  // must sync this the same way.
   if (isFirstUser) {
     await clerkClient.users.updateUserMetadata(clerkId, {
       publicMetadata: { role: 'admin' },

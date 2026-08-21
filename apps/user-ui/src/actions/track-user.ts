@@ -2,12 +2,8 @@
 
 import { kafka, TOPICS, type UserEvent } from '@biashara-mall/kafka';
 
-/**
- * Best-effort: never throws back to the caller. A dropped analytics event
- * must not surface as a broken add-to-cart click. Connects and disconnects
- * per call, unlike sendLog's pooled producer — this runs from a Next.js
- * server action, not a long-lived Express process.
- */
+// Best-effort: never throws back to the caller, so a dropped analytics
+// event can't surface as a broken add-to-cart click.
 export async function trackUserEvent(event: Omit<UserEvent, 'timestamp'>): Promise<void> {
   const producer = kafka.producer();
   try {

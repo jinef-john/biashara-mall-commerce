@@ -73,11 +73,11 @@ const services: Record<string, ServiceDef> = {
   },
   '/chatting': {
     target: process.env.CHATTING_SERVICE_URL ?? 'http://localhost:6006',
-    implemented: false, // Phase 8
+    implemented: false,
   },
   '/recommendation': {
     target: process.env.RECOMMENDATION_SERVICE_URL ?? 'http://localhost:6007',
-    implemented: false, // Phase 10
+    implemented: false,
   },
 };
 
