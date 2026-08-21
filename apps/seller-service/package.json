@@ -66,6 +66,7 @@
     "@biashara-mall/auth": "workspace:*",
     "@biashara-mall/error-handler": "workspace:*",
     "@biashara-mall/prisma": "workspace:*",
-    "dotenv": "^17.4.2"
+    "dotenv": "^17.4.2",
+    "imagekit": "^6.0.0"
   }
 }

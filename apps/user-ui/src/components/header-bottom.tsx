@@ -20,7 +20,7 @@ const NAV = [
   { label: 'Offers', href: '/offers' },
 ];
 
-export function HeaderBottom() {
+export function HeaderBottom({ ref }: { ref?: React.Ref<HTMLDivElement> }) {
   const pathname = usePathname();
   const { data: config } = useSiteConfig();
   const [stuck, setStuck] = useState(false);
@@ -36,6 +36,7 @@ export function HeaderBottom() {
     // sticky (not fixed) so this bar stays scoped to its own flex column's
     // width and never bleeds over the cart sidebar sitting beside it.
     <div
+      ref={ref}
       className={
         stuck
           ? 'sticky top-0 z-40 border-b border-outline-variant bg-surface-container-lowest shadow-md'

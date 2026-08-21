@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { MessagesSquare, User } from 'lucide-react';
@@ -9,6 +8,17 @@ import { useConversation } from '../../../lib/use-conversation';
 import { useWebSocket } from '../../../context/web-socket-context';
 import { ChatInput } from '../../../components/chat/chat-input';
 import { MessagePane } from '../../../components/chat/message-pane';
+import {
+  ProductContextCard,
+  type ProductContext,
+} from '../../../components/chat/product-context-card';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@biashara-mall/ui/components/ui/avatar';
+import { Badge } from '@biashara-mall/ui/components/ui/badge';
+import { Button } from '@biashara-mall/ui/components/ui/button';
 import { ListSkeleton } from '../../../components/skeletons';
 
 interface Conversation {
@@ -16,7 +26,34 @@ interface Conversation {
   updatedAt: string;
   unreadCount: number;
   lastMessage: { content: string; createdAt: string } | null;
+  product: ProductContext | null;
   user: { id: string; name: string | null; avatarUrl: string | null; isOnline: boolean } | null;
+}
+
+function BuyerAvatar({
+  user,
+  className,
+}: {
+  user: { name: string | null; avatarUrl: string | null; isOnline: boolean } | null;
+  className?: string;
+}) {
+  return (
+    <div className="relative shrink-0">
+      <Avatar className={className ?? 'size-9'}>
+        {user?.avatarUrl && <AvatarImage src={user.avatarUrl} alt="" />}
+        <AvatarFallback>
+          {user?.name ? (
+            user.name.slice(0, 1).toUpperCase()
+          ) : (
+            <User className="size-4 text-muted-foreground" />
+          )}
+        </AvatarFallback>
+      </Avatar>
+      {user?.isOnline && (
+        <span className="absolute right-0 bottom-0 size-2.5 rounded-full bg-green-500 ring-2 ring-background" />
+      )}
+    </div>
+  );
 }
 
 export default function InboxPage() {
@@ -33,7 +70,12 @@ export default function InboxPage() {
     staleTime: 60_000,
   });
 
-  const { data: conversations, isPending } = useQuery<Conversation[]>({
+  const {
+    data: conversations,
+    isPending,
+    isError,
+    refetch,
+  } = useQuery<Conversation[]>({
     queryKey: ['seller-conversations'],
     queryFn: async () => {
       const { data } = await api.get('/chatting/api/get-seller-conversations');
@@ -60,18 +102,27 @@ export default function InboxPage() {
         </p>
       </div>
 
-      <div className="flex h-[calc(100vh-16rem)] gap-4">
-        <aside className="flex w-72 shrink-0 flex-col rounded-xl border border-outline-variant bg-surface-container-lowest">
+      <div className="flex h-[calc(100dvh-13rem)] min-h-[28rem] gap-4">
+        <aside className="flex w-72 shrink-0 flex-col overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest shadow-sm">
           {isPending ? (
             <div className="p-3">
               <ListSkeleton rows={4} />
+            </div>
+          ) : isError ? (
+            <div className="flex flex-col items-start gap-2 p-4">
+              <p className="text-body-sm text-on-surface-variant">
+                Could not load conversations.
+              </p>
+              <Button type="button" variant="outline" size="sm" onClick={() => refetch()}>
+                Retry
+              </Button>
             </div>
           ) : (conversations?.length ?? 0) === 0 ? (
             <p className="p-4 text-body-sm text-on-surface-variant">
               No conversations yet. Buyers can message you from your product pages.
             </p>
           ) : (
-            <div className="flex flex-col overflow-y-auto">
+            <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
               {conversations!.map((conversation) => {
                 const unread = unreadCounts[conversation.id] ?? conversation.unreadCount;
                 return (
@@ -85,24 +136,7 @@ export default function InboxPage() {
                         : 'flex items-center gap-3 border-b border-outline-variant px-4 py-3 text-left hover:bg-surface-container-low'
                     }
                   >
-                    <div className="relative shrink-0">
-                      {conversation.user?.avatarUrl ? (
-                        <Image
-                          src={conversation.user.avatarUrl}
-                          alt=""
-                          width={36}
-                          height={36}
-                          className="size-9 rounded-full object-cover"
-                        />
-                      ) : (
-                        <span className="flex size-9 items-center justify-center rounded-full bg-surface-container">
-                          <User className="size-4 text-on-surface-variant" />
-                        </span>
-                      )}
-                      {conversation.user?.isOnline && (
-                        <span className="absolute right-0 bottom-0 size-2.5 rounded-full bg-green-500 ring-2 ring-surface-container-lowest" />
-                      )}
-                    </div>
+                    <BuyerAvatar user={conversation.user} />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-body-md text-on-surface">
                         {conversation.user?.name ?? 'Customer'}
@@ -112,9 +146,9 @@ export default function InboxPage() {
                       </p>
                     </div>
                     {unread > 0 && (
-                      <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-on-primary tabular-nums">
+                      <Badge className="shrink-0 tabular-nums">
                         {unread > 9 ? '9+' : unread}
-                      </span>
+                      </Badge>
                     )}
                   </button>
                 );
@@ -123,7 +157,7 @@ export default function InboxPage() {
           )}
         </aside>
 
-        <section className="flex min-w-0 flex-1 flex-col rounded-xl border border-outline-variant bg-surface-container-lowest">
+        <section className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest shadow-sm">
           {!active ? (
             <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
               <MessagesSquare className="size-8 text-on-surface-variant" />
@@ -131,16 +165,27 @@ export default function InboxPage() {
             </div>
           ) : (
             <>
-              <div className="border-b border-outline-variant px-4 py-3">
-                <p className="text-title-sm text-on-surface">
-                  {active.user?.name ?? 'Customer'}
-                </p>
-                <p className="text-body-sm text-on-surface-variant">
-                  {active.user?.isOnline ? 'Online' : 'Offline'}
-                </p>
+              <div className="flex shrink-0 items-center gap-3 bg-primary px-4 py-3 text-on-primary">
+                <BuyerAvatar user={active.user} />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-title-sm">
+                    {active.user?.name ?? 'Customer'}
+                  </p>
+                  <p className="text-body-sm text-on-primary/80">
+                    {active.user?.isOnline ? 'Online' : 'Offline'}
+                  </p>
+                </div>
               </div>
 
+              {active.product && (
+                <ProductContextCard product={active.product} label="Asking about" />
+              )}
+
               <MessagePane
+                counterpart={{
+                  name: active.user?.name ?? 'Customer',
+                  avatarUrl: active.user?.avatarUrl,
+                }}
                 messages={messages}
                 hasMore={hasMore}
                 loading={loading}

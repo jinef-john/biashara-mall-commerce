@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { SignInButton, SignUpButton, Show, UserButton, useAuth } from '@clerk/nextjs';
 import { Bell, Heart, MapPin, MessagesSquare, Search, ShoppingCart, Store } from 'lucide-react';
 import { Button } from '@biashara-mall/ui/components/ui/button';
@@ -41,6 +41,26 @@ export function Header() {
   const { unreadCounts } = useWebSocket();
   const unreadMessages = Object.values(unreadCounts).reduce((sum, n) => sum + n, 0);
 
+  const topRef = useRef<HTMLElement>(null);
+  const navRef = useRef<HTMLDivElement>(null);
+
+  // The inbox sizes its panes to the leftover viewport. The bar wraps at narrow
+  // widths, so publish the measured height rather than hard-coding one.
+  useEffect(() => {
+    const nodes = [topRef.current, navRef.current].filter(
+      (node): node is HTMLElement => node !== null,
+    );
+    if (nodes.length === 0) return;
+    const publish = () => {
+      const total = nodes.reduce((sum, node) => sum + node.offsetHeight, 0);
+      document.documentElement.style.setProperty('--header-height', `${total}px`);
+    };
+    publish();
+    const observer = new ResizeObserver(publish);
+    nodes.forEach((node) => observer.observe(node));
+    return () => observer.disconnect();
+  }, []);
+
   const search = (e: React.FormEvent) => {
     e.preventDefault();
     const q = query.trim();
@@ -49,7 +69,7 @@ export function Header() {
 
   return (
     <>
-      <header className="border-b border-outline-variant bg-surface-container-lowest">
+      <header ref={topRef} className="border-b border-outline-variant bg-surface-container-lowest">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-4 px-4 py-4 md:flex-nowrap">
           <Link href="/" className="flex shrink-0 items-center gap-2">
             {layout?.logoUrl ? (
@@ -137,7 +157,7 @@ export function Header() {
         </div>
       </header>
 
-      <HeaderBottom />
+      <HeaderBottom ref={navRef} />
     </>
   );
 }

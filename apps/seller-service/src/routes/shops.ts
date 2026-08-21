@@ -1,8 +1,72 @@
 import { Router, type Request, type Response } from 'express';
 import { getAuth } from '@clerk/express';
 import { prisma } from '@biashara-mall/prisma';
+import { imagekit } from '../lib/imagekit';
 
 export const shopsRouter: Router = Router();
+
+/** Shop branding is owner-only, same as editing the shop's details. */
+function requireShopOwner(req: Request, res: Response) {
+  const { userId, orgId, orgRole } = getAuth(req);
+
+  if (!userId) {
+    res.status(401).json({ message: 'Not authenticated' });
+    return null;
+  }
+  if (!orgId) {
+    res.status(400).json({ message: 'No active organization on this session' });
+    return null;
+  }
+  if (orgRole !== 'org:admin') {
+    res.status(403).json({ message: 'Only the shop owner can do this' });
+    return null;
+  }
+  return { userId, orgId };
+}
+
+/**
+ * The logo and cover are uploaded as the seller picks them and returned as a
+ * {fileId, fileUrl} pair; PATCH /api/shops is what actually persists the URL.
+ */
+shopsRouter.post('/branding-image', async (req: Request, res: Response) => {
+  if (!requireShopOwner(req, res)) return;
+
+  const { file, fileName } = req.body;
+  if (!file) {
+    return res.status(400).json({ message: 'No file provided' });
+  }
+
+  try {
+    const uploaded = await imagekit.upload({
+      file,
+      fileName: fileName || `shop-${Date.now()}.jpg`,
+      folder: '/shops',
+    });
+
+    return res.status(201).json({
+      fileId: uploaded.fileId,
+      fileUrl: uploaded.url,
+    });
+  } catch (err) {
+    console.error('ImageKit upload failed', err);
+    return res.status(502).json({ message: 'Could not upload image' });
+  }
+});
+
+shopsRouter.delete(
+  '/branding-image/:fileId',
+  async (req: Request, res: Response) => {
+    if (!requireShopOwner(req, res)) return;
+
+    try {
+      await imagekit.deleteFile(String(req.params.fileId));
+      return res.json({ success: true });
+    } catch (err) {
+      console.error('ImageKit delete failed', err);
+      return res.status(502).json({ message: 'Could not delete image' });
+    }
+  },
+);
 
 shopsRouter.post('/', async (req: Request, res: Response) => {
   const { userId, orgId, orgRole } = getAuth(req);

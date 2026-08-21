@@ -100,7 +100,19 @@ export function ProductDetailsCard({
                 >
                   {product.shop.name}
                 </Link>
-                <ChatWithSellerButton shopId={product.shop.id} size="sm" />
+                <ChatWithSellerButton
+                  shopId={product.shop.id}
+                  shopName={product.shop.name}
+                  shopLogoUrl={product.shop.logoUrl}
+                  product={{
+                    id: product.id,
+                    title: product.title,
+                    slug: product.slug,
+                    salePrice: product.salePrice,
+                    imageUrl: product.images[0]?.fileUrl ?? null,
+                  }}
+                  size="sm"
+                />
               </div>
               <Ratings value={product.ratings} size="md" />
 

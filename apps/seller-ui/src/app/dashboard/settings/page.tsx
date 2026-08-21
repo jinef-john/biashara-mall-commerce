@@ -6,6 +6,10 @@ import { toast } from 'sonner';
 import { useApi } from '../../../lib/api';
 import { COUNTRIES } from '@biashara-mall/config';
 import { Field } from '../../../components/field';
+import {
+  SingleImageUploader,
+  type UploadedImage,
+} from '../../../components/single-image-uploader';
 import { FormSkeleton } from '../../../components/skeletons';
 import { Button } from '@biashara-mall/ui/components/ui/button';
 import { Input } from '@biashara-mall/ui/components/ui/input';
@@ -27,6 +31,8 @@ import {
 
 interface Shop {
   name: string;
+  logoUrl: string | null;
+  coverUrl: string | null;
   bio: string | null;
   address: string | null;
   country: string | null;
@@ -46,6 +52,12 @@ interface SettingsForm {
   instagram: string;
   facebook: string;
   x: string;
+}
+
+// Branding stored on the shop is a bare URL: the ImageKit fileId is never
+// persisted, so a removal has nothing to clean up remotely.
+function toUploaded(url: string | null | undefined): UploadedImage | null {
+  return url ? { fileId: '', fileUrl: url } : null;
 }
 
 export default function SettingsPage() {
@@ -101,6 +113,20 @@ export default function SettingsPage() {
     },
   });
 
+  // Branding saves on pick rather than waiting for the form's Save: the
+  // uploaded file already exists in ImageKit by then, so leaving the URL
+  // unpersisted would just orphan it.
+  const branding = useMutation({
+    mutationFn: (data: { logoUrl?: string | null; coverUrl?: string | null }) =>
+      api.patch('/seller/api/shops', data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['shop'] });
+      queryClient.invalidateQueries({ queryKey: ['shop-me'] });
+      toast.success('Shop branding updated');
+    },
+    onError: () => toast.error('Could not update shop branding'),
+  });
+
   const save = useMutation({
     mutationFn: ({ instagram, facebook, x, ...rest }: SettingsForm) =>
       api.patch('/seller/api/shops', {
@@ -135,6 +161,30 @@ export default function SettingsPage() {
           {shop?.name}: what buyers see on your public page.
         </p>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Branding</CardTitle>
+          <CardDescription>
+            Your logo shows next to your shop name across the marketplace and in
+            buyer conversations. The cover is the banner on your shop page.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-6 sm:grid-cols-[10rem_1fr]">
+          <SingleImageUploader
+            label="Logo"
+            aspectClassName="aspect-square"
+            value={toUploaded(shop?.logoUrl)}
+            onChange={(next) => branding.mutate({ logoUrl: next?.fileUrl ?? null })}
+          />
+          <SingleImageUploader
+            label="Cover"
+            aspectClassName="aspect-[3/1]"
+            value={toUploaded(shop?.coverUrl)}
+            onChange={(next) => branding.mutate({ coverUrl: next?.fileUrl ?? null })}
+          />
+        </CardContent>
+      </Card>
 
       <form
         onSubmit={handleSubmit((data) => save.mutate(data))}

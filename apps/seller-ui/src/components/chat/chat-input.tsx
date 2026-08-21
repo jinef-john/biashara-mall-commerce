@@ -33,10 +33,19 @@ export function ChatInput({
   };
 
   return (
-    <form onSubmit={submit} className="flex items-center gap-2 border-t border-outline-variant p-3">
+    <form
+      onSubmit={submit}
+      className="flex shrink-0 items-center gap-2 border-t border-outline-variant p-3"
+    >
       <Popover open={pickerOpen} onOpenChange={setPickerOpen}>
         <PopoverTrigger asChild>
-          <Button type="button" variant="ghost" size="icon" aria-label="Emoji">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="rounded-full"
+            aria-label="Emoji"
+          >
             <Smile />
           </Button>
         </PopoverTrigger>
@@ -53,12 +62,19 @@ export function ChatInput({
       <Input
         value={value}
         onChange={(event) => setValue(event.target.value)}
-        placeholder="Write a message"
+        placeholder="Type your message…"
         aria-label="Message"
+        autoComplete="off"
         disabled={disabled}
-        className="flex-1"
+        className="flex-1 rounded-full"
       />
-      <Button type="submit" size="icon" disabled={disabled || !value.trim()} aria-label="Send">
+      <Button
+        type="submit"
+        size="icon"
+        className="rounded-full"
+        disabled={disabled || !value.trim()}
+        aria-label="Send"
+      >
         <Send />
       </Button>
     </form>

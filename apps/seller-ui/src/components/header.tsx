@@ -3,9 +3,17 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { SignInButton, SignUpButton, Show, UserButton, useAuth } from '@clerk/nextjs';
-import { Bell } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { Bell, Store } from 'lucide-react';
 import { Button } from '@biashara-mall/ui/components/ui/button';
 import { Badge } from '@biashara-mall/ui/components/ui/badge';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@biashara-mall/ui/components/ui/avatar';
+import { Separator } from '@biashara-mall/ui/components/ui/separator';
+import { useApi } from '../lib/api';
 import { useLayout } from '../lib/use-layout';
 import { useNotifications } from '../lib/use-notifications';
 
@@ -19,10 +27,21 @@ function CountBadge({ count }: { count: number }) {
 }
 
 export function Header({ leading }: { leading?: React.ReactNode }) {
+  const api = useApi();
   const { data: layout } = useLayout();
   const { isSignedIn } = useAuth();
   const { data: notifications } = useNotifications({ enabled: isSignedIn });
   const unreadCount = notifications?.filter((n) => n.status === 'unread').length ?? 0;
+
+  const { data: shop } = useQuery<{ name: string; logoUrl: string | null } | null>({
+    queryKey: ['shop-me'],
+    queryFn: async () => {
+      const { data } = await api.get('/seller/api/shops/me');
+      return data.shop;
+    },
+    enabled: isSignedIn,
+    staleTime: 60_000,
+  });
 
   return (
     <header className="sticky top-0 z-50 flex h-(--header-height) shrink-0 items-center justify-between border-b border-outline-variant bg-surface-container-lowest px-4">
@@ -44,6 +63,29 @@ export function Header({ leading }: { leading?: React.ReactNode }) {
           <span className="text-headline-sm text-on-surface">
             Biashara Mall * Seller
           </span>
+        )}
+        {shop && (
+          <>
+            <Separator orientation="vertical" className="hidden h-6 sm:block" />
+            <Link
+              href="/dashboard/settings"
+              className="hidden items-center gap-2 sm:flex"
+            >
+              <Avatar className="size-7">
+                {shop.logoUrl && <AvatarImage src={shop.logoUrl} alt="" />}
+                <AvatarFallback>
+                  {shop.name ? (
+                    shop.name.slice(0, 1).toUpperCase()
+                  ) : (
+                    <Store className="size-3.5" />
+                  )}
+                </AvatarFallback>
+              </Avatar>
+              <span className="max-w-40 truncate text-label-lg text-on-surface">
+                {shop.name}
+              </span>
+            </Link>
+          </>
         )}
       </div>
       <div className="flex items-center gap-2">

@@ -1,8 +1,41 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { User } from 'lucide-react';
 import { Button } from '@biashara-mall/ui/components/ui/button';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@biashara-mall/ui/components/ui/avatar';
+import {
+  Message,
+  MessageAvatar,
+  MessageContent,
+  MessageFooter,
+  MessageGroup,
+} from '@biashara-mall/ui/components/ui/message';
+import {
+  MessageScroller,
+  MessageScrollerButton,
+  MessageScrollerContent,
+  MessageScrollerItem,
+  MessageScrollerProvider,
+  MessageScrollerViewport,
+} from '@biashara-mall/ui/components/ui/message-scroller';
 import type { ChatMessage } from '../../../context/web-socket-context';
+
+export interface Counterpart {
+  name: string;
+  avatarUrl?: string | null;
+}
+
+function timeOf(createdAt: string) {
+  return new Date(createdAt).toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  });
+}
 
 export function MessagePane({
   messages,
@@ -10,60 +43,86 @@ export function MessagePane({
   loading,
   onLoadPrevious,
   isOwn,
+  counterpart,
 }: {
   messages: ChatMessage[];
   hasMore: boolean;
   loading: boolean;
   onLoadPrevious: () => void;
   isOwn: (message: ChatMessage) => boolean;
+  counterpart: Counterpart;
 }) {
-  const bottomRef = useRef<HTMLDivElement>(null);
-  const latestId = messages[messages.length - 1]?.createdAt;
-
-  // Only on a new latest message, so loading older pages doesn't yank the
-  // reader back down to the bottom.
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [latestId]);
-
   return (
-    <div className="flex-1 overflow-y-auto px-4 py-3">
-      {hasMore && (
-        <div className="mb-3 flex justify-center">
-          <Button type="button" variant="outline" size="sm" onClick={onLoadPrevious} disabled={loading}>
-            {loading ? 'Loading…' : 'Load previous messages'}
-          </Button>
-        </div>
-      )}
-
-      <div className="flex flex-col gap-2">
-        {messages.map((message) => {
-          const own = isOwn(message);
-          return (
-            <div
-              key={`${message.createdAt}-${message.senderId}`}
-              className={own ? 'flex justify-end' : 'flex justify-start'}
-            >
-              <div
-                className={
-                  own
-                    ? 'max-w-[75%] rounded-2xl rounded-br-sm bg-primary px-3 py-2 text-on-primary'
-                    : 'max-w-[75%] rounded-2xl rounded-bl-sm bg-surface-container px-3 py-2 text-on-surface'
-                }
-              >
-                <p className="text-body-md whitespace-pre-wrap break-words">{message.content}</p>
-                <p className={own ? 'text-body-sm text-on-primary/70' : 'text-body-sm text-on-surface-variant'}>
-                  {new Date(message.createdAt).toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                </p>
+    <MessageScrollerProvider>
+      <MessageScroller className="min-h-0 flex-1">
+        <MessageScrollerViewport className="px-4 py-4">
+          <MessageScrollerContent className="gap-4">
+            {hasMore && (
+              <div className="flex justify-center">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={onLoadPrevious}
+                  disabled={loading}
+                >
+                  {loading ? 'Loading…' : 'Load previous messages'}
+                </Button>
               </div>
-            </div>
-          );
-        })}
-      </div>
-      <div ref={bottomRef} />
-    </div>
+            )}
+
+            {messages.length === 0 && !loading && (
+              <p className="m-auto text-center text-sm text-muted-foreground">
+                No messages yet. Say hello to get the conversation started.
+              </p>
+            )}
+
+            <MessageGroup className="gap-4">
+              {messages.map((message, index) => {
+                const own = isOwn(message);
+                return (
+                  <MessageScrollerItem
+                    key={`${message.createdAt}-${message.senderId}`}
+                    scrollAnchor={index === messages.length - 1}
+                  >
+                    <Message align={own ? 'end' : 'start'}>
+                      <MessageAvatar>
+                        <Avatar className="size-8">
+                          {!own && counterpart.avatarUrl && (
+                            <AvatarImage src={counterpart.avatarUrl} alt="" />
+                          )}
+                          <AvatarFallback
+                            className={own ? 'bg-primary/10 text-primary' : undefined}
+                          >
+                            {own ? (
+                              <User className="size-4" />
+                            ) : (
+                              counterpart.name.slice(0, 1).toUpperCase()
+                            )}
+                          </AvatarFallback>
+                        </Avatar>
+                      </MessageAvatar>
+                      <MessageContent>
+                        <div
+                          className={
+                            own
+                              ? 'w-fit max-w-[80%] rounded-2xl rounded-tr-none bg-primary px-4 py-2 text-primary-foreground shadow-sm'
+                              : 'w-fit max-w-[80%] rounded-2xl rounded-tl-none border border-border bg-card px-4 py-2 text-card-foreground shadow-sm'
+                          }
+                        >
+                          <p className="whitespace-pre-wrap">{message.content}</p>
+                        </div>
+                        <MessageFooter>{timeOf(message.createdAt)}</MessageFooter>
+                      </MessageContent>
+                    </Message>
+                  </MessageScrollerItem>
+                );
+              })}
+            </MessageGroup>
+          </MessageScrollerContent>
+        </MessageScrollerViewport>
+        <MessageScrollerButton />
+      </MessageScroller>
+    </MessageScrollerProvider>
   );
 }

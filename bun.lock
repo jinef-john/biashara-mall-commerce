@@ -178,6 +178,7 @@
         "@clerk/express": "^2.1.57",
         "dotenv": "^17.4.2",
         "express": "^5.1.0",
+        "imagekit": "^6.0.0",
       },
     },
     "apps/seller-ui": {

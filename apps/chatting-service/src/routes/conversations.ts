@@ -14,11 +14,33 @@ async function lastMessageOf(conversationId: string) {
   });
 }
 
+async function productContext(productId: string | null) {
+  if (!productId) return null;
+  const product = await prisma.product.findUnique({
+    where: { id: productId },
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      salePrice: true,
+      images: { take: 1, select: { fileUrl: true } },
+    },
+  });
+  if (!product) return null;
+  return {
+    id: product.id,
+    title: product.title,
+    slug: product.slug,
+    salePrice: product.salePrice,
+    imageUrl: product.images[0]?.fileUrl ?? null,
+  };
+}
+
 conversationsRouter.post(
   '/create-user-conversationGroup',
   requireUser,
   async (req: Request, res: Response) => {
-    const { shopId } = req.body;
+    const { shopId, productId } = req.body;
     if (!shopId) return res.status(400).json({ message: 'shopId is required' });
 
     const shop = await prisma.shops.findUnique({ where: { id: shopId } });
@@ -32,11 +54,24 @@ conversationsRouter.post(
     const existing = await prisma.conversationGroup.findFirst({
       where: { participantIds: { hasEvery: [userId, shopId] } },
     });
-    if (existing) return res.json({ conversation: existing, isNew: false });
+
+    if (existing) {
+      // Re-point the context when the buyer opens chat from a different
+      // product, so the seller sees what's being asked about now.
+      const conversation =
+        productId && productId !== existing.productId
+          ? await prisma.conversationGroup.update({
+              where: { id: existing.id },
+              data: { productId },
+            })
+          : existing;
+      return res.json({ conversation, isNew: false });
+    }
 
     const conversation = await prisma.conversationGroup.create({
       data: {
         creatorId: userId,
+        productId: productId ?? null,
         participantIds: [userId, shopId],
         participants: {
           create: [{ userId }, { shopId }],
@@ -61,10 +96,11 @@ conversationsRouter.get(
     const conversations = await Promise.all(
       groups.map(async (group) => {
         const shopId = group.participantIds.find((id) => id !== userId);
-        const [shop, lastMessage, unreadCount] = await Promise.all([
+        const [shop, lastMessage, unreadCount, product] = await Promise.all([
           shopId ? prisma.shops.findUnique({ where: { id: shopId } }) : null,
           lastMessageOf(group.id),
           getUnseenCount(group.id, userId),
+          productContext(group.productId),
         ]);
 
         return {
@@ -72,6 +108,7 @@ conversationsRouter.get(
           updatedAt: group.updatedAt,
           lastMessage,
           unreadCount,
+          product,
           shop: shop && {
             id: shop.id,
             name: shop.name,
@@ -99,10 +136,11 @@ conversationsRouter.get(
     const conversations = await Promise.all(
       groups.map(async (group) => {
         const userId = group.participantIds.find((id) => id !== shopId);
-        const [user, lastMessage, unreadCount] = await Promise.all([
+        const [user, lastMessage, unreadCount, product] = await Promise.all([
           userId ? prisma.user.findUnique({ where: { id: userId } }) : null,
           lastMessageOf(group.id),
           getUnseenCount(group.id, shopId),
+          productContext(group.productId),
         ]);
 
         return {
@@ -110,6 +148,7 @@ conversationsRouter.get(
           updatedAt: group.updatedAt,
           lastMessage,
           unreadCount,
+          product,
           user: user && {
             id: user.id,
             name: user.name,

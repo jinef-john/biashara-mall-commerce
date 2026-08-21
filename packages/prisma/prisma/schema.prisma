@@ -422,6 +422,12 @@ model ConversationGroup {
 
   creatorId String @db.ObjectId
 
+  // What the buyer is currently asking about, so the seller has context
+  // instead of a bare "hi". Re-pointed when a buyer opens chat from another
+  // product on the same thread; deliberately not a relation, so deleting a
+  // product leaves the conversation intact.
+  productId String? @db.ObjectId
+
   // Queried with `hasEvery: [userId, shopId]` to reuse an existing 1:1 group.
   participantIds String[] @db.ObjectId
 

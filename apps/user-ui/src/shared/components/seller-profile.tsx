@@ -1,11 +1,21 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Show } from '@clerk/nextjs';
 import { toast } from 'sonner';
-import { Calendar, Globe, MapPin, Store } from 'lucide-react';
+import { Calendar, Globe, Loader2, MapPin, Store } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@biashara-mall/ui/components/ui/alert-dialog';
 import { Badge } from '@biashara-mall/ui/components/ui/badge';
 import { Button } from '@biashara-mall/ui/components/ui/button';
 import {
@@ -34,6 +44,9 @@ interface SellerData {
   shop: ShopSummary & { reviews: ShopReview[] };
   isFollowing: boolean;
 }
+
+const TAB_TRIGGER =
+  'px-4 font-medium data-active:bg-primary data-active:text-on-primary';
 
 function ProductsTab({ shopId }: { shopId: string }) {
   const { data, isPending } = useProducts({ shopId, limit: 20 });
@@ -119,12 +132,20 @@ export function SellerProfile({
 
   const shop = data!.shop;
   const following = data!.isFollowing;
+  const [confirmUnfollow, setConfirmUnfollow] = useState(false);
 
   const follow = useMutation({
-    mutationFn: () =>
-      following
-        ? api.post('/seller/api/unfollow-shop', { shopId })
-        : api.post('/seller/api/follow-shop', { shopId }),
+    mutationFn: async () => {
+      // Floor the spinner: the call often returns faster than the eye can
+      // register a change, which reads as a button that did nothing.
+      const [response] = await Promise.all([
+        following
+          ? api.post('/seller/api/unfollow-shop', { shopId })
+          : api.post('/seller/api/follow-shop', { shopId }),
+        new Promise((resolve) => setTimeout(resolve, 700)),
+      ]);
+      return response;
+    },
     onSuccess: () => {
       queryClient.setQueryData<SellerData>(['seller', shopId, 'authed'], (current) =>
         current
@@ -181,11 +202,30 @@ export function SellerProfile({
             type="button"
             variant={following ? 'outline' : 'default'}
             disabled={follow.isPending}
-            onClick={() => follow.mutate()}
+            onClick={() => (following ? setConfirmUnfollow(true) : follow.mutate())}
           >
+            {follow.isPending && <Loader2 className="animate-spin" />}
             {following ? 'Following' : 'Follow'}
           </Button>
         </Show>
+
+        <AlertDialog open={confirmUnfollow} onOpenChange={setConfirmUnfollow}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Unfollow {shop.name}?</AlertDialogTitle>
+              <AlertDialogDescription>
+                You'll stop getting this shop's new products and offers in your
+                feed. You can follow again at any time.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={() => follow.mutate()}>
+                Unfollow
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
 
       {shop.bio && <p className="text-body-md text-on-surface-variant">{shop.bio}</p>}
@@ -218,10 +258,16 @@ export function SellerProfile({
       </div>
 
       <Tabs defaultValue="products">
-        <TabsList>
-          <TabsTrigger value="products">Products</TabsTrigger>
-          <TabsTrigger value="offers">Offers</TabsTrigger>
-          <TabsTrigger value="reviews">Reviews</TabsTrigger>
+        <TabsList className="border border-outline-variant bg-surface-container">
+          <TabsTrigger value="products" className={TAB_TRIGGER}>
+            Products
+          </TabsTrigger>
+          <TabsTrigger value="offers" className={TAB_TRIGGER}>
+            Offers
+          </TabsTrigger>
+          <TabsTrigger value="reviews" className={TAB_TRIGGER}>
+            Reviews
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="products" className="pt-4">
           <ProductsTab shopId={shopId} />
