@@ -59,6 +59,26 @@ export function TableSkeleton({
   );
 }
 
+export function ListSkeleton({ rows = 5 }: { rows?: number }) {
+  return (
+    <div className="flex flex-col gap-2">
+      {Array.from({ length: rows }, (_, i) => (
+        <div
+          key={i}
+          className="flex items-start gap-3 rounded-xl border border-outline-variant bg-surface-container-lowest px-4 py-3"
+        >
+          <Skeleton className="mt-1 size-2 shrink-0 rounded-full" />
+          <div className="flex flex-1 flex-col gap-2">
+            <Skeleton className="h-4 w-48" />
+            <Skeleton className="h-3 w-72" />
+          </div>
+          <Skeleton className="h-3 w-16 shrink-0" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function FieldSkeleton({ lines = 1 }: { lines?: number }) {
   return (
     <div className="flex flex-col gap-2">

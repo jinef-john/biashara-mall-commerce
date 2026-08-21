@@ -7,6 +7,7 @@ import { productsRouter } from './routes/products';
 import { sellersRouter } from './routes/sellers';
 import { usersRouter } from './routes/users';
 import { customizationRouter } from './routes/customization';
+import { notificationsRouter } from './routes/notifications';
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use('/api', productsRouter);
 app.use('/api', sellersRouter);
 app.use('/api', usersRouter);
 app.use('/api', customizationRouter);
+app.use('/api', notificationsRouter);
 
 app.use(errorMiddleware);
 

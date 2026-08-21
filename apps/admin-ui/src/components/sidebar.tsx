@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
+  Bell,
   CalendarRange,
   LayoutDashboard,
   Package,
@@ -26,7 +27,10 @@ import {
 const NAV = [
   {
     title: 'Overview',
-    items: [{ label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard }],
+    items: [
+      { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+      { label: 'Notifications', href: '/dashboard/notifications', icon: Bell },
+    ],
   },
   {
     title: 'Products',

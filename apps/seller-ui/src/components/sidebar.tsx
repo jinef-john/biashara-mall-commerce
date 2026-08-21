@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
+  Bell,
   CalendarPlus,
   CalendarRange,
   CreditCard,
@@ -33,6 +34,11 @@ const NAV = [
         label: 'Dashboard',
         href: '/dashboard',
         icon: LayoutDashboard,
+      },
+      {
+        label: 'Notifications',
+        href: '/dashboard/notifications',
+        icon: Bell,
       },
     ],
   },

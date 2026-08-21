@@ -5,6 +5,7 @@ import { errorMiddleware } from '@biashara-mall/error-handler';
 import { shopsRouter } from './routes/shops';
 import { publicShopsRouter } from './routes/public';
 import { followRouter } from './routes/follow';
+import { notificationsRouter } from './routes/notifications';
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.get('/api', (req, res) => {
 app.use('/api/shops', shopsRouter);
 app.use('/api', publicShopsRouter);
 app.use('/api', followRouter);
+app.use('/api/seller-notifications', notificationsRouter);
 
 app.use(errorMiddleware);
 
