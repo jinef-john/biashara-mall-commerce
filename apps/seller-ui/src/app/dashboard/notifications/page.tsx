@@ -1,38 +1,19 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Bell } from 'lucide-react';
 import { useApi } from '../../../lib/api';
+import { useNotifications, type NotificationItem } from '../../../lib/use-notifications';
 import { ListSkeleton } from '../../../components/skeletons';
 import { Button } from '@biashara-mall/ui/components/ui/button';
-
-interface NotificationItem {
-  id: string;
-  title: string;
-  message: string;
-  redirectLink: string | null;
-  status: 'unread' | 'read';
-  createdAt: string;
-}
 
 export default function NotificationsPage() {
   const api = useApi();
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const {
-    data: notifications,
-    isPending,
-    isError,
-    refetch,
-  } = useQuery<NotificationItem[]>({
-    queryKey: ['seller-notifications'],
-    queryFn: async () => {
-      const { data } = await api.get('/seller/api/seller-notifications');
-      return data.notifications;
-    },
-  });
+  const { data: notifications, isPending, isError, refetch } = useNotifications();
 
   const markAsRead = useMutation({
     mutationFn: (notificationId: string) =>

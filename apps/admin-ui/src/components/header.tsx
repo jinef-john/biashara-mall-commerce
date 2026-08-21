@@ -1,13 +1,28 @@
 'use client';
 
 import Image from 'next/image';
-import { SignInButton, Show, UserButton } from '@clerk/nextjs';
+import Link from 'next/link';
+import { SignInButton, Show, UserButton, useAuth } from '@clerk/nextjs';
+import { Bell } from 'lucide-react';
 import { Button } from '@biashara-mall/ui/components/ui/button';
 import { Badge } from '@biashara-mall/ui/components/ui/badge';
 import { useLayout } from '../lib/use-layout';
+import { useNotifications } from '../lib/use-notifications';
+
+function CountBadge({ count }: { count: number }) {
+  if (!count) return null;
+  return (
+    <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-on-primary tabular-nums">
+      {count > 9 ? '9+' : count}
+    </span>
+  );
+}
 
 export function Header({ leading }: { leading?: React.ReactNode }) {
   const { data: layout } = useLayout();
+  const { isSignedIn } = useAuth();
+  const { data: notifications } = useNotifications({ enabled: isSignedIn });
+  const unreadCount = notifications?.filter((n) => n.status === 'unread').length ?? 0;
 
   return (
     <header className="sticky top-0 z-50 flex h-(--header-height) shrink-0 items-center justify-between border-b border-outline-variant bg-surface-container-lowest px-4">
@@ -38,6 +53,12 @@ export function Header({ leading }: { leading?: React.ReactNode }) {
           </SignInButton>
         </Show>
         <Show when="signed-in">
+          <Button asChild variant="ghost" size="icon" className="relative" aria-label="Notifications">
+            <Link href="/dashboard/notifications">
+              <Bell />
+              <CountBadge count={unreadCount} />
+            </Link>
+          </Button>
           <UserButton />
         </Show>
       </div>
