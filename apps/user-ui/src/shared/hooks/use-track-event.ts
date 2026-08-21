@@ -26,7 +26,7 @@ export function useTrackEvent() {
         browser: device.browser,
         os: device.os,
         deviceType: device.deviceType,
-      }).catch(() => {});
+      }).catch(() => undefined);
     },
     [userId, location, device],
   );

@@ -44,7 +44,7 @@ function trackEvent(type: CartEventType, item: LineItem, ctx: TrackingContext) {
     browser: ctx.device.browser,
     os: ctx.device.os,
     deviceType: ctx.device.deviceType,
-  }).catch(() => {});
+  }).catch(() => undefined);
 }
 
 interface StoreState {
