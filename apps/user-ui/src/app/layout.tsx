@@ -2,6 +2,7 @@ import { ClerkProvider } from '@clerk/nextjs';
 import { Inter } from 'next/font/google';
 import { Toaster } from '@biashara-mall/ui/components/ui/sonner';
 import { QueryProvider } from '../components/query-provider';
+import { ChatProvider } from '../components/chat-provider';
 import { Header } from '../components/header';
 import { CartSidebar } from '../shared/components/cart-sidebar';
 import './global.css';
@@ -28,13 +29,15 @@ export default function RootLayout({
           signUpFallbackRedirectUrl="/"
         >
           <QueryProvider>
-            <div className="flex">
-              <div className="min-w-0 flex-1">
-                <Header />
-                {children}
+            <ChatProvider>
+              <div className="flex">
+                <div className="min-w-0 flex-1">
+                  <Header />
+                  {children}
+                </div>
+                <CartSidebar />
               </div>
-              <CartSidebar />
-            </div>
+            </ChatProvider>
           </QueryProvider>
           <Toaster position="bottom-right" />
         </ClerkProvider>

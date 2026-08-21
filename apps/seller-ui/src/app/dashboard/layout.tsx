@@ -5,6 +5,7 @@ import { OctagonAlert } from 'lucide-react';
 import { useApi } from '../../lib/api';
 import { Sidebar } from '../../components/sidebar';
 import { Header } from '../../components/header';
+import { ChatProvider } from '../../components/chat-provider';
 import {
   Alert,
   AlertTitle,
@@ -35,28 +36,30 @@ export default function DashboardLayout({
 
   return (
     <TooltipProvider>
-      <SidebarProvider className="flex-col">
-        <Header leading={<SidebarTrigger />} />
-        <div className="flex flex-1">
-          <Sidebar />
-          <SidebarInset className="bg-surface">
-            <div className="flex-1 px-8 py-6">
-              {shop?.status === 'banned' && (
-                <Alert variant="destructive" className="mb-6">
-                  <OctagonAlert />
-                  <AlertTitle>This shop has been suspended</AlertTitle>
-                  <AlertDescription>
-                    An admin has suspended your shop. It's hidden from buyers,
-                    and you can't create or edit products until it's
-                    reinstated.
-                  </AlertDescription>
-                </Alert>
-              )}
-              {children}
-            </div>
-          </SidebarInset>
-        </div>
-      </SidebarProvider>
+      <ChatProvider>
+        <SidebarProvider className="flex-col">
+          <Header leading={<SidebarTrigger />} />
+          <div className="flex flex-1">
+            <Sidebar />
+            <SidebarInset className="bg-surface">
+              <div className="flex-1 px-8 py-6">
+                {shop?.status === 'banned' && (
+                  <Alert variant="destructive" className="mb-6">
+                    <OctagonAlert />
+                    <AlertTitle>This shop has been suspended</AlertTitle>
+                    <AlertDescription>
+                      An admin has suspended your shop. It's hidden from buyers,
+                      and you can't create or edit products until it's
+                      reinstated.
+                    </AlertDescription>
+                  </Alert>
+                )}
+                {children}
+              </div>
+            </SidebarInset>
+          </div>
+        </SidebarProvider>
+      </ChatProvider>
     </TooltipProvider>
   );
 }

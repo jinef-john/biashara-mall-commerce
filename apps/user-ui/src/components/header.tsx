@@ -5,13 +5,14 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { SignInButton, SignUpButton, Show, UserButton, useAuth } from '@clerk/nextjs';
-import { Bell, Heart, MapPin, Search, ShoppingCart, Store } from 'lucide-react';
+import { Bell, Heart, MapPin, MessagesSquare, Search, ShoppingCart, Store } from 'lucide-react';
 import { Button } from '@biashara-mall/ui/components/ui/button';
 import { Input } from '@biashara-mall/ui/components/ui/input';
 import { useLayout } from '../lib/use-layout';
 import { useStore } from '../store';
 import { useHydrated } from '../lib/use-hydrated';
 import { useNotifications } from '../shared/hooks/use-notifications';
+import { useWebSocket } from '../context/web-socket-context';
 import { HeaderBottom } from './header-bottom';
 
 const SELLER_URL = process.env.NEXT_PUBLIC_SELLER_URL ?? 'http://localhost:3001';
@@ -37,6 +38,8 @@ export function Header() {
   const wishlistCount = useStore((s) => s.wishlist.length);
   const { data: notifications } = useNotifications({ enabled: isSignedIn });
   const unreadCount = notifications?.filter((n) => n.status === 'unread').length ?? 0;
+  const { unreadCounts } = useWebSocket();
+  const unreadMessages = Object.values(unreadCounts).reduce((sum, n) => sum + n, 0);
 
   const search = (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,6 +112,12 @@ export function Header() {
               </SignUpButton>
             </Show>
             <Show when="signed-in">
+              <Button asChild variant="ghost" size="icon" className="relative" aria-label="Messages">
+                <Link href="/inbox">
+                  <MessagesSquare />
+                  <CountBadge count={unreadMessages} />
+                </Link>
+              </Button>
               <Button asChild variant="ghost" size="icon" className="relative" aria-label="Notifications">
                 <Link href="/notifications">
                   <Bell />

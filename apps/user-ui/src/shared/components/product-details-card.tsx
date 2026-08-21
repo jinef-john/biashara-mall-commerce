@@ -13,6 +13,7 @@ import { useProduct } from '../../lib/queries';
 import { formatPrice } from '../../lib/format';
 import { Ratings } from './ratings';
 import { AddToCartControls } from './add-to-cart-controls';
+import { ChatWithSellerButton } from './chat/chat-with-seller-button';
 
 /** Quick-view modal opened from a product card's Eye action. */
 export function ProductDetailsCard({
@@ -92,12 +93,15 @@ export function ProductDetailsCard({
               <DialogTitle className="text-headline-sm text-on-surface">
                 {product.title}
               </DialogTitle>
-              <Link
-                href={`/shop/${product.shop.id}`}
-                className="text-label-md text-primary hover:underline"
-              >
-                {product.shop.name}
-              </Link>
+              <div className="flex flex-wrap items-center gap-3">
+                <Link
+                  href={`/shop/${product.shop.id}`}
+                  className="text-label-md text-primary hover:underline"
+                >
+                  {product.shop.name}
+                </Link>
+                <ChatWithSellerButton shopId={product.shop.id} size="sm" />
+              </div>
               <Ratings value={product.ratings} size="md" />
 
               <div className="flex items-baseline gap-2">
