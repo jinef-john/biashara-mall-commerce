@@ -61,7 +61,11 @@
     }
   },
   "dependencies": {
+    "@biashara-mall/auth": "workspace:*",
     "@biashara-mall/kafka": "workspace:*",
-    "dotenv": "^17.4.2"
+    "@biashara-mall/prisma": "workspace:*",
+    "@clerk/express": "^2.1.57",
+    "dotenv": "^17.4.2",
+    "express": "^5.1.0"
   }
 }

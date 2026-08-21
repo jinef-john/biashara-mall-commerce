@@ -2,6 +2,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { trackUserEvent } from '../actions/track-user';
 import type { DeviceInfo } from '../shared/hooks/use-device-tracking';
 import type { LocationInfo } from '../shared/hooks/use-location-tracking';
 
@@ -18,9 +19,7 @@ export interface LineItem {
   shopName?: string;
 }
 
-/** Who/where/what-device an action happened on: carried through to the
- * Kafka event Phase 7 adds. The emit is a no-op today; this signature is
- * what lets that phase land without touching every call site again. */
+/** Who/where/what-device an action happened on: carried through to Kafka. */
 export interface TrackingContext {
   userId: string | null;
   location: LocationInfo | null;
@@ -33,12 +32,19 @@ type CartEventType =
   | 'add_to_wishlist'
   | 'remove_from_wishlist';
 
-function trackEvent(
-  _type: CartEventType,
-  _item: LineItem,
-  _ctx: TrackingContext,
-) {
-  // No-op until Phase 7 wires this to Kafka.
+function trackEvent(type: CartEventType, item: LineItem, ctx: TrackingContext) {
+  if (!ctx.userId || !ctx.location || !ctx.device) return;
+  void trackUserEvent({
+    clerkId: ctx.userId,
+    action: type,
+    productId: item.id,
+    shopId: item.shopId,
+    country: ctx.location.country,
+    city: ctx.location.city,
+    browser: ctx.device.browser,
+    os: ctx.device.os,
+    deviceType: ctx.device.deviceType,
+  }).catch(() => {});
 }
 
 interface StoreState {

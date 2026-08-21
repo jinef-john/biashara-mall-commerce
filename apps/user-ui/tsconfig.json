@@ -21,7 +21,8 @@
     "paths": {
       "@/*": ["./src/*"],
       "@biashara-mall/ui/*": ["../../packages/ui/src/*"],
-      "@biashara-mall/config": ["../../packages/config/src/index.ts"]
+      "@biashara-mall/config": ["../../packages/config/src/index.ts"],
+      "@biashara-mall/kafka": ["../../packages/kafka/src/index.ts"]
     },
     "outDir": "dist",
     "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo"
@@ -30,6 +31,7 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "../../packages/config/src/**/*.ts",
+    "../../packages/kafka/src/**/*.ts",
     "src/**/*.js",
     "src/**/*.jsx",
     "../../apps/user-ui/.next/types/**/*.ts",

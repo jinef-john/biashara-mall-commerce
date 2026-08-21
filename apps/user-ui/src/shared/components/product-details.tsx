@@ -2,12 +2,13 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import DOMPurify from 'isomorphic-dompurify';
 import { RotateCcw, ShieldCheck, Store, Truck } from 'lucide-react';
 import { Badge } from '@biashara-mall/ui/components/ui/badge';
 import { formatPrice } from '../../lib/format';
 import { useCountdown } from '../hooks/use-countdown';
+import { useTrackEvent } from '../hooks/use-track-event';
 import { Ratings } from './ratings';
 import { AddToCartControls } from './add-to-cart-controls';
 import { ImageZoom } from './image-zoom';
@@ -16,6 +17,10 @@ import type { ProductDetail } from '../types';
 
 export function ProductDetails({ product }: { product: ProductDetail }) {
   const [activeImage, setActiveImage] = useState(0);
+  const track = useTrackEvent();
+  useEffect(() => {
+    track('product_view', { productId: product.id });
+  }, [product.id, track]);
   const isEvent = Boolean(product.startingDate);
   const countdown = useCountdown(
     isEvent && product.endingDate ? new Date(product.endingDate) : null,

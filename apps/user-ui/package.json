@@ -5,6 +5,7 @@
   "dependencies": {
     "@biashara-mall/config": "workspace:*",
     "@biashara-mall/design-tokens": "workspace:*",
+    "@biashara-mall/kafka": "workspace:*",
     "@biashara-mall/ui": "workspace:*",
     "@clerk/nextjs": "^7.7.6",
     "@stripe/react-stripe-js": "^6.8.1",

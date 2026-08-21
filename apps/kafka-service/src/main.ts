@@ -1,9 +1,10 @@
 import 'dotenv/config';
 import { ensureTopics } from '@biashara-mall/kafka';
+import { startUserEventsConsumer } from './consumers/user-events.consumer';
 
 async function bootstrap() {
   await ensureTopics();
-  console.log('[kafka-service] topics ready — no consumers registered yet');
+  await startUserEventsConsumer();
 }
 
 bootstrap().catch((err) => {

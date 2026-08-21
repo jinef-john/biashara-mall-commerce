@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Show } from '@clerk/nextjs';
 import { toast } from 'sonner';
@@ -15,6 +16,7 @@ import {
 } from '@biashara-mall/ui/components/ui/tabs';
 import { useApi } from '../../lib/api';
 import { useProducts, useEvents } from '../../lib/queries';
+import { useTrackEvent } from '../hooks/use-track-event';
 import { Ratings } from './ratings';
 import { ProductCard } from './cards/product-card';
 import { ProductGridSkeleton } from './skeletons';
@@ -99,6 +101,10 @@ export function SellerProfile({
 }) {
   const api = useApi();
   const queryClient = useQueryClient();
+  const track = useTrackEvent();
+  useEffect(() => {
+    track('shop_visit', { shopId });
+  }, [shopId, track]);
 
   // Seeded with the server-rendered payload for instant paint, then refetched
   // through the authenticated client so `isFollowing` reflects the viewer.

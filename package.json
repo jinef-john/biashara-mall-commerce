@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "dev": "nx run-many -t serve,dev --parallel=9",
-    "dev:services": "nx run-many -t serve -p api-gateway user-service product-service seller-service order-service admin-service --parallel=6",
+    "dev": "nx run-many -t serve,dev --parallel=10",
+    "dev:services": "nx run-many -t serve -p api-gateway user-service product-service seller-service order-service admin-service kafka-service --parallel=7",
     "dev:user-ui": "nx dev user-ui",
     "dev:seller-ui": "nx dev seller-ui",
     "dev:admin-ui": "nx dev admin-ui",
