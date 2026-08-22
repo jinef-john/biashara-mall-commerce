@@ -13,6 +13,7 @@ import { useCartActions } from '../../shared/hooks/use-cart-actions';
 import { useApi } from '../../lib/api';
 import { cartToPayload } from '../../lib/use-checkout';
 import { ConfirmDialog } from '../../shared/components/confirm-dialog';
+import { AddressFormDialog } from '../../shared/components/address-form-dialog';
 import { formatPrice } from '../../lib/format';
 
 interface ShopGroup {
@@ -40,6 +41,7 @@ export default function CartPage() {
   const clearCart = useStore((s) => s.clearCart);
   const { removeFromCart } = useCartActions();
   const [confirmClear, setConfirmClear] = useState(false);
+  const [addressOpen, setAddressOpen] = useState(false);
 
   const groups = useMemo(() => groupByShop(cart), [cart]);
   const subtotal = useMemo(
@@ -58,10 +60,14 @@ export default function CartPage() {
       router.push(`/checkout?sessionId=${sessionId}`);
     },
     onError: (err) => {
-      const message =
-        (err as { response?: { data?: { message?: string } } })?.response
-          ?.data?.message ?? 'Could not start checkout';
-      toast.error(message);
+      const data = (
+        err as { response?: { data?: { code?: string; message?: string } } }
+      )?.response?.data;
+      if (data?.code === 'NO_ADDRESS') {
+        setAddressOpen(true);
+        return;
+      }
+      toast.error(data?.message ?? 'Could not start checkout');
     },
   });
 
@@ -237,6 +243,13 @@ export default function CartPage() {
           clearCart();
           setConfirmClear(false);
         }}
+      />
+
+      <AddressFormDialog
+        open={addressOpen}
+        onOpenChange={setAddressOpen}
+        onSaved={() => checkout.mutate()}
+        forceDefault
       />
     </main>
   );

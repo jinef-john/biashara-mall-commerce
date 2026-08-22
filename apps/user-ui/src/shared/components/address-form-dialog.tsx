@@ -37,9 +37,15 @@ interface AddressForm {
 export function AddressFormDialog({
   open,
   onOpenChange,
+  onSaved,
+  forceDefault = false,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onSaved?: () => void;
+  /** Checkout only accepts the default address, so one opened from there must
+   * become the default or the retry blocks on the same guard again. */
+  forceDefault?: boolean;
 }) {
   const api = useApi();
   const queryClient = useQueryClient();
@@ -58,7 +64,7 @@ export function AddressFormDialog({
       city: '',
       zip: '',
       country: '',
-      isDefault: false,
+      isDefault: forceDefault,
     },
   });
 
@@ -69,6 +75,7 @@ export function AddressFormDialog({
       toast.success('Address added');
       reset();
       onOpenChange(false);
+      onSaved?.();
     },
     onError: (err) => {
       const message =
@@ -142,21 +149,23 @@ export function AddressFormDialog({
             />
           </Field>
 
-          <Controller
-            name="isDefault"
-            control={control}
-            render={({ field }) => (
-              <Label className="flex items-center gap-2 font-normal">
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-                <span className="text-body-sm text-on-surface">
-                  Set as default address
-                </span>
-              </Label>
-            )}
-          />
+          {!forceDefault && (
+            <Controller
+              name="isDefault"
+              control={control}
+              render={({ field }) => (
+                <Label className="flex items-center gap-2 font-normal">
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                  <span className="text-body-sm text-on-surface">
+                    Set as default address
+                  </span>
+                </Label>
+              )}
+            />
+          )}
 
           <Button type="submit" disabled={isSubmitting} className="mt-2">
             {isSubmitting ? 'Saving…' : 'Save address'}

@@ -65,9 +65,12 @@ paymentRouter.post(
       where: { userId, isDefault: true },
     });
     if (!address) {
-      return res
-        .status(400)
-        .json({ message: 'Add a shipping address before checking out' });
+      // Coded so the cart can open the address dialog instead of dead-ending
+      // on a toast.
+      return res.status(400).json({
+        code: 'NO_ADDRESS',
+        message: 'Add a shipping address before checking out',
+      });
     }
 
     const normalized = await normalizeCart(cart);
