@@ -18,6 +18,28 @@ const toRow = (m: ChatMessageEvent) => ({
 const isDuplicate = (err: unknown) =>
   (err as { code?: string })?.code === 'P2002';
 
+// Messages live in their own collection, so nothing else moves the group row
+// the inbox orders by.
+async function touchConversations(batch: ChatMessageEvent[]) {
+  const latest = new Map<string, string>();
+  for (const message of batch) {
+    const current = latest.get(message.conversationId);
+    if (!current || message.createdAt > current) {
+      latest.set(message.conversationId, message.createdAt);
+    }
+  }
+
+  await Promise.all(
+    [...latest].map(([id, createdAt]) =>
+      prisma.conversationGroup
+        .update({ where: { id }, data: { updatedAt: new Date(createdAt) } })
+        .catch((err) =>
+          console.error(`[chat-consumer] touch ${id} failed:`, (err as Error).message),
+        ),
+    ),
+  );
+}
+
 // createMany has no skipDuplicates on MongoDB, so a re-queued batch would
 // collide with the rows that already landed and never drain. P2002 here means
 // "already persisted"; anything else is a real failure and goes back on the buffer.
@@ -35,6 +57,7 @@ async function flushIndividually(batch: ChatMessageEvent[]) {
   }
 
   if (failed.length) buffer = [...failed, ...buffer];
+  await touchConversations(batch.filter((m) => !failed.includes(m)));
   console.log(
     `[chat-consumer] persisted ${persisted}/${batch.length} message(s)` +
       (failed.length ? `, ${failed.length} re-queued` : ''),
@@ -49,6 +72,7 @@ async function flush() {
 
   try {
     await prisma.message.createMany({ data: batch.map(toRow) });
+    await touchConversations(batch);
     console.log(`[chat-consumer] persisted ${batch.length} message(s)`);
   } catch {
     await flushIndividually(batch);

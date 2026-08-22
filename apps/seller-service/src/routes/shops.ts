@@ -5,7 +5,6 @@ import { imagekit } from '../lib/imagekit';
 
 export const shopsRouter: Router = Router();
 
-/** Shop branding is owner-only, same as editing the shop's details. */
 function requireShopOwner(req: Request, res: Response) {
   const { userId, orgId, orgRole } = getAuth(req);
 
@@ -24,10 +23,7 @@ function requireShopOwner(req: Request, res: Response) {
   return { userId, orgId };
 }
 
-/**
- * The logo and cover are uploaded as the seller picks them and returned as a
- * {fileId, fileUrl} pair; PATCH /api/shops is what actually persists the URL.
- */
+// Returns {fileId, fileUrl}; PATCH /api/shops is what persists the URL.
 shopsRouter.post('/branding-image', async (req: Request, res: Response) => {
   if (!requireShopOwner(req, res)) return;
 

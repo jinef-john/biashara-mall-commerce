@@ -1,6 +1,7 @@
 import { ClerkProvider } from '@clerk/nextjs';
 import { Inter } from 'next/font/google';
 import { QueryProvider } from '../components/query-provider';
+import { clerkLocalization } from '../lib/clerk-localization';
 import { Toaster } from '@biashara-mall/ui/components/ui/sonner';
 import './global.css';
 
@@ -20,6 +21,7 @@ export default function RootLayout({
     <html lang="en" className={inter.variable}>
       <body className="font-sans">
         <ClerkProvider
+          localization={clerkLocalization}
           signInUrl="/sign-in"
           signUpUrl="/sign-up"
           signInFallbackRedirectUrl="/"

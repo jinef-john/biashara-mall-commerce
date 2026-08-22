@@ -6,7 +6,7 @@ import { SignInButton, SignUpButton, Show, UserButton, useAuth } from '@clerk/ne
 import { useQuery } from '@tanstack/react-query';
 import { Bell, Store } from 'lucide-react';
 import { Button } from '@biashara-mall/ui/components/ui/button';
-import { Badge } from '@biashara-mall/ui/components/ui/badge';
+import { Skeleton } from '@biashara-mall/ui/components/ui/skeleton';
 import {
   Avatar,
   AvatarFallback,
@@ -17,6 +17,8 @@ import { useApi } from '../lib/api';
 import { useLayout } from '../lib/use-layout';
 import { useNotifications } from '../lib/use-notifications';
 
+const USER_URL = process.env.NEXT_PUBLIC_USER_URL ?? 'http://localhost:3000';
+
 function CountBadge({ count }: { count: number }) {
   if (!count) return null;
   return (
@@ -26,9 +28,29 @@ function CountBadge({ count }: { count: number }) {
   );
 }
 
+// `/` bounces a seller without a shop straight back to onboarding, so the
+// marketplace is the only real way out until the shop exists.
+function HomeLink({
+  hasShop,
+  children,
+}: {
+  hasShop: boolean;
+  children: React.ReactNode;
+}) {
+  return hasShop ? (
+    <Link href="/dashboard" aria-label="Dashboard">
+      {children}
+    </Link>
+  ) : (
+    <a href={USER_URL} aria-label="Biashara Mall home">
+      {children}
+    </a>
+  );
+}
+
 export function Header({ leading }: { leading?: React.ReactNode }) {
   const api = useApi();
-  const { data: layout } = useLayout();
+  const { data: layout, isPending: layoutPending } = useLayout();
   const { isSignedIn } = useAuth();
   const { data: notifications } = useNotifications({ enabled: isSignedIn });
   const unreadCount = notifications?.filter((n) => n.status === 'unread').length ?? 0;
@@ -47,22 +69,25 @@ export function Header({ leading }: { leading?: React.ReactNode }) {
     <header className="sticky top-0 z-50 flex h-(--header-height) shrink-0 items-center justify-between border-b border-outline-variant bg-surface-container-lowest px-4">
       <div className="flex items-center gap-3">
         {leading}
-        {layout?.logoUrl ? (
-          <>
-            <Image
-              src={layout.logoUrl}
-              alt="Biashara Mall"
-              width={140}
-              height={32}
-              className="h-8 w-auto"
-              priority
-            />
-            <Badge variant="secondary">Seller</Badge>
-          </>
+        {layoutPending ? (
+          <Skeleton className="h-8 w-36" />
         ) : (
-          <span className="text-headline-sm text-on-surface">
-            Biashara Mall * Seller
-          </span>
+          <HomeLink hasShop={Boolean(shop)}>
+            {layout?.logoUrl ? (
+              <Image
+                src={layout.logoUrl}
+                alt="Biashara Mall"
+                width={140}
+                height={32}
+                className="h-8 w-auto"
+                priority
+              />
+            ) : (
+              <span className="text-headline-sm text-on-surface">
+                Biashara Mall
+              </span>
+            )}
+          </HomeLink>
         )}
         {shop && (
           <>

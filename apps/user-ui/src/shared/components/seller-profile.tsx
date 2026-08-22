@@ -136,8 +136,7 @@ export function SellerProfile({
 
   const follow = useMutation({
     mutationFn: async () => {
-      // Floor the spinner: the call often returns faster than the eye can
-      // register a change, which reads as a button that did nothing.
+      // Floored so the spinner is visible; otherwise the button reads as dead.
       const [response] = await Promise.all([
         following
           ? api.post('/seller/api/unfollow-shop', { shopId })

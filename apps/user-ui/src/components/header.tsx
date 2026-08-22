@@ -8,6 +8,7 @@ import { SignInButton, SignUpButton, Show, UserButton, useAuth } from '@clerk/ne
 import { Bell, Heart, MapPin, MessagesSquare, Search, ShoppingCart, Store } from 'lucide-react';
 import { Button } from '@biashara-mall/ui/components/ui/button';
 import { Input } from '@biashara-mall/ui/components/ui/input';
+import { Skeleton } from '@biashara-mall/ui/components/ui/skeleton';
 import { useLayout } from '../lib/use-layout';
 import { useStore } from '../store';
 import { useHydrated } from '../lib/use-hydrated';
@@ -29,7 +30,7 @@ function CountBadge({ count }: { count: number }) {
 export function Header() {
   const router = useRouter();
   const [query, setQuery] = useState('');
-  const { data: layout } = useLayout();
+  const { data: layout, isPending: layoutPending } = useLayout();
   const { isSignedIn } = useAuth();
 
   // localStorage-backed counts would mismatch the server render on first paint.
@@ -44,8 +45,7 @@ export function Header() {
   const topRef = useRef<HTMLElement>(null);
   const navRef = useRef<HTMLDivElement>(null);
 
-  // The inbox sizes its panes to the leftover viewport. The bar wraps at narrow
-  // widths, so publish the measured height rather than hard-coding one.
+  // The bar wraps at narrow widths, so the inbox reads a measured height.
   useEffect(() => {
     const nodes = [topRef.current, navRef.current].filter(
       (node): node is HTMLElement => node !== null,
@@ -72,7 +72,9 @@ export function Header() {
       <header ref={topRef} className="border-b border-outline-variant bg-surface-container-lowest">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-4 px-4 py-4 md:flex-nowrap">
           <Link href="/" className="flex shrink-0 items-center gap-2">
-            {layout?.logoUrl ? (
+            {layoutPending ? (
+              <Skeleton className="h-8 w-36" />
+            ) : layout?.logoUrl ? (
               <Image
                 src={layout.logoUrl}
                 alt="Biashara Mall"

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { MessagesSquare, User } from 'lucide-react';
 import { useApi } from '../../../lib/api';
 import { useConversation } from '../../../lib/use-conversation';
@@ -58,7 +58,8 @@ function BuyerAvatar({
 
 export default function InboxPage() {
   const api = useApi();
-  const { unreadCounts, sendMessage, markAsSeen, ready } = useWebSocket();
+  const queryClient = useQueryClient();
+  const { unreadCounts, sendMessage, markAsSeen, ready, subscribe } = useWebSocket();
   const [activeId, setActiveId] = useState<string | null>(null);
 
   const { data: shop } = useQuery<{ id: string } | null>({
@@ -92,6 +93,38 @@ export default function InboxPage() {
   useEffect(() => {
     if (activeId && ready) markAsSeen(activeId);
   }, [activeId, ready, markAsSeen, messages.length]);
+
+  // Without this the previews and the ordering stay frozen at page load.
+  useEffect(
+    () =>
+      subscribe((message) => {
+        queryClient.setQueryData<Conversation[]>(
+          ['seller-conversations'],
+          (current) => {
+            if (!current) return current;
+            if (!current.some((c) => c.id === message.conversationId)) {
+              queryClient.invalidateQueries({ queryKey: ['seller-conversations'] });
+              return current;
+            }
+            return current
+              .map((c) =>
+                c.id === message.conversationId
+                  ? {
+                      ...c,
+                      updatedAt: message.createdAt,
+                      lastMessage: {
+                        content: message.content,
+                        createdAt: message.createdAt,
+                      },
+                    }
+                  : c,
+              )
+              .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+          },
+        );
+      }),
+    [subscribe, queryClient],
+  );
 
   return (
     <div className="flex flex-col gap-4">
@@ -138,10 +171,30 @@ export default function InboxPage() {
                   >
                     <BuyerAvatar user={conversation.user} />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-body-md text-on-surface">
-                        {conversation.user?.name ?? 'Customer'}
-                      </p>
-                      <p className="truncate text-body-sm text-on-surface-variant">
+                      <div className="flex items-center gap-1.5">
+                        <p
+                          className={
+                            unread > 0
+                              ? 'truncate text-body-md font-medium text-on-surface'
+                              : 'truncate text-body-md text-on-surface'
+                          }
+                        >
+                          {conversation.user?.name ?? 'Customer'}
+                        </p>
+                        {unread > 0 && (
+                          <span
+                            className="size-2 shrink-0 rounded-full bg-primary"
+                            aria-label="Unread messages"
+                          />
+                        )}
+                      </div>
+                      <p
+                        className={
+                          unread > 0
+                            ? 'truncate text-body-sm font-medium text-on-surface'
+                            : 'truncate text-body-sm text-on-surface-variant'
+                        }
+                      >
                         {conversation.lastMessage?.content ?? 'No messages yet'}
                       </p>
                     </div>

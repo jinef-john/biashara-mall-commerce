@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { MessagesSquare, Store } from 'lucide-react';
 import { useApi } from '../../lib/api';
 import { useMe } from '../../lib/use-me';
@@ -63,7 +63,8 @@ function Inbox() {
   const api = useApi();
   const params = useSearchParams();
   const { data: me } = useMe();
-  const { unreadCounts, sendMessage, markAsSeen, ready } = useWebSocket();
+  const queryClient = useQueryClient();
+  const { unreadCounts, sendMessage, markAsSeen, ready, subscribe } = useWebSocket();
   const [activeId, setActiveId] = useState<string | null>(params.get('c'));
 
   const {
@@ -89,9 +90,36 @@ function Inbox() {
     if (activeId && ready) markAsSeen(activeId);
   }, [activeId, ready, markAsSeen, messages.length]);
 
+  // Without this the previews and the ordering stay frozen at page load.
+  useEffect(
+    () =>
+      subscribe((message) => {
+        queryClient.setQueryData<Conversation[]>(['conversations'], (current) => {
+          if (!current) return current;
+          if (!current.some((c) => c.id === message.conversationId)) {
+            queryClient.invalidateQueries({ queryKey: ['conversations'] });
+            return current;
+          }
+          return current
+            .map((c) =>
+              c.id === message.conversationId
+                ? {
+                    ...c,
+                    updatedAt: message.createdAt,
+                    lastMessage: {
+                      content: message.content,
+                      createdAt: message.createdAt,
+                    },
+                  }
+                : c,
+            )
+            .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+        });
+      }),
+    [subscribe, queryClient],
+  );
+
   return (
-    // Sized to the viewport left under the header so the composer is always
-    // reachable without scrolling the page; --header-height is measured there.
     <main className="mx-auto flex h-[calc(100dvh-var(--header-height,8rem))] max-w-6xl gap-4 px-4 py-4">
       <aside className="flex w-72 shrink-0 flex-col overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest shadow-sm">
         <h1 className="shrink-0 border-b border-outline-variant px-4 py-3 text-title-md text-on-surface">
@@ -131,10 +159,30 @@ function Inbox() {
                 >
                   <ShopAvatar shop={conversation.shop} />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-body-md text-on-surface">
-                      {conversation.shop?.name ?? 'Shop'}
-                    </p>
-                    <p className="truncate text-body-sm text-on-surface-variant">
+                    <div className="flex items-center gap-1.5">
+                      <p
+                        className={
+                          unread > 0
+                            ? 'truncate text-body-md font-medium text-on-surface'
+                            : 'truncate text-body-md text-on-surface'
+                        }
+                      >
+                        {conversation.shop?.name ?? 'Shop'}
+                      </p>
+                      {unread > 0 && (
+                        <span
+                          className="size-2 shrink-0 rounded-full bg-primary"
+                          aria-label="Unread messages"
+                        />
+                      )}
+                    </div>
+                    <p
+                      className={
+                        unread > 0
+                          ? 'truncate text-body-sm font-medium text-on-surface'
+                          : 'truncate text-body-sm text-on-surface-variant'
+                      }
+                    >
                       {conversation.lastMessage?.content ?? 'No messages yet'}
                     </p>
                   </div>

@@ -10,7 +10,7 @@ export interface UploadedImage {
   fileUrl: string;
 }
 
-/** ImageKit accepts the data URI directly, so no need to strip the prefix. */
+// ImageKit accepts the data URI directly, so the prefix stays on.
 function fileToBase64(file: File) {
   return new Promise<string>((resolve, reject) => {
     const reader = new FileReader();
@@ -20,11 +20,6 @@ function fileToBase64(file: File) {
   });
 }
 
-/**
- * Single-slot uploader for the shop's logo and cover. Points at
- * seller-service's owner-gated route (`/shops` ImageKit folder) rather than
- * product-service's, so shop branding isn't mixed in with product media.
- */
 export function SingleImageUploader({
   value,
   onChange,
@@ -35,8 +30,7 @@ export function SingleImageUploader({
   value: UploadedImage | null;
   onChange: (value: UploadedImage | null) => void;
   label: string;
-  /** Match the box to where the image actually displays, so cropping in the
-   * preview matches cropping on the storefront. */
+  /** Match the box to where the image displays, so previews crop the same. */
   aspectClassName?: string;
   className?: string;
 }) {
@@ -69,14 +63,10 @@ export function SingleImageUploader({
     if (!value) return;
     const removed = value;
     onChange(null);
-    // Branding hydrated from the Shops row only carries a URL: its ImageKit
-    // fileId was never persisted, so there is nothing to clean up.
     if (!removed.fileId) return;
     try {
       await api.delete(`/seller/api/shops/branding-image/${removed.fileId}`);
     } catch (err) {
-      // The image is already off the form; a failed cleanup isn't worth
-      // blocking the seller over.
       console.error('Image delete failed', err);
     }
   };

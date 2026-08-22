@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { User } from 'lucide-react';
 import { Button } from '@biashara-mall/ui/components/ui/button';
 import {
@@ -21,12 +22,22 @@ import {
   MessageScrollerItem,
   MessageScrollerProvider,
   MessageScrollerViewport,
+  useMessageScroller,
 } from '@biashara-mall/ui/components/ui/message-scroller';
 import type { ChatMessage } from '../../context/web-socket-context';
 
 export interface Counterpart {
   name: string;
   avatarUrl?: string | null;
+}
+
+// autoScroll only holds the bottom; this also snaps back after you send.
+function ScrollOnOwnMessage({ marker }: { marker: string | null }) {
+  const { scrollToEnd } = useMessageScroller();
+  useEffect(() => {
+    if (marker) scrollToEnd({ behavior: 'smooth' });
+  }, [marker, scrollToEnd]);
+  return null;
 }
 
 function timeOf(createdAt: string) {
@@ -52,8 +63,12 @@ export function MessagePane({
   isOwn: (message: ChatMessage) => boolean;
   counterpart: Counterpart;
 }) {
+  const last = messages[messages.length - 1];
+  const ownMarker =
+    last && isOwn(last) ? `${last.createdAt}-${last.senderId}` : null;
+
   return (
-    <MessageScrollerProvider>
+    <MessageScrollerProvider autoScroll>
       <MessageScroller className="min-h-0 flex-1">
         <MessageScrollerViewport className="px-4 py-4">
           <MessageScrollerContent className="gap-4">
@@ -123,6 +138,7 @@ export function MessagePane({
         </MessageScrollerViewport>
         <MessageScrollerButton />
       </MessageScroller>
+      <ScrollOnOwnMessage marker={ownMarker} />
     </MessageScrollerProvider>
   );
 }

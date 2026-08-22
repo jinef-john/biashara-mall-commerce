@@ -54,8 +54,7 @@ interface SettingsForm {
   x: string;
 }
 
-// Branding stored on the shop is a bare URL: the ImageKit fileId is never
-// persisted, so a removal has nothing to clean up remotely.
+// The shop stores a bare URL, so a removal has no fileId to clean up.
 function toUploaded(url: string | null | undefined): UploadedImage | null {
   return url ? { fileId: '', fileUrl: url } : null;
 }
@@ -113,9 +112,7 @@ export default function SettingsPage() {
     },
   });
 
-  // Branding saves on pick rather than waiting for the form's Save: the
-  // uploaded file already exists in ImageKit by then, so leaving the URL
-  // unpersisted would just orphan it.
+  // Saves on pick: the file is already in ImageKit, so an unsaved URL orphans it.
   const branding = useMutation({
     mutationFn: (data: { logoUrl?: string | null; coverUrl?: string | null }) =>
       api.patch('/seller/api/shops', data),
