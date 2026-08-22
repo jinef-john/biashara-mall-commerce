@@ -62,6 +62,7 @@
         "@biashara-mall/auth": "workspace:*",
         "@biashara-mall/config": "workspace:*",
         "@biashara-mall/error-handler": "workspace:*",
+        "@biashara-mall/kafka": "workspace:*",
         "@biashara-mall/prisma": "workspace:*",
         "@clerk/express": "^2.1.57",
         "dotenv": "^17.4.2",
@@ -98,6 +99,7 @@
       "version": "0.0.1",
       "dependencies": {
         "@biashara-mall/error-handler": "workspace:*",
+        "@biashara-mall/kafka": "workspace:*",
         "cors": "^2.8.6",
         "express": "^5.1.0",
         "express-rate-limit": "^8.0.1",
@@ -138,6 +140,20 @@
         "express": "^5.1.0",
       },
     },
+    "apps/logger-service": {
+      "name": "@biashara-mall/logger-service",
+      "version": "0.0.1",
+      "dependencies": {
+        "@biashara-mall/error-handler": "workspace:*",
+        "@biashara-mall/kafka": "workspace:*",
+        "dotenv": "^17.4.2",
+        "express": "^5.1.0",
+        "ws": "^8.21.3",
+      },
+      "devDependencies": {
+        "@types/ws": "^8.5.10",
+      },
+    },
     "apps/order-service": {
       "name": "@biashara-mall/order-service",
       "version": "0.0.1",
@@ -145,6 +161,7 @@
         "@biashara-mall/auth": "workspace:*",
         "@biashara-mall/config": "workspace:*",
         "@biashara-mall/error-handler": "workspace:*",
+        "@biashara-mall/kafka": "workspace:*",
         "@biashara-mall/payments": "workspace:*",
         "@biashara-mall/prisma": "workspace:*",
         "@biashara-mall/redis": "workspace:*",
@@ -160,6 +177,7 @@
         "@biashara-mall/auth": "workspace:*",
         "@biashara-mall/config": "workspace:*",
         "@biashara-mall/error-handler": "workspace:*",
+        "@biashara-mall/kafka": "workspace:*",
         "@biashara-mall/prisma": "workspace:*",
         "@clerk/express": "^2.1.57",
         "dotenv": "^17.4.2",
@@ -174,6 +192,7 @@
       "dependencies": {
         "@biashara-mall/auth": "workspace:*",
         "@biashara-mall/error-handler": "workspace:*",
+        "@biashara-mall/kafka": "workspace:*",
         "@biashara-mall/prisma": "workspace:*",
         "@clerk/express": "^2.1.57",
         "dotenv": "^17.4.2",
@@ -214,6 +233,7 @@
       "dependencies": {
         "@biashara-mall/auth": "workspace:*",
         "@biashara-mall/error-handler": "workspace:*",
+        "@biashara-mall/kafka": "workspace:*",
         "@biashara-mall/prisma": "workspace:*",
         "@clerk/express": "^2.1.57",
         "dotenv": "^17.4.2",
@@ -279,6 +299,7 @@
       "name": "@biashara-mall/error-handler",
       "version": "0.0.0",
       "dependencies": {
+        "@biashara-mall/kafka": "workspace:*",
         "express": "^5.1.0",
       },
     },
@@ -603,6 +624,8 @@
     "@biashara-mall/kafka": ["@biashara-mall/kafka@workspace:packages/kafka"],
 
     "@biashara-mall/kafka-service": ["@biashara-mall/kafka-service@workspace:apps/kafka-service"],
+
+    "@biashara-mall/logger-service": ["@biashara-mall/logger-service@workspace:apps/logger-service"],
 
     "@biashara-mall/order-service": ["@biashara-mall/order-service@workspace:apps/order-service"],
 

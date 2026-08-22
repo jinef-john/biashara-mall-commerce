@@ -69,6 +69,7 @@
     "dotenv": "^17.4.2",
     "express": "^5.1.0",
     "imagekit": "^6.0.0",
-    "node-cron": "^4.6.0"
+    "node-cron": "^4.6.0",
+    "@biashara-mall/kafka": "workspace:*"
   }
 }

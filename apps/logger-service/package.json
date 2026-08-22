@@ -1,5 +1,5 @@
 {
-  "name": "@biashara-mall/order-service",
+  "name": "@biashara-mall/logger-service",
   "version": "0.0.1",
   "private": true,
   "nx": {
@@ -11,8 +11,8 @@
         "cache": true,
         "executor": "@nx/js:prune-lockfile",
         "outputs": [
-          "{workspaceRoot}/apps/order-service/dist/package.json",
-          "{workspaceRoot}/apps/order-service/dist/bun.lock"
+          "{workspaceRoot}/apps/logger-service/dist/package.json",
+          "{workspaceRoot}/apps/logger-service/dist/bun.lock"
         ],
         "options": {
           "buildTarget": "build"
@@ -24,7 +24,7 @@
         ],
         "cache": true,
         "outputs": [
-          "{workspaceRoot}/apps/order-service/dist/workspace_modules"
+          "{workspaceRoot}/apps/logger-service/dist/workspace_modules"
         ],
         "executor": "@nx/js:copy-workspace-modules",
         "options": {
@@ -46,30 +46,28 @@
           "build"
         ],
         "options": {
-          "buildTarget": "@biashara-mall/order-service:build",
+          "buildTarget": "@biashara-mall/logger-service:build",
           "runBuildTargetDependencies": false
         },
         "configurations": {
           "development": {
-            "buildTarget": "@biashara-mall/order-service:build:development"
+            "buildTarget": "@biashara-mall/logger-service:build:development"
           },
           "production": {
-            "buildTarget": "@biashara-mall/order-service:build:production"
+            "buildTarget": "@biashara-mall/logger-service:build:production"
           }
         }
       }
     }
   },
   "dependencies": {
-    "express": "^5.1.0",
-    "@clerk/express": "^2.1.57",
-    "@biashara-mall/auth": "workspace:*",
-    "@biashara-mall/config": "workspace:*",
     "@biashara-mall/error-handler": "workspace:*",
-    "@biashara-mall/payments": "workspace:*",
-    "@biashara-mall/prisma": "workspace:*",
-    "@biashara-mall/redis": "workspace:*",
+    "@biashara-mall/kafka": "workspace:*",
     "dotenv": "^17.4.2",
-    "@biashara-mall/kafka": "workspace:*"
+    "express": "^5.1.0",
+    "ws": "^8.21.3"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.5.10"
   }
 }

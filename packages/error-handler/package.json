@@ -4,6 +4,7 @@
   "private": true,
   "main": "./src/index.ts",
   "dependencies": {
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "@biashara-mall/kafka": "workspace:*"
   }
 }

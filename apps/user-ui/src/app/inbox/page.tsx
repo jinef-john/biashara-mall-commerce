@@ -120,7 +120,7 @@ function Inbox() {
   );
 
   return (
-    <main className="mx-auto flex h-[calc(100dvh-var(--header-height,8rem))] max-w-6xl gap-4 px-4 py-4">
+    <main className="mx-auto flex h-[calc(100dvh-var(--site-header-height,8rem))] max-w-6xl gap-4 px-4 py-4">
       <aside className="flex w-72 shrink-0 flex-col overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest shadow-sm">
         <h1 className="shrink-0 border-b border-outline-variant px-4 py-3 text-title-md text-on-surface">
           Messages

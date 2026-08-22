@@ -66,6 +66,7 @@
     "@biashara-mall/prisma": "workspace:*",
     "@clerk/express": "^2.1.57",
     "dotenv": "^17.4.2",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "@biashara-mall/kafka": "workspace:*"
   }
 }

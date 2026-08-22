@@ -1,7 +1,8 @@
 import 'dotenv/config';
 import express from 'express';
 import { clerkMiddleware } from '@clerk/express';
-import { errorMiddleware } from '@biashara-mall/error-handler';
+import { createErrorMiddleware } from '@biashara-mall/error-handler';
+import { sendLog } from '@biashara-mall/kafka';
 import { requireAdmin } from '@biashara-mall/auth';
 import { productsRouter } from './routes/products';
 import { sellersRouter } from './routes/sellers';
@@ -30,10 +31,11 @@ app.use('/api', usersRouter);
 app.use('/api', customizationRouter);
 app.use('/api', notificationsRouter);
 
-app.use(errorMiddleware);
+app.use(createErrorMiddleware('admin-service'));
 
 const port = process.env.PORT || 6005;
 const server = app.listen(port, () => {
   console.log(`Listening at http://localhost:${port}/api`);
+  void sendLog({ type: 'info', message: `admin-service started on port ${port}`, source: 'admin-service' });
 });
 server.on('error', console.error);

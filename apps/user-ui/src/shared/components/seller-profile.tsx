@@ -46,7 +46,7 @@ interface SellerData {
 }
 
 const TAB_TRIGGER =
-  'px-4 font-medium data-active:bg-primary data-active:text-on-primary';
+  'px-4 font-medium data-[state=active]:bg-primary data-[state=active]:text-on-primary';
 
 function ProductsTab({ shopId }: { shopId: string }) {
   const { data, isPending } = useProducts({ shopId, limit: 20 });

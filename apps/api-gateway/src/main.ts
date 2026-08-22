@@ -3,7 +3,8 @@ import cors from 'cors';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import { createProxyMiddleware } from 'http-proxy-middleware';
-import { errorMiddleware } from '@biashara-mall/error-handler';
+import { createErrorMiddleware } from '@biashara-mall/error-handler';
+import { sendLog } from '@biashara-mall/kafka';
 
 const app = express();
 
@@ -113,10 +114,11 @@ for (const [prefix, { target }] of Object.entries(services)) {
   app.use(prefix, createProxyMiddleware({ target, changeOrigin: true }));
 }
 
-app.use(errorMiddleware);
+app.use(createErrorMiddleware('api-gateway'));
 
 const port = process.env.PORT || 8080;
 const server = app.listen(port, () => {
   console.log(`Listening at http://localhost:${port}/api`);
+  void sendLog({ type: 'info', message: `api-gateway started on port ${port}`, source: 'api-gateway' });
 });
 server.on('error', console.error);

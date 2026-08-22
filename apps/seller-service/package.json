@@ -67,6 +67,7 @@
     "@biashara-mall/error-handler": "workspace:*",
     "@biashara-mall/prisma": "workspace:*",
     "dotenv": "^17.4.2",
-    "imagekit": "^6.0.0"
+    "imagekit": "^6.0.0",
+    "@biashara-mall/kafka": "workspace:*"
   }
 }

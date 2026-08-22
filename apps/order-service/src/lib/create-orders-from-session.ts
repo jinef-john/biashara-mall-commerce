@@ -1,4 +1,5 @@
 import { prisma } from '@biashara-mall/prisma';
+import { sendLog } from '@biashara-mall/kafka';
 import { platformFee, sellerEarning, CURRENCY } from '@biashara-mall/config';
 import { getPaymentProvider } from '@biashara-mall/payments';
 import { deleteSession, getSession, type SessionCartItem } from './session';
@@ -109,6 +110,11 @@ export async function createOrdersFromSession(sessionId: string, paymentIntentId
         message: `Order ${order.id} placed by ${user.email}`,
         redirectLink: `/orders/${order.id}`,
       },
+    });
+    void sendLog({
+      type: 'success',
+      message: `Order ${order.id} placed for ${CURRENCY} ${shopTotal.toFixed(2)} (shop ${shopId})`,
+      source: 'order-service',
     });
   }
 

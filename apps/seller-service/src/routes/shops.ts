@@ -1,6 +1,7 @@
 import { Router, type Request, type Response } from 'express';
 import { getAuth } from '@clerk/express';
 import { prisma } from '@biashara-mall/prisma';
+import { sendLog } from '@biashara-mall/kafka';
 import { imagekit } from '../lib/imagekit';
 
 export const shopsRouter: Router = Router();
@@ -102,6 +103,12 @@ shopsRouter.post('/', async (req: Request, res: Response) => {
       category,
     },
     update: { name, bio, address, country, openingHours, website, category },
+  });
+
+  void sendLog({
+    type: 'success',
+    message: `Shop "${shop.name}" saved by owner ${userId}`,
+    source: 'seller-service',
   });
 
   return res.status(201).json({ shop });

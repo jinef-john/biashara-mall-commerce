@@ -1,7 +1,8 @@
 import 'dotenv/config';
 import express from 'express';
 import { clerkMiddleware } from '@clerk/express';
-import { errorMiddleware } from '@biashara-mall/error-handler';
+import { createErrorMiddleware } from '@biashara-mall/error-handler';
+import { sendLog } from '@biashara-mall/kafka';
 import { shopsRouter } from './routes/shops';
 import { publicShopsRouter } from './routes/public';
 import { followRouter } from './routes/follow';
@@ -25,10 +26,11 @@ app.use('/api', publicShopsRouter);
 app.use('/api', followRouter);
 app.use('/api/seller-notifications', notificationsRouter);
 
-app.use(errorMiddleware);
+app.use(createErrorMiddleware('seller-service'));
 
 const port = process.env.PORT || 6003;
 const server = app.listen(port, () => {
   console.log(`Listening at http://localhost:${port}/api`);
+  void sendLog({ type: 'info', message: `seller-service started on port ${port}`, source: 'seller-service' });
 });
 server.on('error', console.error);

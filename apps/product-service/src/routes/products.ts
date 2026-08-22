@@ -1,5 +1,6 @@
 import { Router, type Request, type Response } from 'express';
 import { prisma } from '@biashara-mall/prisma';
+import { sendLog } from '@biashara-mall/kafka';
 import { PRODUCT_PURGE_DELAY_MS } from '@biashara-mall/config';
 import { requireShop } from '../middleware/require-shop';
 import { imagekit } from '../lib/imagekit';
@@ -242,6 +243,12 @@ productsRouter.delete(
       },
     });
 
+    void sendLog({
+      type: 'warning',
+      message: `Product "${updated.title}" scheduled for deletion`,
+      source: 'product-service',
+    });
+
     return res.json({ product: updated });
   },
 );
@@ -332,6 +339,12 @@ productsRouter.post('/', requireShop, async (req: Request, res: Response) => {
       },
     },
     include: { images: true },
+  });
+
+  void sendLog({
+    type: 'success',
+    message: `Product "${product.title}" created by shop ${product.shopId}`,
+    source: 'product-service',
   });
 
   return res.status(201).json({ product });

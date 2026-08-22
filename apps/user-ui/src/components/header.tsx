@@ -45,7 +45,8 @@ export function Header() {
   const topRef = useRef<HTMLElement>(null);
   const navRef = useRef<HTMLDivElement>(null);
 
-  // The bar wraps at narrow widths, so the inbox reads a measured height.
+  // Own variable, not the 4rem --header-height token: this bar wraps and its
+  // real height is measured.
   useEffect(() => {
     const nodes = [topRef.current, navRef.current].filter(
       (node): node is HTMLElement => node !== null,
@@ -53,7 +54,7 @@ export function Header() {
     if (nodes.length === 0) return;
     const publish = () => {
       const total = nodes.reduce((sum, node) => sum + node.offsetHeight, 0);
-      document.documentElement.style.setProperty('--header-height', `${total}px`);
+      document.documentElement.style.setProperty('--site-header-height', `${total}px`);
     };
     publish();
     const observer = new ResizeObserver(publish);

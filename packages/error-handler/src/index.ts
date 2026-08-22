@@ -1,4 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
+import { sendLog } from '@biashara-mall/kafka';
 
 export class AppError extends Error {
   readonly statusCode: number;
@@ -55,11 +56,8 @@ export class RateLimitError extends AppError {
   }
 }
 
-/**
- * Must be mounted last, and must declare all four parameters: Express only
- * treats a handler as an error handler when arity is 4, so dropping the unused
- * `next` silently disables it.
- */
+// Mount last, and keep all four parameters: Express only treats a handler as
+// an error handler when its arity is 4.
 export function errorMiddleware(
   err: Error,
   req: Request,
@@ -82,4 +80,23 @@ export function errorMiddleware(
     status: 'error',
     message: 'Something went wrong, please try again later',
   });
+}
+
+// Same handler, plus a `logs` topic event tagged with the service name, so the
+// admin log stream and Loki see failures from every service in one place.
+export function createErrorMiddleware(source: string) {
+  return function loggedErrorMiddleware(
+    err: Error,
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): void {
+    const status = err instanceof AppError ? err.statusCode : 500;
+    void sendLog({
+      type: status >= 500 ? 'error' : 'warning',
+      message: `${req.method} ${req.originalUrl} ${status}: ${err.message}`,
+      source,
+    });
+    errorMiddleware(err, req, res, next);
+  };
 }

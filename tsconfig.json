@@ -38,6 +38,9 @@
     },
     {
       "path": "./apps/chatting-service"
+    },
+    {
+      "path": "./apps/logger-service"
     }
   ],
   "compilerOptions": {}

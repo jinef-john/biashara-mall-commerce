@@ -2,7 +2,8 @@ import 'dotenv/config';
 import http from 'http';
 import express from 'express';
 import { clerkMiddleware } from '@clerk/express';
-import { errorMiddleware } from '@biashara-mall/error-handler';
+import { createErrorMiddleware } from '@biashara-mall/error-handler';
+import { sendLog } from '@biashara-mall/kafka';
 import { ensureTopics } from '@biashara-mall/kafka';
 import { initWebSocket } from './websocket';
 import { startChatMessageConsumer } from './consumers/chat-message.consumer';
@@ -23,7 +24,7 @@ app.get('/api', (req, res) => {
 
 app.use('/api', conversationsRouter);
 
-app.use(errorMiddleware);
+app.use(createErrorMiddleware('chatting-service'));
 
 const server = http.createServer(app);
 initWebSocket(server);
@@ -31,6 +32,7 @@ initWebSocket(server);
 const port = process.env.PORT || 6006;
 server.listen(port, async () => {
   console.log(`Listening at http://localhost:${port}/api`);
+  void sendLog({ type: 'info', message: `chatting-service started on port ${port}`, source: 'chatting-service' });
   // Before subscribing: a missing topic would otherwise be broker-auto-created
   // with default partitioning instead of the count TOPICS declares.
   await ensureTopics();

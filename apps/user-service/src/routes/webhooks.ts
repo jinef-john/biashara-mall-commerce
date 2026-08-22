@@ -1,6 +1,7 @@
 import express, { Router, type Request, type Response } from 'express';
 import { verifyWebhook } from '@clerk/express/webhooks';
 import { prisma } from '@biashara-mall/prisma';
+import { sendLog } from '@biashara-mall/kafka';
 
 export const webhooksRouter: Router = Router();
 
@@ -60,6 +61,11 @@ webhooksRouter.post(
             // role is intentionally not updated: admin promotion is managed
             // in the admin dashboard, not by Clerk profile edits.
             update: { email, name, avatarUrl, deletedAt: null },
+          });
+          void sendLog({
+            type: 'info',
+            message: `Clerk ${evt.type}: ${email}`,
+            source: 'user-service',
           });
           break;
         }

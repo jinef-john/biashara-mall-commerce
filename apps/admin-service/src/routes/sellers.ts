@@ -1,5 +1,6 @@
 import { Router, type Request, type Response } from 'express';
 import { prisma, type Prisma } from '@biashara-mall/prisma';
+import { sendLog } from '@biashara-mall/kafka';
 import { NotFoundError, ValidationError } from '@biashara-mall/error-handler';
 
 export const sellersRouter: Router = Router();
@@ -55,6 +56,12 @@ sellersRouter.put('/update-seller-status/:id', async (req: Request, res: Respons
     const updated = await prisma.shops.update({
       where: { id: shop.id },
       data: { status: banned ? 'banned' : 'active' },
+    });
+
+    void sendLog({
+      type: 'warning',
+      message: `Shop ${shop.name} (${shop.id}) ${banned ? 'banned' : 'reinstated'}`,
+      source: 'admin-service',
     });
 
     res.json({ shop: updated });

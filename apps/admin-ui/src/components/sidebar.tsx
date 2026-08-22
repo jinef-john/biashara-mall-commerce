@@ -6,6 +6,7 @@ import {
   Bell,
   CalendarRange,
   LayoutDashboard,
+  ScrollText,
   Package,
   Settings,
   ShoppingBag,
@@ -55,6 +56,12 @@ const NAV = [
   {
     title: 'Sellers',
     items: [{ label: 'Sellers', href: '/dashboard/sellers', icon: Store }],
+  },
+  {
+    title: 'System',
+    items: [
+      { label: 'Logs', href: '/dashboard/loggers', icon: ScrollText },
+    ],
   },
   {
     title: 'Customization',
