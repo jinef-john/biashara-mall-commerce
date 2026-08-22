@@ -1,2 +1,7 @@
 export { ensureUser } from './ensure-user';
-export { requireUser, requireShop, requireAdmin } from './middleware';
+export {
+  requireUser,
+  requireActiveUser,
+  requireShop,
+  requireAdmin,
+} from './middleware';

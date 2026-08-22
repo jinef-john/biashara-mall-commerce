@@ -105,13 +105,14 @@ export function useHomeEvents() {
   });
 }
 
-export function useTopShops() {
+export function useTopShops(enabled = true) {
   return useQuery<{ shops: ShopCardData[] }>({
     queryKey: ['top-shops'],
     queryFn: async () => {
       const { data } = await publicApi.get('/product/api/top-shops');
       return data;
     },
+    enabled,
   });
 }
 

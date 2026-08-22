@@ -16,6 +16,11 @@ enum UserRole {
   admin
 }
 
+enum UserStatus {
+  active
+  banned
+}
+
 // Mirror of a Clerk user, kept in sync by the webhook in apps/user-service.
 // clerkId is what getAuth(req) returns; id is what every relation points at.
 model User {
@@ -25,6 +30,10 @@ model User {
   name    String?
   avatarUrl String?
   role    UserRole @default(user)
+
+  // Suspension is separate from deletion: an admin ban must stay
+  // distinguishable from a Clerk account that no longer exists.
+  status  UserStatus @default(active)
 
   // Soft delete: a Clerk user can vanish, but their orders must not.
   deletedAt DateTime?

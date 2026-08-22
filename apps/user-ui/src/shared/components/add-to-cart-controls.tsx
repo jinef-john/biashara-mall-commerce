@@ -8,6 +8,7 @@ import { cn } from '@biashara-mall/ui/lib/utils';
 import { useStore } from '../../store';
 import { useCartActions } from '../hooks/use-cart-actions';
 import type { ProductCardData, ProductDetail } from '../types';
+import { useIsSuspended } from '../../lib/use-me';
 
 function isLight(hex: string) {
   const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
@@ -28,6 +29,7 @@ export function AddToCartControls({
   const [quantity, setQuantity] = useState(1);
 
   const { addToCart, addToWishlist, removeFromWishlist } = useCartActions();
+  const suspended = useIsSuspended();
   const inWishlist = useStore((s) => s.wishlist.some((i) => i.id === product.id));
 
   const outOfStock = product.stock <= 0;
@@ -117,7 +119,8 @@ export function AddToCartControls({
         <Button
           type="button"
           className="flex-1"
-          disabled={outOfStock}
+          disabled={outOfStock || suspended}
+          title={suspended ? 'Your account is suspended' : undefined}
           onClick={() => addToCart({ ...lineItem, quantity })}
         >
           {outOfStock ? 'Out of stock' : 'Add to Cart'}
@@ -127,6 +130,8 @@ export function AddToCartControls({
           type="button"
           variant="outline"
           size="icon"
+          disabled={suspended}
+          title={suspended ? 'Your account is suspended' : undefined}
           aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
           onClick={() =>
             inWishlist

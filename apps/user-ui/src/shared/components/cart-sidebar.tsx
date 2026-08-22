@@ -9,19 +9,21 @@ import { Button } from '@biashara-mall/ui/components/ui/button';
 import { useStore } from '../../store';
 import { useCartActions } from '../hooks/use-cart-actions';
 import { formatPrice } from '../../lib/format';
+import { useIsSuspended } from '../../lib/use-me';
 
 export function CartSidebar() {
   const pathname = usePathname();
   const cart = useStore((s) => s.cart);
   const setQuantity = useStore((s) => s.setQuantity);
   const { removeFromCart } = useCartActions();
+  const suspended = useIsSuspended();
 
   const subtotal = useMemo(
     () => cart.reduce((sum, item) => sum + item.price * item.quantity, 0),
     [cart],
   );
 
-  if (cart.length === 0 || pathname === '/cart') return null;
+  if (suspended || cart.length === 0 || pathname === '/cart') return null;
 
   return (
     <aside className="sticky top-0 hidden h-screen w-50 shrink-0 flex-col border-l border-outline-variant bg-surface-container-lowest lg:flex">

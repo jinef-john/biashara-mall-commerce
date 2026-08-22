@@ -1,10 +1,10 @@
 import { Router, type Request, type Response } from 'express';
-import { requireUser } from '@biashara-mall/auth';
+import { requireActiveUser } from '@biashara-mall/auth';
 import { prisma } from '@biashara-mall/prisma';
 
 export const addressesRouter: Router = Router();
 
-addressesRouter.get('/', requireUser, async (req: Request, res: Response) => {
+addressesRouter.get('/', requireActiveUser, async (req: Request, res: Response) => {
   const addresses = await prisma.address.findMany({
     where: { userId: req.appUser!.id },
     orderBy: [{ isDefault: 'desc' }, { createdAt: 'desc' }],
@@ -13,7 +13,7 @@ addressesRouter.get('/', requireUser, async (req: Request, res: Response) => {
   return res.json({ addresses });
 });
 
-addressesRouter.post('/', requireUser, async (req: Request, res: Response) => {
+addressesRouter.post('/', requireActiveUser, async (req: Request, res: Response) => {
   const { label, name, street, city, zip, country, isDefault } = req.body;
 
   const missing = [
@@ -55,7 +55,7 @@ addressesRouter.post('/', requireUser, async (req: Request, res: Response) => {
 
 addressesRouter.delete(
   '/:id',
-  requireUser,
+  requireActiveUser,
   async (req: Request, res: Response) => {
     const userId = req.appUser!.id;
     const address = await prisma.address.findUnique({

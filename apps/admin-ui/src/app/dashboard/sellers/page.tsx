@@ -156,7 +156,7 @@ export default function AdminSellersPage() {
                     <TableCell>
                       <Button
                         type="button"
-                        variant={banned ? 'secondary' : 'outline'}
+                        variant={banned ? 'outline' : 'destructive'}
                         size="sm"
                         onClick={() => setPending(shop)}
                       >

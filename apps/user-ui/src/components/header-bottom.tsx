@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@biashara-mall/ui/components/ui/dropdown-menu';
 import { useSiteConfig } from '../lib/use-site-config';
+import { useIsSuspended } from '../lib/use-me';
 
 const NAV = [
   { label: 'Home', href: '/' },
@@ -24,6 +25,10 @@ export function HeaderBottom({ ref }: { ref?: React.Ref<HTMLDivElement> }) {
   const pathname = usePathname();
   const { data: config } = useSiteConfig();
   const [stuck, setStuck] = useState(false);
+  const suspended = useIsSuspended();
+  const nav = suspended
+    ? NAV.filter((item) => item.href === '/' || item.href === '/products')
+    : NAV;
 
   useEffect(() => {
     const onScroll = () => setStuck(window.scrollY > 100);
@@ -66,7 +71,7 @@ export function HeaderBottom({ ref }: { ref?: React.Ref<HTMLDivElement> }) {
         </DropdownMenu>
 
         <nav className="flex items-center gap-1 overflow-x-auto">
-          {NAV.map((item) => (
+          {nav.map((item) => (
             <Button
               key={item.href}
               asChild

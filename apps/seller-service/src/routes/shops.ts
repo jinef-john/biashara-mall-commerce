@@ -1,5 +1,6 @@
 import { Router, type Request, type Response } from 'express';
 import { getAuth } from '@clerk/express';
+import { ensureUser } from '@biashara-mall/auth';
 import { prisma } from '@biashara-mall/prisma';
 import { sendLog } from '@biashara-mall/kafka';
 import { imagekit } from '../lib/imagekit';
@@ -80,6 +81,15 @@ shopsRouter.post('/', async (req: Request, res: Response) => {
     return res
       .status(403)
       .json({ message: 'Only the shop owner can set up shop details' });
+  }
+
+  // A suspended buyer must not be able to open a shop by going straight to
+  // seller-ui; hiding the button in user-ui is not the control.
+  const owner = await ensureUser(userId);
+  if (owner.status === 'banned') {
+    return res
+      .status(403)
+      .json({ code: 'ACCOUNT_SUSPENDED', message: 'This account is suspended' });
   }
 
   const { name, bio, address, country, openingHours, website, category } =

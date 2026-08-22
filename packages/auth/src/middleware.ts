@@ -13,7 +13,11 @@ declare global {
   }
 }
 
-/** Signed-in end user. Attaches req.appUser, creating the row if needed. */
+/**
+ * Signed-in end user. Attaches req.appUser, creating the row if needed.
+ * A suspended account still passes: it must be able to read its own orders
+ * and see why it was suspended. Use requireActiveUser to block one.
+ */
 export async function requireUser(
   req: Request,
   res: Response,
@@ -37,6 +41,24 @@ export async function requireUser(
   } catch (err) {
     next(err);
   }
+}
+
+/** Everything requireUser does, and rejects a suspended account. */
+export async function requireActiveUser(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  await requireUser(req, res, () => {
+    if (req.appUser?.status === 'banned') {
+      res.status(403).json({
+        code: 'ACCOUNT_SUSPENDED',
+        message: 'This account is suspended',
+      });
+      return;
+    }
+    next();
+  });
 }
 
 /** Seller acting on their own shop. Attaches req.shop. */

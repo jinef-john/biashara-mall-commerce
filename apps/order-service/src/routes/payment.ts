@@ -1,5 +1,5 @@
 import { Router, type Request, type Response } from 'express';
-import { requireUser } from '@biashara-mall/auth';
+import { requireActiveUser } from '@biashara-mall/auth';
 import { prisma } from '@biashara-mall/prisma';
 import { CURRENCY, PLATFORM_FEE_BPS } from '@biashara-mall/config';
 import { getPaymentProvider } from '@biashara-mall/payments';
@@ -52,7 +52,7 @@ async function normalizeCart(cart: CartInput[]): Promise<
 
 paymentRouter.post(
   '/create-payment-session',
-  requireUser,
+  requireActiveUser,
   async (req: Request, res: Response) => {
     const userId = req.appUser!.id;
     const { cart } = req.body as { cart: CartInput[] };
@@ -116,7 +116,7 @@ paymentRouter.post(
 
 paymentRouter.get(
   '/verifying-payment-session',
-  requireUser,
+  requireActiveUser,
   async (req: Request, res: Response) => {
     const sessionId = String(req.query.sessionId ?? '');
     const session = await getSession(sessionId);
@@ -135,7 +135,7 @@ paymentRouter.get(
 
 paymentRouter.post(
   '/create-payment-intent',
-  requireUser,
+  requireActiveUser,
   async (req: Request, res: Response) => {
     const { sessionId } = req.body;
     const session = await getSession(String(sessionId ?? ''));
@@ -168,7 +168,7 @@ paymentRouter.post(
  * never be used to fabricate a paid order once real Stripe is configured. */
 paymentRouter.post(
   '/confirm-mock-payment',
-  requireUser,
+  requireActiveUser,
   async (req: Request, res: Response) => {
     const provider = getPaymentProvider();
     if (provider.name !== 'mock') {
@@ -190,7 +190,7 @@ paymentRouter.post(
 
 paymentRouter.put(
   '/verify-coupon',
-  requireUser,
+  requireActiveUser,
   async (req: Request, res: Response) => {
     const { sessionId, code } = req.body;
     const session = await getSession(String(sessionId ?? ''));
@@ -251,7 +251,7 @@ paymentRouter.put(
 
 paymentRouter.delete(
   '/verify-coupon',
-  requireUser,
+  requireActiveUser,
   async (req: Request, res: Response) => {
     const { sessionId } = req.body;
     const session = await getSession(String(sessionId ?? ''));

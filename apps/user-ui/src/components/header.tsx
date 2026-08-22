@@ -13,6 +13,7 @@ import { useLayout } from '../lib/use-layout';
 import { useStore } from '../store';
 import { useHydrated } from '../lib/use-hydrated';
 import { useNotifications } from '../shared/hooks/use-notifications';
+import { useIsSuspended } from '../lib/use-me';
 import { useWebSocket } from '../context/web-socket-context';
 import { HeaderBottom } from './header-bottom';
 
@@ -41,6 +42,7 @@ export function Header() {
   const unreadCount = notifications?.filter((n) => n.status === 'unread').length ?? 0;
   const { unreadCounts } = useWebSocket();
   const unreadMessages = Object.values(unreadCounts).reduce((sum, n) => sum + n, 0);
+  const suspended = useIsSuspended();
 
   const topRef = useRef<HTMLElement>(null);
   const navRef = useRef<HTMLDivElement>(null);
@@ -105,26 +107,32 @@ export function Header() {
           </form>
 
           <div className="ml-auto flex shrink-0 items-center gap-1 md:ml-0">
-            <Button asChild variant="ghost" className="hidden lg:inline-flex">
-              <a href={SELLER_URL}>
-                <Store />
-                Become a seller
-              </a>
-            </Button>
+            {!suspended && (
+              <Button asChild variant="ghost" className="hidden lg:inline-flex">
+                <a href={SELLER_URL}>
+                  <Store />
+                  Become a seller
+                </a>
+              </Button>
+            )}
 
-            <Button asChild variant="ghost" size="icon" className="relative">
-              <Link href="/wishlist" aria-label="Wishlist">
-                <Heart />
-                {hydrated && <CountBadge count={wishlistCount} />}
-              </Link>
-            </Button>
+            {!suspended && (
+              <>
+                <Button asChild variant="ghost" size="icon" className="relative">
+                  <Link href="/wishlist" aria-label="Wishlist">
+                    <Heart />
+                    {hydrated && <CountBadge count={wishlistCount} />}
+                  </Link>
+                </Button>
 
-            <Button asChild variant="ghost" size="icon" className="relative">
-              <Link href="/cart" aria-label="Cart">
-                <ShoppingCart />
-                {hydrated && <CountBadge count={cartCount} />}
-              </Link>
-            </Button>
+                <Button asChild variant="ghost" size="icon" className="relative">
+                  <Link href="/cart" aria-label="Cart">
+                    <ShoppingCart />
+                    {hydrated && <CountBadge count={cartCount} />}
+                  </Link>
+                </Button>
+              </>
+            )}
 
             <Show when="signed-out">
               <SignInButton mode="modal">
@@ -135,12 +143,14 @@ export function Header() {
               </SignUpButton>
             </Show>
             <Show when="signed-in">
-              <Button asChild variant="ghost" size="icon" className="relative" aria-label="Messages">
-                <Link href="/inbox">
-                  <MessagesSquare />
-                  <CountBadge count={unreadMessages} />
-                </Link>
-              </Button>
+              {!suspended && (
+                <Button asChild variant="ghost" size="icon" className="relative" aria-label="Messages">
+                  <Link href="/inbox">
+                    <MessagesSquare />
+                    <CountBadge count={unreadMessages} />
+                  </Link>
+                </Button>
+              )}
               <Button asChild variant="ghost" size="icon" className="relative" aria-label="Notifications">
                 <Link href="/notifications">
                   <Bell />

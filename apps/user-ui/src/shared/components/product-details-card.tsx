@@ -14,6 +14,7 @@ import { formatPrice } from '../../lib/format';
 import { Ratings } from './ratings';
 import { AddToCartControls } from './add-to-cart-controls';
 import { ChatWithSellerButton } from './chat/chat-with-seller-button';
+import { useIsSuspended } from '../../lib/use-me';
 
 /** Quick-view modal opened from a product card's Eye action. */
 export function ProductDetailsCard({
@@ -26,6 +27,7 @@ export function ProductDetailsCard({
   onOpenChange: (open: boolean) => void;
 }) {
   const { data, isPending } = useProduct(slug);
+  const suspended = useIsSuspended();
   const [activeImage, setActiveImage] = useState(0);
   const product = data?.product;
 
@@ -94,12 +96,18 @@ export function ProductDetailsCard({
                 {product.title}
               </DialogTitle>
               <div className="flex flex-wrap items-center gap-3">
-                <Link
-                  href={`/shop/${product.shop.id}`}
-                  className="text-label-md text-primary hover:underline"
-                >
-                  {product.shop.name}
-                </Link>
+                {suspended ? (
+                  <span className="text-label-md text-on-surface-variant">
+                    {product.shop.name}
+                  </span>
+                ) : (
+                  <Link
+                    href={`/shop/${product.shop.id}`}
+                    className="text-label-md text-primary hover:underline"
+                  >
+                    {product.shop.name}
+                  </Link>
+                )}
                 <ChatWithSellerButton
                   shopId={product.shop.id}
                   shopName={product.shop.name}

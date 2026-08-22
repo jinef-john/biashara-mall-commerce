@@ -8,12 +8,16 @@ import { useHomeEvents, useHomeProducts, useTopShops } from '../lib/queries';
 import { ProductSection } from '../shared/components/product-section';
 import { ShopSection } from '../shared/components/shop-section';
 import { HeroSkeleton } from '../shared/components/skeletons';
+import { useIsSuspended } from '../lib/use-me';
 
 export default function Home() {
   const { data: layout, isPending: layoutPending } = useLayout();
   const { data: homeProducts, isPending: productsPending } = useHomeProducts();
   const { data: homeEvents, isPending: eventsPending } = useHomeEvents();
-  const { data: topShops, isPending: shopsPending } = useTopShops();
+  const suspended = useIsSuspended();
+  // Not fetched at all when suspended: shops and offers are unreachable for
+  // them, so the request is pure waste.
+  const { data: topShops, isPending: shopsPending } = useTopShops(!suspended);
 
   return (
     <main className="mx-auto flex max-w-7xl flex-col gap-10 px-4 py-8">
@@ -55,19 +59,23 @@ export default function Home() {
         isPending={productsPending}
       />
 
-      <ShopSection
-        title="Top shops"
-        viewAllHref="/shops"
-        shops={topShops?.shops}
-        isPending={shopsPending}
-      />
+      {!suspended && (
+        <>
+          <ShopSection
+            title="Top shops"
+            viewAllHref="/shops"
+            shops={topShops?.shops}
+            isPending={shopsPending}
+          />
 
-      <ProductSection
-        title="Top offers"
-        viewAllHref="/offers"
-        products={homeEvents?.products}
-        isPending={eventsPending}
-      />
+          <ProductSection
+            title="Top offers"
+            viewAllHref="/offers"
+            products={homeEvents?.products}
+            isPending={eventsPending}
+          />
+        </>
+      )}
     </main>
   );
 }

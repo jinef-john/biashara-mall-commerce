@@ -5,6 +5,7 @@ import { QueryProvider } from '../components/query-provider';
 import { ChatProvider } from '../components/chat-provider';
 import { Header } from '../components/header';
 import { CartSidebar } from '../shared/components/cart-sidebar';
+import { SuspendedBanner } from '../shared/components/suspended-banner';
 import './global.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
@@ -33,6 +34,7 @@ export default function RootLayout({
               <div className="flex">
                 <div className="min-w-0 flex-1">
                   <Header />
+                  <SuspendedBanner />
                   {children}
                 </div>
                 <CartSidebar />

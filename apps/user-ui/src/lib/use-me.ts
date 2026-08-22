@@ -10,6 +10,7 @@ export interface Me {
   email: string;
   avatarUrl: string | null;
   role: 'user' | 'admin';
+  status: 'active' | 'banned';
 }
 
 // The Mongo User.id, not the Clerk id: chat handshakes and every participant
@@ -27,4 +28,9 @@ export function useMe() {
     enabled: Boolean(isSignedIn),
     staleTime: Infinity,
   });
+}
+
+export function useIsSuspended(): boolean {
+  const { data } = useMe();
+  return data?.status === 'banned';
 }

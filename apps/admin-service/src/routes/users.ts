@@ -1,6 +1,7 @@
 import { Router, type Request, type Response } from 'express';
 import { clerkClient } from '@clerk/express';
 import { prisma, type Prisma, type UserRole } from '@biashara-mall/prisma';
+import { sendLog } from '@biashara-mall/kafka';
 import { ForbiddenError, NotFoundError, ValidationError } from '@biashara-mall/error-handler';
 
 export const usersRouter: Router = Router();
@@ -85,7 +86,13 @@ usersRouter.put('/update-user-status/:id', async (req: Request, res: Response, n
 
     const updated = await prisma.user.update({
       where: { id: targetId },
-      data: { deletedAt: banned ? new Date() : null },
+      data: { status: banned ? 'banned' : 'active' },
+    });
+
+    void sendLog({
+      type: 'warning',
+      message: `User ${user.email} ${banned ? 'suspended' : 'reinstated'}`,
+      source: 'admin-service',
     });
 
     res.json({ user: updated });

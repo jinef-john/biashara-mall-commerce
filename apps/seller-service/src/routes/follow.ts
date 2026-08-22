@@ -1,12 +1,12 @@
 import { Router, type Request, type Response } from 'express';
-import { requireUser } from '@biashara-mall/auth';
+import { requireActiveUser } from '@biashara-mall/auth';
 import { prisma } from '@biashara-mall/prisma';
 
 export const followRouter: Router = Router();
 
 followRouter.post(
   '/follow-shop',
-  requireUser,
+  requireActiveUser,
   async (req: Request, res: Response) => {
     const { shopId } = req.body;
     if (!shopId) {
@@ -30,7 +30,7 @@ followRouter.post(
 
 followRouter.post(
   '/unfollow-shop',
-  requireUser,
+  requireActiveUser,
   async (req: Request, res: Response) => {
     const { shopId } = req.body;
     if (!shopId) {

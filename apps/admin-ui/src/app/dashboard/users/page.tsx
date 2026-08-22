@@ -31,7 +31,7 @@ interface AdminUser {
   name: string | null;
   email: string;
   role: 'user' | 'admin';
-  deletedAt: string | null;
+  status: 'active' | 'banned';
   createdAt: string;
 }
 
@@ -70,7 +70,9 @@ export default function AdminUsersPage() {
     onSuccess: (_res, { user, banned }) => {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
       setPending(null);
-      toast.success(banned ? `${user.email} banned` : `${user.email} unbanned`);
+      toast.success(
+        banned ? `${user.email} suspended` : `${user.email} reinstated`,
+      );
     },
     onError: () => {
       toast.error('Could not update this user');
@@ -100,15 +102,16 @@ export default function AdminUsersPage() {
 
   const dialogCopy: Record<PendingAction['type'], { title: string; description: string; confirmLabel: string; destructive: boolean }> = {
     ban: {
-      title: 'Ban this user?',
-      description: 'They will be signed out of every session and unable to use the platform until unbanned.',
-      confirmLabel: 'Ban user',
+      title: 'Suspend this user?',
+      description:
+        'They keep their account and order history, but cannot buy, message sellers, use the cart or wishlist, follow shops, or review. A banner tells them the account is suspended.',
+      confirmLabel: 'Suspend user',
       destructive: true,
     },
     unban: {
-      title: 'Unban this user?',
-      description: 'They will regain full access immediately.',
-      confirmLabel: 'Unban user',
+      title: 'Reinstate this user?',
+      description: 'They regain full access immediately.',
+      confirmLabel: 'Reinstate user',
       destructive: false,
     },
     'make-admin': {
@@ -196,7 +199,7 @@ export default function AdminUsersPage() {
             </TableHeader>
             <TableBody>
               {users.map((user) => {
-                const banned = Boolean(user.deletedAt);
+                const banned = user.status === 'banned';
                 return (
                   <TableRow key={user.id}>
                     <TableCell className="min-w-0">
@@ -209,7 +212,7 @@ export default function AdminUsersPage() {
                     </TableCell>
                     <TableCell>
                       {banned ? (
-                        <Badge variant="destructive">Banned</Badge>
+                        <Badge variant="destructive">Suspended</Badge>
                       ) : (
                         <Badge variant="secondary">Active</Badge>
                       )}
@@ -232,7 +235,7 @@ export default function AdminUsersPage() {
                         {user.role !== 'admin' && (
                           <Button
                             type="button"
-                            variant={banned ? 'secondary' : 'outline'}
+                            variant={banned ? 'outline' : 'destructive'}
                             size="sm"
                             onClick={() =>
                               setPending({ type: banned ? 'unban' : 'ban', user })

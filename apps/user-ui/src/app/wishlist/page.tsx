@@ -7,8 +7,9 @@ import { Button } from '@biashara-mall/ui/components/ui/button';
 import { useStore, type LineItem } from '../../store';
 import { useCartActions } from '../../shared/hooks/use-cart-actions';
 import { formatPrice } from '../../lib/format';
+import { SuspendedGate } from '../../shared/components/suspended-gate';
 
-export default function WishlistPage() {
+function WishlistPage() {
   const wishlist = useStore((s) => s.wishlist);
   const setQuantity = useStore((s) => s.setQuantity);
   const { addToCart, removeFromWishlist } = useCartActions();
@@ -123,5 +124,13 @@ export default function WishlistPage() {
         ))}
       </div>
     </main>
+  );
+}
+
+export default function Page() {
+  return (
+    <SuspendedGate>
+      <WishlistPage />
+    </SuspendedGate>
   );
 }

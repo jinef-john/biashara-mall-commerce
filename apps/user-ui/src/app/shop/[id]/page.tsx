@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { serverGet } from '../../../lib/server-api';
 import { SellerProfile } from '../../../shared/components/seller-profile';
+import { SuspendedGate } from '../../../shared/components/suspended-gate';
 import type { ShopSummary } from '../../../shared/types';
 
 interface Props {
@@ -50,5 +51,9 @@ export default async function ShopPage({ params }: Props) {
 
   if (!data) notFound();
 
-  return <SellerProfile shopId={id} initial={data} />;
+  return (
+    <SuspendedGate>
+      <SellerProfile shopId={id} initial={data} />
+    </SuspendedGate>
+  );
 }

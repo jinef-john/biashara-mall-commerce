@@ -15,6 +15,7 @@ import { cartToPayload } from '../../lib/use-checkout';
 import { ConfirmDialog } from '../../shared/components/confirm-dialog';
 import { AddressFormDialog } from '../../shared/components/address-form-dialog';
 import { formatPrice } from '../../lib/format';
+import { SuspendedGate } from '../../shared/components/suspended-gate';
 
 interface ShopGroup {
   shopId: string;
@@ -33,7 +34,7 @@ function groupByShop(cart: LineItem[]): ShopGroup[] {
   return [...groups.values()];
 }
 
-export default function CartPage() {
+function CartPage() {
   const router = useRouter();
   const api = useApi();
   const cart = useStore((s) => s.cart);
@@ -252,5 +253,13 @@ export default function CartPage() {
         forceDefault
       />
     </main>
+  );
+}
+
+export default function Page() {
+  return (
+    <SuspendedGate>
+      <CartPage />
+    </SuspendedGate>
   );
 }

@@ -1,5 +1,5 @@
 import { Router, type Request, type Response } from 'express';
-import { requireShop, requireUser } from '@biashara-mall/auth';
+import { requireShop, requireActiveUser } from '@biashara-mall/auth';
 import { prisma } from '@biashara-mall/prisma';
 import { getUnseenCount, redis } from '@biashara-mall/redis';
 
@@ -38,7 +38,7 @@ async function productContext(productId: string | null) {
 
 conversationsRouter.post(
   '/create-user-conversationGroup',
-  requireUser,
+  requireActiveUser,
   async (req: Request, res: Response) => {
     const { shopId, productId } = req.body;
     if (!shopId) return res.status(400).json({ message: 'shopId is required' });
@@ -85,7 +85,7 @@ conversationsRouter.post(
 
 conversationsRouter.get(
   '/get-user-conversations',
-  requireUser,
+  requireActiveUser,
   async (req: Request, res: Response) => {
     const userId = req.appUser!.id;
     const groups = await prisma.conversationGroup.findMany({
@@ -196,7 +196,7 @@ async function listMessages(req: Request, res: Response, viewerId: string) {
 
 conversationsRouter.get(
   '/get-messages/:conversationId',
-  requireUser,
+  requireActiveUser,
   async (req: Request, res: Response) => listMessages(req, res, req.appUser!.id),
 );
 

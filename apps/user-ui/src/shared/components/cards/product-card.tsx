@@ -14,10 +14,12 @@ import { formatPrice } from '../../../lib/format';
 import { Ratings } from '../ratings';
 import { ProductDetailsCard } from '../product-details-card';
 import type { ProductCardData } from '../../types';
+import { useIsSuspended } from '../../../lib/use-me';
 
 export function ProductCard({ product }: { product: ProductCardData }) {
   const [quickView, setQuickView] = useState(false);
   const { addToCart, addToWishlist, removeFromWishlist } = useCartActions();
+  const suspended = useIsSuspended();
   const inWishlist = useStore((s) => s.wishlist.some((i) => i.id === product.id));
 
   const isEvent = Boolean(product.startingDate);
@@ -77,6 +79,8 @@ export function ProductCard({ product }: { product: ProductCardData }) {
               size="icon"
               variant="outline"
               className="size-8 rounded-full border-transparent bg-surface-container-lowest shadow hover:bg-surface-container-lowest"
+              disabled={suspended}
+              title={suspended ? 'Your account is suspended' : undefined}
               aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
               onClick={(e) => {
                 e.preventDefault();
@@ -114,7 +118,8 @@ export function ProductCard({ product }: { product: ProductCardData }) {
               size="icon"
               className="size-8 rounded-full shadow"
               aria-label="Add to cart"
-              disabled={outOfStock}
+              disabled={outOfStock || suspended}
+              title={suspended ? 'Your account is suspended' : undefined}
               onClick={quickAdd}
             >
               <Plus />

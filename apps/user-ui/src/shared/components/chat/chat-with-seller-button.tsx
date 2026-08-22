@@ -9,6 +9,7 @@ import { Button } from '@biashara-mall/ui/components/ui/button';
 import { useApi } from '../../../lib/api';
 import { ChatDialog } from './chat-dialog';
 import type { ProductContext } from './product-context-card';
+import { useIsSuspended } from '../../../lib/use-me';
 
 export function ChatWithSellerButton({
   shopId,
@@ -25,6 +26,7 @@ export function ChatWithSellerButton({
 }) {
   const api = useApi();
   const { isSignedIn } = useAuth();
+  const suspended = useIsSuspended();
   const [open, setOpen] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
 
@@ -49,7 +51,8 @@ export function ChatWithSellerButton({
         type="button"
         variant="outline"
         size={size}
-        disabled={start.isPending}
+        disabled={start.isPending || suspended}
+        title={suspended ? 'Your account is suspended' : undefined}
         onClick={() => {
           if (!isSignedIn) {
             toast.error('Sign in to message this shop');

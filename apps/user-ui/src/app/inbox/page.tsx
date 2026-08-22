@@ -23,6 +23,7 @@ import {
 import { Badge } from '@biashara-mall/ui/components/ui/badge';
 import { Button } from '@biashara-mall/ui/components/ui/button';
 import { NotificationListSkeleton } from '../../shared/components/skeletons';
+import { SuspendedGate } from '../../shared/components/suspended-gate';
 
 interface Conversation {
   id: string;
@@ -260,8 +261,10 @@ function Inbox() {
 
 export default function InboxPage() {
   return (
-    <Suspense fallback={null}>
-      <Inbox />
-    </Suspense>
+    <SuspendedGate>
+      <Suspense fallback={null}>
+        <Inbox />
+      </Suspense>
+    </SuspendedGate>
   );
 }

@@ -15,9 +15,11 @@ import { ImageZoom } from './image-zoom';
 import { RelatedProducts } from './related-products';
 import { ChatWithSellerButton } from './chat/chat-with-seller-button';
 import type { ProductDetail } from '../types';
+import { useIsSuspended } from '../../lib/use-me';
 
 export function ProductDetails({ product }: { product: ProductDetail }) {
   const [activeImage, setActiveImage] = useState(0);
+  const suspended = useIsSuspended();
   const track = useTrackEvent();
   useEffect(() => {
     track('product_view', { productId: product.id });
@@ -74,13 +76,20 @@ export function ProductDetails({ product }: { product: ProductDetail }) {
           <h1 className="text-headline-lg text-on-surface">{product.title}</h1>
 
           <div className="flex flex-wrap items-center gap-3">
-            <Link
-              href={`/shop/${product.shop.id}`}
-              className="flex w-fit items-center gap-2 text-label-md text-on-surface-variant hover:text-primary"
-            >
-              <Store className="size-4" />
-              {product.shop.name}
-            </Link>
+            {suspended ? (
+              <span className="flex w-fit items-center gap-2 text-label-md text-on-surface-variant">
+                <Store className="size-4" />
+                {product.shop.name}
+              </span>
+            ) : (
+              <Link
+                href={`/shop/${product.shop.id}`}
+                className="flex w-fit items-center gap-2 text-label-md text-on-surface-variant hover:text-primary"
+              >
+                <Store className="size-4" />
+                {product.shop.name}
+              </Link>
+            )}
             <ChatWithSellerButton
               shopId={product.shop.id}
               shopName={product.shop.name}
