@@ -12,6 +12,7 @@ import {
   type SessionCartItem,
 } from '../lib/session';
 import { createOrdersFromSession } from '../lib/create-orders-from-session';
+import { computeDiscount } from '../lib/pricing';
 
 export const paymentRouter: Router = Router();
 
@@ -24,9 +25,9 @@ interface CartInput {
 
 /** Re-derives cart line items from the database: a client-supplied price is
  * never trusted for anything that ends up in a PaymentIntent amount. */
-async function normalizeCart(cart: CartInput[]): Promise<
-  { error: string } | { items: SessionCartItem[] }
-> {
+async function normalizeCart(
+  cart: CartInput[],
+): Promise<{ error: string } | { items: SessionCartItem[] }> {
   const items: SessionCartItem[] = [];
 
   for (const line of cart) {
@@ -43,7 +44,8 @@ async function normalizeCart(cart: CartInput[]): Promise<
       quantity: line.quantity,
       salePrice: product.salePrice,
       shopId: product.shopId,
-      selectedOptions: line.color || line.size ? { color: line.color, size: line.size } : null,
+      selectedOptions:
+        line.color || line.size ? { color: line.color, size: line.size } : null,
     });
   }
 
@@ -122,7 +124,9 @@ paymentRouter.get(
     const session = await getSession(sessionId);
 
     if (!session || session.userId !== req.appUser!.id) {
-      return res.status(404).json({ message: 'Checkout session not found or expired' });
+      return res
+        .status(404)
+        .json({ message: 'Checkout session not found or expired' });
     }
 
     return res.json({
@@ -141,7 +145,9 @@ paymentRouter.post(
     const session = await getSession(String(sessionId ?? ''));
 
     if (!session || session.userId !== req.appUser!.id) {
-      return res.status(404).json({ message: 'Checkout session not found or expired' });
+      return res
+        .status(404)
+        .json({ message: 'Checkout session not found or expired' });
     }
 
     const shops = await prisma.shops.findMany({
@@ -172,17 +178,24 @@ paymentRouter.post(
   async (req: Request, res: Response) => {
     const provider = getPaymentProvider();
     if (provider.name !== 'mock') {
-      return res.status(403).json({ message: 'Not available with a live payment provider' });
+      return res
+        .status(403)
+        .json({ message: 'Not available with a live payment provider' });
     }
 
     const { sessionId } = req.body;
     const session = await getSession(String(sessionId ?? ''));
 
     if (!session || session.userId !== req.appUser!.id) {
-      return res.status(404).json({ message: 'Checkout session not found or expired' });
+      return res
+        .status(404)
+        .json({ message: 'Checkout session not found or expired' });
     }
 
-    const orders = await createOrdersFromSession(session.sessionId, `pi_mock_${session.sessionId}`);
+    const orders = await createOrdersFromSession(
+      session.sessionId,
+      `pi_mock_${session.sessionId}`,
+    );
 
     return res.json({ orderIds: orders.map((o) => o.id) });
   },
@@ -196,7 +209,9 @@ paymentRouter.put(
     const session = await getSession(String(sessionId ?? ''));
 
     if (!session || session.userId !== req.appUser!.id) {
-      return res.status(404).json({ message: 'Checkout session not found or expired' });
+      return res
+        .status(404)
+        .json({ message: 'Checkout session not found or expired' });
     }
     if (!code) {
       return res.status(400).json({ valid: false, message: 'Enter a code' });
@@ -217,18 +232,20 @@ paymentRouter.put(
       },
     });
     if (!matchingProduct) {
-      return res
-        .status(400)
-        .json({ valid: false, message: 'This code does not apply to anything in your cart' });
+      return res.status(400).json({
+        valid: false,
+        message: 'This code does not apply to anything in your cart',
+      });
     }
 
-    const cartItem = session.cart.find((i) => i.productId === matchingProduct.id)!;
-    const itemTotal = cartItem.salePrice * cartItem.quantity;
-    const rawDiscount =
-      discountCode.discountType === 'percentage'
-        ? itemTotal * (discountCode.discountValue / 100)
-        : discountCode.discountValue;
-    const discountAmount = Math.round(Math.min(rawDiscount, itemTotal) * 100) / 100;
+    const cartItem = session.cart.find(
+      (i) => i.productId === matchingProduct.id,
+    )!;
+    const discountAmount = computeDiscount(
+      cartItem.salePrice * cartItem.quantity,
+      discountCode.discountType,
+      discountCode.discountValue,
+    );
 
     session.couponCode = discountCode.discountCode;
     session.discount = {
@@ -257,7 +274,9 @@ paymentRouter.delete(
     const session = await getSession(String(sessionId ?? ''));
 
     if (!session || session.userId !== req.appUser!.id) {
-      return res.status(404).json({ message: 'Checkout session not found or expired' });
+      return res
+        .status(404)
+        .json({ message: 'Checkout session not found or expired' });
     }
 
     session.couponCode = null;
@@ -268,4 +287,3 @@ paymentRouter.delete(
     return res.json({ total: session.total });
   },
 );
-

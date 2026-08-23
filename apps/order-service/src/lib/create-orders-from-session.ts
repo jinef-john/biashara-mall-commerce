@@ -2,7 +2,8 @@ import { prisma } from '@biashara-mall/prisma';
 import { produce, sendLog, TOPICS } from '@biashara-mall/kafka';
 import { platformFee, sellerEarning, CURRENCY } from '@biashara-mall/config';
 import { getPaymentProvider } from '@biashara-mall/payments';
-import { deleteSession, getSession, type SessionCartItem } from './session';
+import { deleteSession, getSession } from './session';
+import { splitCartByShop } from './pricing';
 
 /**
  * Shared by both order-creation paths: the real Stripe webhook and the mock
@@ -10,36 +11,30 @@ import { deleteSession, getSession, type SessionCartItem } from './session';
  * processed, or expired) is a silent no-op rather than an error, since
  * Stripe retries webhook deliveries.
  */
-export async function createOrdersFromSession(sessionId: string, paymentIntentId: string) {
+export async function createOrdersFromSession(
+  sessionId: string,
+  paymentIntentId: string,
+) {
   const session = await getSession(sessionId);
   if (!session) return [];
 
   const user = await prisma.user.findUnique({ where: { id: session.userId } });
   if (!user) return [];
 
-  const byShop = new Map<string, SessionCartItem[]>();
-  for (const item of session.cart) {
-    if (!byShop.has(item.shopId)) byShop.set(item.shopId, []);
-    byShop.get(item.shopId)!.push(item);
-  }
+  const splits = splitCartByShop(session.cart, session.discount);
 
-  const shops = await prisma.shops.findMany({ where: { id: { in: [...byShop.keys()] } } });
+  const shops = await prisma.shops.findMany({
+    where: { id: { in: splits.map((s) => s.shopId) } },
+  });
   const shopById = new Map(shops.map((s) => [s.id, s]));
-  const isMultiShop = byShop.size > 1;
+  const isMultiShop = splits.length > 1;
   const provider = getPaymentProvider();
 
   const createdOrders = [];
 
-  for (const [shopId, items] of byShop) {
+  for (const { shopId, items, discountAmount, total: shopTotal } of splits) {
     const shop = shopById.get(shopId);
     if (!shop) continue;
-
-    const shopSubtotal = items.reduce((sum, i) => sum + i.salePrice * i.quantity, 0);
-    const discountAmount =
-      session.discount && items.some((i) => i.productId === session.discount!.discountedProductId)
-        ? session.discount.discountAmount
-        : 0;
-    const shopTotal = shopSubtotal - discountAmount;
 
     const order = await prisma.order.create({
       data: {
@@ -79,7 +74,10 @@ export async function createOrdersFromSession(sessionId: string, paymentIntentId
         .catch((err) => {
           // The order is already recorded as paid: a failed transfer is a
           // payout problem to reconcile manually, not a reason to lose the order.
-          console.error(`[order ${order.id}] transfer to ${shopId} failed:`, err);
+          console.error(
+            `[order ${order.id}] transfer to ${shopId} failed:`,
+            err,
+          );
         });
     }
 
@@ -132,7 +130,10 @@ export async function createOrdersFromSession(sessionId: string, paymentIntentId
         }),
       })),
     ).catch((err) =>
-      console.error(`[order ${order.id}] purchase event failed:`, (err as Error).message),
+      console.error(
+        `[order ${order.id}] purchase event failed:`,
+        (err as Error).message,
+      ),
     );
   }
 

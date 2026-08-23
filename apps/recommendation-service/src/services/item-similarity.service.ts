@@ -69,13 +69,16 @@ async function getIndex(): Promise<Index> {
   return index;
 }
 
-function weightsOf(actions: UserAction[]): Map<string, number> {
+export function weightsOf(actions: UserAction[]): Map<string, number> {
   const best = new Map<string, number>();
   for (const action of actions) {
     if (!action.productId) continue;
     const weight = ACTION_WEIGHT[action.action];
     if (weight === undefined) continue;
-    best.set(action.productId, Math.max(best.get(action.productId) ?? 0, weight));
+    best.set(
+      action.productId,
+      Math.max(best.get(action.productId) ?? 0, weight),
+    );
   }
   return best;
 }
@@ -88,7 +91,9 @@ function weightsOf(actions: UserAction[]): Map<string, number> {
  * No training and no model — the whole thing is one pass over the interaction
  * index, which is why it works at a density where matrix factorisation cannot.
  */
-export async function recommendSimilarItems(targetUserId: string): Promise<string[]> {
+export async function recommendSimilarItems(
+  targetUserId: string,
+): Promise<string[]> {
   const { byUser, byItem, norm } = await getIndex();
 
   const seen = byUser.get(targetUserId);
@@ -113,7 +118,8 @@ export async function recommendSimilarItems(targetUserId: string): Promise<strin
         if (!candidateNorm) continue;
 
         const contribution =
-          (likedWeight * ratingOfLiked * ratingOfCandidate) / (likedNorm * candidateNorm);
+          (likedWeight * ratingOfLiked * ratingOfCandidate) /
+          (likedNorm * candidateNorm);
         scores.set(candidateId, (scores.get(candidateId) ?? 0) + contribution);
         overlap.set(candidateId, (overlap.get(candidateId) ?? 0) + 1);
       }
@@ -129,7 +135,11 @@ export async function recommendSimilarItems(targetUserId: string): Promise<strin
     .slice(0, VERIFY_POOL);
 
   const active = await prisma.product.findMany({
-    where: { id: { in: ranked.map((r) => r.id) }, isDeleted: false, status: 'active' },
+    where: {
+      id: { in: ranked.map((r) => r.id) },
+      isDeleted: false,
+      status: 'active',
+    },
     select: { id: true },
   });
   const sellable = new Set(active.map((p) => p.id));
