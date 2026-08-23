@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { publicApi } from './api';
+import { publicApi, useApi } from './api';
 import type { ProductCardData, ProductDetail, ShopCardData, ShopSummary } from '../shared/types';
 
 export interface Pagination {
@@ -90,6 +90,21 @@ export function useHomeProducts() {
       });
       return data;
     },
+  });
+}
+
+// Personalised when signed in with enough history; the service falls back to
+// the newest products otherwise, so the shelf is never empty.
+export function useRecommendations(enabled: boolean) {
+  const api = useApi();
+  return useQuery<{ products: ProductCardData[]; source: string }>({
+    queryKey: ['recommendations'],
+    queryFn: async () => {
+      const { data } = await api.get('/recommendation/api/get-recommendation-products');
+      return data;
+    },
+    enabled,
+    staleTime: 5 * 60 * 1000,
   });
 }
 

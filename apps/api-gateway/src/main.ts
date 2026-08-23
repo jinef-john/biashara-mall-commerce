@@ -78,7 +78,7 @@ const services: Record<string, ServiceDef> = {
   },
   '/recommendation': {
     target: process.env.RECOMMENDATION_SERVICE_URL ?? 'http://localhost:6007',
-    implemented: false,
+    implemented: true,
   },
 };
 

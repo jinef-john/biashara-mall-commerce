@@ -1,5 +1,5 @@
 import { prisma } from '@biashara-mall/prisma';
-import { sendLog } from '@biashara-mall/kafka';
+import { produce, sendLog, TOPICS } from '@biashara-mall/kafka';
 import { platformFee, sellerEarning, CURRENCY } from '@biashara-mall/config';
 import { getPaymentProvider } from '@biashara-mall/payments';
 import { deleteSession, getSession, type SessionCartItem } from './session';
@@ -116,6 +116,24 @@ export async function createOrdersFromSession(sessionId: string, paymentIntentId
       message: `Order ${order.id} placed for ${CURRENCY} ${shopTotal.toFixed(2)} (shop ${shopId})`,
       source: 'order-service',
     });
+
+    // The strongest recommendation signal there is, and nothing else emits it:
+    // browsing events come from the client, a completed purchase only exists here.
+    void produce(
+      TOPICS.USERS_EVENTS.topic,
+      items.map((item) => ({
+        key: user.clerkId,
+        value: JSON.stringify({
+          clerkId: user.clerkId,
+          action: 'purchase',
+          productId: item.productId,
+          shopId,
+          timestamp: new Date().toISOString(),
+        }),
+      })),
+    ).catch((err) =>
+      console.error(`[order ${order.id}] purchase event failed:`, (err as Error).message),
+    );
   }
 
   // Order-confirmation email intentionally skipped: no email infrastructure

@@ -3,6 +3,14 @@ import { prisma } from '@biashara-mall/prisma';
 const USER_COUNT = 200;
 const ACTIONS_PER_USER = 100;
 const AFFINITY_CATEGORIES = 3;
+// Real catalogues are power-law: a minority of products take most of the traffic.
+const POPULARITY_SKEW = 3;
+// Taste clusters within each category. Collaborative filtering learns
+// item-to-item structure, so the data has to contain some: drawing uniformly
+// within a category means two shoppers who both like Jewelry touch different
+// jewellery at random, and there is nothing to recover. Clusters give the
+// "people who liked this also liked that" shape that real catalogues have.
+const CLUSTERS_PER_CATEGORY = 5;
 // Share of each user's history that comes from outside their affinities, so
 // the model sees genuine cross-category signal instead of perfect clusters.
 const NOISE_RATE = 0.2;
@@ -75,21 +83,32 @@ async function main() {
     });
     usersCreated++;
 
-    const affinities: string[] = [];
+    const affinities: { category: string; cluster: number }[] = [];
     while (affinities.length < AFFINITY_CATEGORIES) {
-      const candidate = categories[Math.floor(random() * categories.length)];
-      if (!affinities.includes(candidate)) affinities.push(candidate);
+      const category = categories[Math.floor(random() * categories.length)];
+      if (affinities.some((a) => a.category === category)) continue;
+      affinities.push({
+        category,
+        cluster: Math.floor(random() * CLUSTERS_PER_CATEGORY),
+      });
     }
 
     const actions = [];
     for (let n = 0; n < ACTIONS_PER_USER; n++) {
       const fromAffinity = random() > NOISE_RATE;
+      const affinity = affinities[Math.floor(random() * affinities.length)];
       const category = fromAffinity
-        ? affinities[Math.floor(random() * affinities.length)]
+        ? affinity.category
         : categories[Math.floor(random() * categories.length)];
 
-      const pool = byCategory.get(category)!;
-      const product = pool[Math.floor(random() * pool.length)];
+      const categoryPool = byCategory.get(category)!;
+      const clusterPool = fromAffinity
+        ? categoryPool.filter(
+            (_, index) => index % CLUSTERS_PER_CATEGORY === affinity.cluster,
+          )
+        : categoryPool;
+      const pool = clusterPool.length > 0 ? clusterPool : categoryPool;
+      const product = pool[Math.floor(pool.length * random() ** POPULARITY_SKEW)];
 
       actions.push({
         productId: product.id,

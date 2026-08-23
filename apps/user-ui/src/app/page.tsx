@@ -4,17 +4,27 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@biashara-mall/ui/components/ui/button';
 import { useLayout } from '../lib/use-layout';
-import { useHomeEvents, useHomeProducts, useTopShops } from '../lib/queries';
+import {
+  useHomeEvents,
+  useHomeProducts,
+  useRecommendations,
+  useTopShops,
+} from '../lib/queries';
 import { ProductSection } from '../shared/components/product-section';
 import { ShopSection } from '../shared/components/shop-section';
 import { HeroSkeleton } from '../shared/components/skeletons';
 import { useIsSuspended } from '../lib/use-me';
+import { useAuth } from '@clerk/nextjs';
 
 export default function Home() {
   const { data: layout, isPending: layoutPending } = useLayout();
   const { data: homeProducts, isPending: productsPending } = useHomeProducts();
   const { data: homeEvents, isPending: eventsPending } = useHomeEvents();
   const suspended = useIsSuspended();
+  const { isSignedIn } = useAuth();
+  const { data: recommended, isPending: recommendedPending } = useRecommendations(
+    Boolean(isSignedIn) && !suspended,
+  );
   // Not fetched at all when suspended: shops and offers are unreachable for
   // them, so the request is pure waste.
   const { data: topShops, isPending: shopsPending } = useTopShops(!suspended);
@@ -48,8 +58,8 @@ export default function Home() {
       <ProductSection
         title="Suggested for you"
         viewAllHref="/products"
-        products={homeProducts?.top10}
-        isPending={productsPending}
+        products={isSignedIn ? recommended?.products : homeProducts?.top10}
+        isPending={isSignedIn ? recommendedPending : productsPending}
       />
 
       <ProductSection

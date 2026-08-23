@@ -4,7 +4,8 @@ export type UserEventAction =
   | 'remove_from_cart'
   | 'add_to_wishlist'
   | 'remove_from_wishlist'
-  | 'shop_visit';
+  | 'shop_visit'
+  | 'purchase';
 
 export interface UserEvent {
   clerkId: string;

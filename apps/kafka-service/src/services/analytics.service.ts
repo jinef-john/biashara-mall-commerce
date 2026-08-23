@@ -16,6 +16,7 @@ function applyAction(actions: UserAction[], event: UserEvent) {
     a.action === action && a.productId === (event.productId ?? null);
 
   switch (event.action) {
+    case 'purchase':
     case 'product_view':
       actions.push({
         productId: event.productId ?? null,

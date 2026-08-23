@@ -1,0 +1,73 @@
+{
+  "name": "@biashara-mall/recommendation-service",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "targets": {
+      "prune-lockfile": {
+        "dependsOn": [
+          "build"
+        ],
+        "cache": true,
+        "executor": "@nx/js:prune-lockfile",
+        "outputs": [
+          "{workspaceRoot}/apps/recommendation-service/dist/package.json",
+          "{workspaceRoot}/apps/recommendation-service/dist/bun.lock"
+        ],
+        "options": {
+          "buildTarget": "build"
+        }
+      },
+      "copy-workspace-modules": {
+        "dependsOn": [
+          "build"
+        ],
+        "cache": true,
+        "outputs": [
+          "{workspaceRoot}/apps/recommendation-service/dist/workspace_modules"
+        ],
+        "executor": "@nx/js:copy-workspace-modules",
+        "options": {
+          "buildTarget": "build"
+        }
+      },
+      "prune": {
+        "dependsOn": [
+          "prune-lockfile",
+          "copy-workspace-modules"
+        ],
+        "executor": "nx:noop"
+      },
+      "serve": {
+        "continuous": true,
+        "executor": "@nx/js:node",
+        "defaultConfiguration": "development",
+        "dependsOn": [
+          "build"
+        ],
+        "options": {
+          "buildTarget": "@biashara-mall/recommendation-service:build",
+          "runBuildTargetDependencies": false
+        },
+        "configurations": {
+          "development": {
+            "buildTarget": "@biashara-mall/recommendation-service:build:development"
+          },
+          "production": {
+            "buildTarget": "@biashara-mall/recommendation-service:build:production"
+          }
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "@biashara-mall/auth": "workspace:*",
+    "@biashara-mall/error-handler": "workspace:*",
+    "@biashara-mall/prisma": "workspace:*",
+    "@clerk/express": "^2.1.57",
+    "dotenv": "^17.4.2",
+    "express": "^5.1.0",
+    "@biashara-mall/kafka": "workspace:*",
+    "@tensorflow/tfjs-node": "^4.22.0"
+  }
+}
