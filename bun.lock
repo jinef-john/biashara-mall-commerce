@@ -32,6 +32,7 @@
         "@swc/cli": "~0.8.1",
         "@swc/core": "1.15.8",
         "@swc/helpers": "0.5.18",
+        "@types/bun": "^1.4.0",
         "@types/cors": "^2.8.19",
         "@types/express": "^5.0.0",
         "@types/node": "^24.0.0",
@@ -196,7 +197,7 @@
         "@biashara-mall/kafka": "workspace:*",
         "@biashara-mall/prisma": "workspace:*",
         "@clerk/express": "^2.1.57",
-        "@tensorflow/tfjs": "^4.22.0",
+        "@tensorflow/tfjs-node": "^4.22.0",
         "dotenv": "^17.4.2",
         "express": "^5.1.0",
       },
@@ -367,6 +368,10 @@
         "@types/react-simple-maps": "^3.0.6",
         "@types/topojson-client": "^3.1.5",
       },
+    },
+    "tests": {
+      "name": "@biashara-mall/tests",
+      "version": "0.0.0",
     },
   },
   "packages": {
@@ -657,6 +662,8 @@
     "@biashara-mall/seller-service": ["@biashara-mall/seller-service@workspace:apps/seller-service"],
 
     "@biashara-mall/seller-ui": ["@biashara-mall/seller-ui@workspace:apps/seller-ui"],
+
+    "@biashara-mall/tests": ["@biashara-mall/tests@workspace:tests"],
 
     "@biashara-mall/ui": ["@biashara-mall/ui@workspace:packages/ui"],
 
@@ -1478,6 +1485,8 @@
 
     "@types/bonjour": ["@types/bonjour@3.5.13", "", { "dependencies": { "@types/node": "*" } }, "sha512-z9fJ5Im06zvUL548KvYNecEVlA7cVDkGUi6kZusb04mpyEFKCIZJvloCcmpmLaIahDpOQGHaHmG6imtPMmPXGQ=="],
 
+    "@types/bun": ["@types/bun@1.4.0", "", { "dependencies": { "bun-types": "1.4.0" } }, "sha512-K+lZULY23vRgK/CfTjFIV+tyifaNdSMlPh9j+6mQ/cLfpOznLyAuzgV/JQysyECpkBQLVMSyvjlr2fBUSA9wFQ=="],
+
     "@types/canvas-confetti": ["@types/canvas-confetti@1.9.0", "", {}, "sha512-aBGj/dULrimR1XDZLtG9JwxX1b4HPRF6CX9Yfwh3NvstZEm1ZL7RBnel4keCPSqs1ANRu1u2Aoz9R+VmtjYuTg=="],
 
     "@types/connect": ["@types/connect@3.4.38", "", { "dependencies": { "@types/node": "*" } }, "sha512-K6uROf1LD88uDQqJCktA4yzL1YYAK6NgfsI0v/mTgyPKWsX1CnJ0XPSDhViejru1GcRkLWb8RlzFYJRqGUbaug=="],
@@ -1871,6 +1880,8 @@
     "buffer": ["buffer@5.7.1", "", { "dependencies": { "base64-js": "^1.3.1", "ieee754": "^1.1.13" } }, "sha512-EHcyIPBQ4BSGlvjB16k5KgAJ27CIsHY/2JBmCRReo48y9rQ3MaUzWX3KVlBa4U7MyX02HdVj0K7C3WaB3ju7FQ=="],
 
     "buffer-from": ["buffer-from@1.1.2", "", {}, "sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ=="],
+
+    "bun-types": ["bun-types@1.4.0", "", { "dependencies": { "@types/node": "*" } }, "sha512-iIKw23BspnQQYd3prITOBxeUsxBHnwzX6YJfGMuNOZzeNcMmVqzIIVGRm1l69ogaPQmb4wB6BN8mA5bE9YuC5Q=="],
 
     "bundle-name": ["bundle-name@4.1.0", "", { "dependencies": { "run-applescript": "^7.0.0" } }, "sha512-tjwM5exMg6BGRI+kNmTntNsvdZS1X8BFYS6tnJ2hdH0kVxM6/eVZ2xy+FqStSWvYmtfFMDLIxurorHwDKfDz5Q=="],
 

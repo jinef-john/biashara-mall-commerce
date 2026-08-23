@@ -29,6 +29,4 @@ jobs:
 
       - run: bunx nx format:check --base="remotes/origin/main"
 
-      # test/e2e targets are added in Phase 11; running them now would fail on
-      # projects that define no tests.
-      - run: bunx nx run-many -t lint build typecheck
+      - run: bunx nx run-many -t lint build typecheck test

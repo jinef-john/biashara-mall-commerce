@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "test": "nx run-many -t test",
     "dev": "nx run-many -t serve,dev --parallel=13",
     "dev:services": "nx run-many -t serve -p api-gateway user-service product-service seller-service order-service admin-service kafka-service chatting-service logger-service recommendation-service --parallel=10",
     "dev:user-ui": "nx dev user-ui",
@@ -47,6 +48,7 @@
     "@swc/cli": "~0.8.1",
     "@swc/core": "1.15.8",
     "@swc/helpers": "0.5.18",
+    "@types/bun": "^1.4.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.0",
     "@types/node": "^24.0.0",
@@ -72,6 +74,7 @@
   },
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "tests"
   ]
 }
