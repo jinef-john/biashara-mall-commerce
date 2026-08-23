@@ -13,7 +13,9 @@
     "prisma:generate": "prisma generate --schema packages/prisma/prisma/schema.prisma",
     "prisma:push": "prisma db push --schema packages/prisma/prisma/schema.prisma",
     "prisma:studio": "prisma studio --schema packages/prisma/prisma/schema.prisma",
-    "demo:order": "cd apps/order-service && bun run src/scripts/place-demo-order.ts"
+    "demo:order": "cd apps/order-service && bun run src/scripts/place-demo-order.ts",
+    "seed:catalogue": "bun run scripts/seed-catalogue.ts",
+    "seed:interactions": "bun run scripts/seed-interactions.ts"
   },
   "private": true,
   "dependencies": {
