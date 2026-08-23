@@ -79,7 +79,7 @@ recommendationsRouter.get(
 
       return res.json({ products: ordered, source: 'item-item' });
     } catch (err) {
-      next(err);
+      return next(err);
     }
   },
 );
