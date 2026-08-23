@@ -4,6 +4,7 @@ import type { Router } from 'express';
 import { conversationsRouter } from '../apps/chatting-service/src/routes/conversations';
 import { ordersRouter } from '../apps/order-service/src/routes/orders';
 import { paymentRouter } from '../apps/order-service/src/routes/payment';
+import { reviewsRouter } from '../apps/order-service/src/routes/reviews';
 import { followRouter } from '../apps/seller-service/src/routes/follow';
 import { shopsRouter } from '../apps/seller-service/src/routes/shops';
 import { addressesRouter } from '../apps/user-service/src/routes/addresses';
@@ -17,6 +18,7 @@ const BUYER_ROUTERS: Record<string, Router> = {
   'chatting-service/conversations': conversationsRouter,
   'order-service/orders': ordersRouter,
   'order-service/payment': paymentRouter,
+  'order-service/reviews': reviewsRouter,
   'seller-service/follow': followRouter,
   'seller-service/shops': shopsRouter,
   'user-service/addresses': addressesRouter,
