@@ -28,7 +28,7 @@ export function normalizeCategory(raw: string): string {
 }
 
 /** Minimal RFC4180 reader: product names contain both commas and quotes. */
-function parseCsv(text: string): string[][] {
+export function parseCsv(text: string): string[][] {
   const rows: string[][] = [];
   let row: string[] = [];
   let field = '';
@@ -92,7 +92,13 @@ export function readCatalogue(path: string): CsvProduct[] {
     const image = (row[iImage] ?? '').trim();
     const price = Number((row[iPrice] ?? '').replace(/[$,\s]/g, ''));
 
-    if (!name || !category || !image.startsWith('http') || !Number.isFinite(price) || price <= 0) {
+    if (
+      !name ||
+      !category ||
+      !image.startsWith('http') ||
+      !Number.isFinite(price) ||
+      price <= 0
+    ) {
       continue;
     }
 
