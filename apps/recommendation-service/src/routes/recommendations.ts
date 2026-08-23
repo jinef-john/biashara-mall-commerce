@@ -1,7 +1,10 @@
 import { Router, type Request, type Response } from 'express';
-import { requireUser } from '@biashara-mall/auth';
+import { requireActiveUser } from '@biashara-mall/auth';
 import { prisma } from '@biashara-mall/prisma';
-import { MIN_ACTIONS, recommendSimilarItems } from '../services/item-similarity.service';
+import {
+  MIN_ACTIONS,
+  recommendSimilarItems,
+} from '../services/item-similarity.service';
 
 export const recommendationsRouter: Router = Router();
 
@@ -30,11 +33,13 @@ function latestProducts(take: number) {
 
 recommendationsRouter.get(
   '/get-recommendation-products',
-  requireUser,
+  requireActiveUser,
   async (req: Request, res: Response, next) => {
     try {
       const userId = req.appUser!.id;
-      const analytics = await prisma.userAnalytics.findUnique({ where: { userId } });
+      const analytics = await prisma.userAnalytics.findUnique({
+        where: { userId },
+      });
 
       // Cold start: no history to learn from, so show what's new instead of
       // an empty shelf.
@@ -50,7 +55,10 @@ recommendationsRouter.get(
       // whatever a periodic job last wrote.
       const ids = await recommendSimilarItems(userId);
       if (ids.length === 0) {
-        return res.json({ products: await latestProducts(10), source: 'latest' });
+        return res.json({
+          products: await latestProducts(10),
+          source: 'latest',
+        });
       }
 
       void prisma.userAnalytics

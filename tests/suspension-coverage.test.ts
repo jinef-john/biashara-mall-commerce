@@ -49,9 +49,6 @@ const ALLOWED: Record<string, string> = {
   'seller-service/shops POST /': 'inline getAuth + ACCOUNT_SUSPENDED check',
   'seller-service/shops PATCH /': 'inline getAuth',
   'seller-service/shops GET /me': 'inline getAuth',
-  // Gated in the UI only. Server-side this is still open to a suspended user.
-  'recommendation-service/recommendations GET /get-recommendation-products':
-    'hidden client-side, not blocked server-side',
 };
 
 interface RouteInfo {
@@ -102,9 +99,21 @@ describe('suspension coverage', () => {
     expect(unguarded).toEqual([]);
   });
 
-  test('no stale exceptions', () => {
-    const keys = new Set(allRoutes.map((route) => route.key));
-    expect(Object.keys(ALLOWED).filter((key) => !keys.has(key))).toEqual([]);
+  // An exception that is no longer needed is not harmless: it would let a
+  // later removal of the guard pass unnoticed.
+  test('no stale or redundant exceptions', () => {
+    const byKey = new Map(allRoutes.map((route) => [route.key, route]));
+    const dead = Object.keys(ALLOWED).map((key) => {
+      const route = byKey.get(key);
+      if (!route) return `${key} — no such route`;
+      if (route.guards.includes('requireActiveUser'))
+        return `${key} — now guarded`;
+      if (route.guards.some((guard) => OTHER_AUDIENCE.has(guard)))
+        return `${key} — now ${route.guards.join('/')}`;
+      return null;
+    });
+
+    expect(dead.filter(Boolean)).toEqual([]);
   });
 
   test('the routers actually loaded', () => {
