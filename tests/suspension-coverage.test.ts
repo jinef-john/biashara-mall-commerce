@@ -58,15 +58,15 @@ interface RouteInfo {
 
 function routesOf(name: string, router: Router): RouteInfo[] {
   const stack = (router as unknown as { stack: RouteLayer[] }).stack ?? [];
-  return stack.flatMap((layer) => {
-    if (!layer.route) return [];
-    const guards = (layer.route.stack ?? [])
+  return stack.flatMap(({ route }) => {
+    if (!route) return [];
+    const guards = (route.stack ?? [])
       .map((entry) => entry.name)
-      .filter((name) => name && name !== '<anonymous>');
-    return Object.keys(layer.route.methods)
+      .filter((entryName) => entryName && entryName !== '<anonymous>');
+    return Object.keys(route.methods)
       .filter((method) => method !== '_all')
       .map((method) => ({
-        key: `${name} ${method.toUpperCase()} ${layer.route!.path}`,
+        key: `${name} ${method.toUpperCase()} ${route.path}`,
         guards,
       }));
   });
