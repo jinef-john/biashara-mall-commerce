@@ -15,7 +15,8 @@
     "prisma:studio": "prisma studio --schema packages/prisma/prisma/schema.prisma",
     "demo:order": "cd apps/order-service && bun run src/scripts/place-demo-order.ts",
     "seed:catalogue": "bun run scripts/seed-catalogue.ts",
-    "seed:interactions": "bun run scripts/seed-interactions.ts"
+    "seed:interactions": "bun run scripts/seed-interactions.ts",
+    "rec:compare": "cd apps/recommendation-service && bun run src/scripts/compare-recommenders.ts"
   },
   "private": true,
   "dependencies": {

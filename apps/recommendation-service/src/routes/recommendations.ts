@@ -1,11 +1,7 @@
 import { Router, type Request, type Response } from 'express';
 import { requireUser } from '@biashara-mall/auth';
 import { prisma } from '@biashara-mall/prisma';
-import {
-  MIN_ACTIONS,
-  RETRAIN_AFTER_MS,
-  trainAndRecommend,
-} from '../services/recommendation.service';
+import { MIN_ACTIONS, recommendSimilarItems } from '../services/item-similarity.service';
 
 export const recommendationsRouter: Router = Router();
 
@@ -32,30 +28,6 @@ function latestProducts(take: number) {
   });
 }
 
-// Training takes ~50s over the full interaction set, so it never runs on the
-// request path: the caller gets the stale cache (or latest products) now, and
-// the next request picks up the fresh ranking. Single-flight per user, since
-// two concurrent misses would otherwise each build their own model.
-const inFlight = new Set<string>();
-
-function retrainInBackground(userId: string) {
-  if (inFlight.has(userId)) return;
-  inFlight.add(userId);
-
-  void trainAndRecommend(userId)
-    .then(async (ids) => {
-      if (ids.length === 0) return;
-      await prisma.userAnalytics.update({
-        where: { userId },
-        data: { recommendations: ids, lastTrained: new Date() },
-      });
-    })
-    .catch((err) =>
-      console.error(`[recommendation] training failed for ${userId}:`, (err as Error).message),
-    )
-    .finally(() => inFlight.delete(userId));
-}
-
 recommendationsRouter.get(
   '/get-recommendation-products',
   requireUser,
@@ -73,16 +45,20 @@ recommendationsRouter.get(
         });
       }
 
-      const fresh =
-        analytics.lastTrained &&
-        Date.now() - analytics.lastTrained.getTime() < RETRAIN_AFTER_MS;
-
-      if (!fresh) retrainInBackground(userId);
-
-      const ids = analytics.recommendations;
+      // Scoring is a single pass over a cached interaction index — tens of
+      // milliseconds — so it runs inline and stays current instead of serving
+      // whatever a periodic job last wrote.
+      const ids = await recommendSimilarItems(userId);
       if (ids.length === 0) {
         return res.json({ products: await latestProducts(10), source: 'latest' });
       }
+
+      void prisma.userAnalytics
+        .update({
+          where: { userId },
+          data: { recommendations: ids, lastTrained: new Date() },
+        })
+        .catch(() => undefined);
 
       const products = await prisma.product.findMany({
         where: { id: { in: ids }, isDeleted: false, status: 'active' },
@@ -93,10 +69,7 @@ recommendationsRouter.get(
       const byId = new Map(products.map((p) => [p.id, p]));
       const ordered = ids.map((id) => byId.get(id)).filter(Boolean);
 
-      return res.json({
-        products: ordered,
-        source: fresh ? 'cache' : 'stale',
-      });
+      return res.json({ products: ordered, source: 'item-item' });
     } catch (err) {
       next(err);
     }
