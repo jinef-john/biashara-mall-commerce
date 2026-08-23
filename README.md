@@ -62,6 +62,15 @@ Services read `.env` at boot only, restart after editing it.
 | seller-service       | 6003 |
 | order-service        | 6004 |
 | admin-service        | 6005 |
+| chatting-service     | 6006 |
+| recommendation-service | 6007 |
+| logger-service       | 6008 |
+
+## Recommendations
+
+Both a TensorFlow.js model and plain cosine similarity live in `apps/recommendation-service`. Cosine similarity is the one wired up.
+
+The model needs far more traffic than this catalogue has to learn anything useful, so it performed no better than random. "People who liked this also liked that" needs no training and works fine at this size. The TensorFlow version is kept for reference, and `bun run rec:compare` runs them side by side.
 
 ## Roadmap (very high level)
 
@@ -71,7 +80,8 @@ Services read `.env` at boot only, restart after editing it.
 - [x] Payments & checkout (Stripe but for now it's just a mock)
 - [x] Order management
 - [x] Admin panel
-- [ ] Real-time analytics (Kafka)
-- [ ] Live chat
-- [ ] ML-based product recommendations
+- [x] Real-time analytics (Kafka)
+- [x] Live chat
+- [x] Log streaming (Kafka -> websocket + Grafana Loki)
+- [x] Product recommendations
 - [ ] Production hardening & deployment
