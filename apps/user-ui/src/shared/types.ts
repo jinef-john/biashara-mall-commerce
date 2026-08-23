@@ -9,7 +9,12 @@ export interface ProductCardData {
   startingDate?: string | null;
   endingDate?: string | null;
   images: { id: string; fileUrl: string }[];
-  shop: { id: string; name: string; logoUrl: string | null; category: string | null };
+  shop: {
+    id: string;
+    name: string;
+    logoUrl: string | null;
+    category: string | null;
+  };
 }
 
 export interface ShopSummary {
@@ -49,7 +54,16 @@ export interface ProductDetail {
   startingDate?: string | null;
   endingDate?: string | null;
   images: { id: string; fileUrl: string }[];
+  reviews: ProductReviewSummary[];
   shop: ShopSummary;
+}
+
+export interface ProductReviewSummary {
+  id: string;
+  rating: number;
+  review: string | null;
+  createdAt: string;
+  user: { name: string | null; avatarUrl: string | null };
 }
 
 export interface ShopCardData {

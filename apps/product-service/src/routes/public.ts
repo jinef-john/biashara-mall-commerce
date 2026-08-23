@@ -51,7 +51,11 @@ function ordering(type: unknown): Prisma.ProductOrderByWithRelationInput[] {
     : [{ createdAt: 'desc' }, { totalSales: 'desc' }];
 }
 
-async function listing(req: Request, res: Response, kind: 'products' | 'events') {
+async function listing(
+  req: Request,
+  res: Response,
+  kind: 'products' | 'events',
+) {
   const { page, limit, skip } = paginate(req.query);
   const base: Prisma.ProductWhereInput = {
     ...VISIBLE,
@@ -82,7 +86,9 @@ async function listing(req: Request, res: Response, kind: 'products' | 'events')
   });
 }
 
-publicRouter.get('/get-all-products', (req, res) => listing(req, res, 'products'));
+publicRouter.get('/get-all-products', (req, res) =>
+  listing(req, res, 'products'),
+);
 publicRouter.get('/get-all-events', (req, res) => listing(req, res, 'events'));
 
 publicRouter.get('/get-product/:slug', async (req: Request, res: Response) => {
@@ -90,6 +96,17 @@ publicRouter.get('/get-product/:slug', async (req: Request, res: Response) => {
     where: { slug: String(req.params.slug) },
     include: {
       images: { select: { id: true, fileUrl: true } },
+      reviews: {
+        orderBy: { createdAt: 'desc' },
+        take: 20,
+        select: {
+          id: true,
+          rating: true,
+          review: true,
+          createdAt: true,
+          user: { select: { name: true, avatarUrl: true } },
+        },
+      },
       shop: {
         select: {
           id: true,
@@ -123,7 +140,11 @@ publicRouter.get('/get-product/:slug', async (req: Request, res: Response) => {
   return res.json({ product });
 });
 
-async function filtered(req: Request, res: Response, kind: 'products' | 'events') {
+async function filtered(
+  req: Request,
+  res: Response,
+  kind: 'products' | 'events',
+) {
   const { page, limit, skip } = paginate(req.query);
   const categories = list(req.query.categories);
   const colors = list(req.query.colors);
@@ -262,7 +283,9 @@ publicRouter.get('/top-shops', async (req: Request, res: Response) => {
       country: true,
       _count: { select: { followers: true, products: true } },
     },
-    ...(ranked.size ? {} : { orderBy: { products: { _count: 'desc' } }, take: 10 }),
+    ...(ranked.size
+      ? {}
+      : { orderBy: { products: { _count: 'desc' } }, take: 10 }),
   });
 
   return res.json({

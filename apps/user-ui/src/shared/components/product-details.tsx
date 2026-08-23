@@ -13,6 +13,7 @@ import { Ratings } from './ratings';
 import { AddToCartControls } from './add-to-cart-controls';
 import { ImageZoom } from './image-zoom';
 import { RelatedProducts } from './related-products';
+import { ProductReviews } from './product-reviews';
 import { ChatWithSellerButton } from './chat/chat-with-seller-button';
 import type { ProductDetail } from '../types';
 import { useIsSuspended } from '../../lib/use-me';
@@ -131,7 +132,9 @@ export function ProductDetails({ product }: { product: ProductDetail }) {
           <div className="grid gap-3 border-t border-outline-variant pt-4 sm:grid-cols-3">
             <div className="flex items-center gap-2 text-body-sm text-on-surface-variant">
               <Truck className="size-4 shrink-0" />
-              {product.cashOnDelivery === 'yes' ? 'Cash on delivery' : 'Prepaid only'}
+              {product.cashOnDelivery === 'yes'
+                ? 'Cash on delivery'
+                : 'Prepaid only'}
             </div>
             <div className="flex items-center gap-2 text-body-sm text-on-surface-variant">
               <RotateCcw className="size-4 shrink-0" />
@@ -154,6 +157,11 @@ export function ProductDetails({ product }: { product: ProductDetail }) {
           }}
         />
       </div>
+
+      <ProductReviews
+        reviews={product.reviews ?? []}
+        rating={product.ratings}
+      />
 
       <RelatedProducts category={product.category} excludeId={product.id} />
     </main>

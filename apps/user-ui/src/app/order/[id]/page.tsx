@@ -11,6 +11,7 @@ import { useApi } from '../../../lib/api';
 import { formatPrice } from '../../../lib/format';
 import { OrderStatusBadge } from '../../../shared/components/order-status-badge';
 import { DeliveryProgress } from '../../../shared/components/delivery-progress';
+import { OrderReviews } from '../../../shared/components/order-reviews';
 
 interface OrderDetails {
   id: string;
@@ -19,7 +20,14 @@ interface OrderDetails {
   discountAmount: number;
   couponCode: string | null;
   createdAt: string;
-  shippingAddress: { label: string; name: string; street: string; city: string; zip: string; country: string };
+  shippingAddress: {
+    label: string;
+    name: string;
+    street: string;
+    city: string;
+    zip: string;
+    country: string;
+  };
   shop: { name: string; logoUrl: string | null } | null;
   items: {
     productId: string;
@@ -30,7 +38,11 @@ interface OrderDetails {
   }[];
 }
 
-export default function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default function OrderDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = use(params);
   const api = useApi();
 
@@ -73,7 +85,9 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
           </Link>
         </Button>
         <div>
-          <h1 className="font-mono text-headline-md text-on-surface">#{data.id.slice(-8)}</h1>
+          <h1 className="font-mono text-headline-md text-on-surface">
+            #{data.id.slice(-8)}
+          </h1>
           <p className="text-body-sm text-on-surface-variant">
             Placed {new Date(data.createdAt).toLocaleString()}
             {data.shop ? ` · ${data.shop.name}` : ''}
@@ -111,9 +125,13 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                   {item.title}
                 </Link>
               ) : (
-                <p className="truncate text-body-md text-on-surface">{item.title}</p>
+                <p className="truncate text-body-md text-on-surface">
+                  {item.title}
+                </p>
               )}
-              <p className="text-body-sm text-on-surface-variant">Qty {item.quantity}</p>
+              <p className="text-body-sm text-on-surface-variant">
+                Qty {item.quantity}
+              </p>
             </div>
             <span className="tabular-nums text-on-surface">
               {formatPrice(item.salePrice * item.quantity)}
@@ -124,7 +142,9 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
         <div className="mt-2 flex flex-col gap-1 border-t border-outline-variant pt-3 text-body-sm">
           {data.discountAmount > 0 && (
             <div className="flex justify-between text-on-surface-variant">
-              <span>Discount {data.couponCode ? `(${data.couponCode})` : ''}</span>
+              <span>
+                Discount {data.couponCode ? `(${data.couponCode})` : ''}
+              </span>
               <span>-{formatPrice(data.discountAmount)}</span>
             </div>
           )}
@@ -135,9 +155,13 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
         </div>
       </div>
 
+      <OrderReviews orderId={data.id} />
+
       <div className="flex flex-col gap-1 rounded-xl border border-outline-variant bg-surface-container-lowest p-4">
         <h2 className="text-title-md text-on-surface">Delivery address</h2>
-        <p className="text-body-md font-medium text-on-surface">{data.shippingAddress.name}</p>
+        <p className="text-body-md font-medium text-on-surface">
+          {data.shippingAddress.name}
+        </p>
         <p className="text-body-sm text-on-surface-variant">
           {data.shippingAddress.street}, {data.shippingAddress.city}{' '}
           {data.shippingAddress.zip}, {data.shippingAddress.country}

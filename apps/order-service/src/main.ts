@@ -6,6 +6,7 @@ import { sendLog } from '@biashara-mall/kafka';
 import { webhookRouter } from './routes/webhook';
 import { paymentRouter } from './routes/payment';
 import { ordersRouter } from './routes/orders';
+import { reviewsRouter } from './routes/reviews';
 
 const app = express();
 
@@ -29,12 +30,17 @@ app.get('/api', (req, res) => {
 
 app.use('/api', paymentRouter);
 app.use('/api', ordersRouter);
+app.use('/api', reviewsRouter);
 
 app.use(createErrorMiddleware('order-service'));
 
 const port = process.env.PORT || 6004;
 const server = app.listen(port, () => {
   console.log(`Listening at http://localhost:${port}/api`);
-  void sendLog({ type: 'info', message: `order-service started on port ${port}`, source: 'order-service' });
+  void sendLog({
+    type: 'info',
+    message: `order-service started on port ${port}`,
+    source: 'order-service',
+  });
 });
 server.on('error', console.error);

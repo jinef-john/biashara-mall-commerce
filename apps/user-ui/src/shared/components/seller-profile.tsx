@@ -52,7 +52,9 @@ function ProductsTab({ shopId }: { shopId: string }) {
   const { data, isPending } = useProducts({ shopId, limit: 20 });
   if (isPending) return <ProductGridSkeleton />;
   if (!data?.products.length) {
-    return <p className="text-body-md text-on-surface-variant">No products yet.</p>;
+    return (
+      <p className="text-body-md text-on-surface-variant">No products yet.</p>
+    );
   }
   return (
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
@@ -67,7 +69,11 @@ function OffersTab({ shopId }: { shopId: string }) {
   const { data, isPending } = useEvents({ shopId, limit: 20 });
   if (isPending) return <ProductGridSkeleton />;
   if (!data?.products.length) {
-    return <p className="text-body-md text-on-surface-variant">No offers right now.</p>;
+    return (
+      <p className="text-body-md text-on-surface-variant">
+        No offers right now.
+      </p>
+    );
   }
   return (
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
@@ -81,9 +87,7 @@ function OffersTab({ shopId }: { shopId: string }) {
 function ReviewsTab({ reviews }: { reviews: ShopReview[] }) {
   if (!reviews.length) {
     return (
-      <p className="text-body-md text-on-surface-variant">
-        No reviews yet. Reviews appear here once buyers complete an order.
-      </p>
+      <p className="text-body-md text-on-surface-variant">No reviews yet.</p>
     );
   }
   return (
@@ -97,7 +101,9 @@ function ReviewsTab({ reviews }: { reviews: ShopReview[] }) {
             <Ratings value={review.rating} size="sm" />
           </div>
           {review.review && (
-            <p className="mt-1 text-body-sm text-on-surface-variant">{review.review}</p>
+            <p className="mt-1 text-body-sm text-on-surface-variant">
+              {review.review}
+            </p>
           )}
         </div>
       ))}
@@ -146,20 +152,23 @@ export function SellerProfile({
       return response;
     },
     onSuccess: () => {
-      queryClient.setQueryData<SellerData>(['seller', shopId, 'authed'], (current) =>
-        current
-          ? {
-              ...current,
-              isFollowing: !following,
-              shop: {
-                ...current.shop,
-                _count: {
-                  ...current.shop._count,
-                  followers: current.shop._count.followers + (following ? -1 : 1),
+      queryClient.setQueryData<SellerData>(
+        ['seller', shopId, 'authed'],
+        (current) =>
+          current
+            ? {
+                ...current,
+                isFollowing: !following,
+                shop: {
+                  ...current.shop,
+                  _count: {
+                    ...current.shop._count,
+                    followers:
+                      current.shop._count.followers + (following ? -1 : 1),
+                  },
                 },
-              },
-            }
-          : current,
+              }
+            : current,
       );
     },
     onError: () => toast.error('Could not update follow status'),
@@ -169,7 +178,13 @@ export function SellerProfile({
     <main className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-8">
       <div className="relative h-40 overflow-hidden rounded-xl bg-surface-container sm:h-56">
         {shop.coverUrl && (
-          <Image src={shop.coverUrl} alt="" fill sizes="100vw" className="object-cover" />
+          <Image
+            src={shop.coverUrl}
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover"
+          />
         )}
       </div>
 
@@ -191,7 +206,9 @@ export function SellerProfile({
           <div>
             <h1 className="text-headline-lg text-on-surface">{shop.name}</h1>
             {shop.category && (
-              <span className="text-body-sm text-on-surface-variant">{shop.category}</span>
+              <span className="text-body-sm text-on-surface-variant">
+                {shop.category}
+              </span>
             )}
           </div>
         </div>
@@ -201,7 +218,9 @@ export function SellerProfile({
             type="button"
             variant={following ? 'outline' : 'default'}
             disabled={follow.isPending}
-            onClick={() => (following ? setConfirmUnfollow(true) : follow.mutate())}
+            onClick={() =>
+              following ? setConfirmUnfollow(true) : follow.mutate()
+            }
           >
             {follow.isPending && <Loader2 className="animate-spin" />}
             {following ? 'Following' : 'Follow'}
@@ -227,7 +246,9 @@ export function SellerProfile({
         </AlertDialog>
       </div>
 
-      {shop.bio && <p className="text-body-md text-on-surface-variant">{shop.bio}</p>}
+      {shop.bio && (
+        <p className="text-body-md text-on-surface-variant">{shop.bio}</p>
+      )}
 
       <div className="flex flex-wrap gap-4 text-body-sm text-on-surface-variant">
         {shop.address && (
@@ -250,7 +271,11 @@ export function SellerProfile({
         )}
         <span className="flex items-center gap-1.5">
           <Calendar className="size-4" />
-          Joined {new Date(shop.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}
+          Joined{' '}
+          {new Date(shop.createdAt).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+          })}
         </span>
         <Badge variant="secondary">{shop._count.products} products</Badge>
         <Badge variant="secondary">{shop._count.followers} followers</Badge>
