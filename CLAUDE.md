@@ -21,3 +21,10 @@
 - The `nx-generate` skill handles generator discovery internally - don't call nx_docs just to look up generator syntax
 
 <!-- nx configuration end-->
+
+## Testing in this workspace
+
+- Runner is **`bun test`**, not jest. No `@nx/jest`/`@nx/vitest`/`@nx/playwright` is installed, and every app was generated with `--unitTestRunner none`, so no project has an inferred `test` target and there are no `*-e2e` projects.
+- Cross-service tests live in `tests/` — its own Nx project (`@biashara-mall/tests`) with a `test` target wrapping `bun test`. It imports service routers by relative path, which Nx resolves into real graph edges, so `nx affected -t test` runs it when a service it touches changes.
+- Run with `bun run test` (`nx run-many -t test`), never `bun test` directly, so caching and affected work.
+- Adding per-project tests later: give that project an `nx.targets.test` entry in its `package.json` running `bun test`, rather than installing a second runner.
