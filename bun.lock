@@ -372,6 +372,12 @@
     "tests": {
       "name": "@biashara-mall/tests",
       "version": "0.0.0",
+      "dependencies": {
+        "@biashara-mall/config": "workspace:*",
+        "@biashara-mall/error-handler": "workspace:*",
+        "@biashara-mall/prisma": "workspace:*",
+        "express": "^5.1.0",
+      },
     },
   },
   "packages": {
