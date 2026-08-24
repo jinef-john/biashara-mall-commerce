@@ -1,4 +1,9 @@
-import { kafka, restartOnCrash, TOPICS, type ChatMessageEvent } from '@biashara-mall/kafka';
+import {
+  kafka,
+  restartOnCrash,
+  TOPICS,
+  type ChatMessageEvent,
+} from '@biashara-mall/kafka';
 import { prisma } from '@biashara-mall/prisma';
 
 const BATCH_INTERVAL_MS = 3000;
@@ -18,9 +23,11 @@ const toRow = (m: ChatMessageEvent) => ({
 const isDuplicate = (err: unknown) =>
   (err as { code?: string })?.code === 'P2002';
 
-// Messages live in their own collection, so nothing else moves the group row
-// the inbox orders by.
-async function touchConversations(batch: ChatMessageEvent[]) {
+/** The newest message per conversation, which is what the inbox orders by —
+ * newest, not last seen, since a batch can arrive out of order. */
+export function latestPerConversation(
+  batch: ChatMessageEvent[],
+): Map<string, string> {
   const latest = new Map<string, string>();
   for (const message of batch) {
     const current = latest.get(message.conversationId);
@@ -28,13 +35,23 @@ async function touchConversations(batch: ChatMessageEvent[]) {
       latest.set(message.conversationId, message.createdAt);
     }
   }
+  return latest;
+}
+
+// Messages live in their own collection, so nothing else moves the group row
+// the inbox orders by.
+async function touchConversations(batch: ChatMessageEvent[]) {
+  const latest = latestPerConversation(batch);
 
   await Promise.all(
     [...latest].map(([id, createdAt]) =>
       prisma.conversationGroup
         .update({ where: { id }, data: { updatedAt: new Date(createdAt) } })
         .catch((err) =>
-          console.error(`[chat-consumer] touch ${id} failed:`, (err as Error).message),
+          console.error(
+            `[chat-consumer] touch ${id} failed:`,
+            (err as Error).message,
+          ),
         ),
     ),
   );
@@ -86,7 +103,10 @@ export async function startChatMessageConsumer(): Promise<void> {
   restartOnCrash(consumer, 'chat-consumer', startChatMessageConsumer);
 
   await consumer.connect();
-  await consumer.subscribe({ topic: TOPICS.CHAT_NEW_MESSAGE.topic, fromBeginning: false });
+  await consumer.subscribe({
+    topic: TOPICS.CHAT_NEW_MESSAGE.topic,
+    fromBeginning: false,
+  });
 
   await consumer.run({
     eachMessage: async ({ message }) => {
@@ -94,7 +114,10 @@ export async function startChatMessageConsumer(): Promise<void> {
       try {
         buffer.push(JSON.parse(message.value.toString()) as ChatMessageEvent);
       } catch (err) {
-        console.error('[chat-consumer] malformed message:', (err as Error).message);
+        console.error(
+          '[chat-consumer] malformed message:',
+          (err as Error).message,
+        );
       }
     },
   });
@@ -102,5 +125,7 @@ export async function startChatMessageConsumer(): Promise<void> {
   // Guarded: a crash restart re-enters this function, and a second interval
   // would double-flush the same buffer.
   flushTimer ??= setInterval(flush, BATCH_INTERVAL_MS);
-  console.log('[chat-consumer] consumer group "chat-message-db-writer" running');
+  console.log(
+    '[chat-consumer] consumer group "chat-message-db-writer" running',
+  );
 }
