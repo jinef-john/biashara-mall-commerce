@@ -7,12 +7,21 @@
       "test": {
         "executor": "nx:run-commands",
         "cache": true,
-        "inputs": ["default", "^default"],
+        "inputs": [
+          "default",
+          "^default"
+        ],
         "options": {
-          "command": "bun test",
+          "command": "./run-tests.sh",
           "cwd": "tests"
         }
       }
     }
+  },
+  "dependencies": {
+    "@biashara-mall/config": "workspace:*",
+    "@biashara-mall/error-handler": "workspace:*",
+    "@biashara-mall/prisma": "workspace:*",
+    "express": "^5.1.0"
   }
 }
